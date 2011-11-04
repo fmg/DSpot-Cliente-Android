@@ -31,8 +31,8 @@ import android.app.Application;
 public class Api extends Application{
 	
 	public static String cookie;
-	public static final String IP = "http://95.92.200.69:3000";
-	//String IP = "http://172.30.94.186:3000";
+	//public static final String IP = "http://95.92.200.69:3000";
+	String IP = "http://172.30.1.57:3000";
 	public static User user = new User();
 	
 	
@@ -40,7 +40,7 @@ public class Api extends Application{
 	
 	
 	
-	public int login(String username, String password){
+	public int login(String username, String password) throws JSONException, ClientProtocolException, IOException{
 		
 		if(username.length() == 0 || password.length() == 0){
 			return -1;
@@ -50,32 +50,42 @@ public class Api extends Application{
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		
 		HttpResponse response=null;
-        try {
+        
         	
-            String url = IP + "/user/login?username=" + username + "&password=" + password; 
-            
-            System.out.println(url);
+        String url = IP + "/login"; 
+        
+        System.out.println(url);
 
-            HttpGet httpget = new HttpGet(url);
-            
-            httpget.setHeader("Accept", "application/json");
-            
-            response = httpClient.execute(httpget);
-            
-            if(response.getStatusLine().getStatusCode() == 200){
-            	cookie = response.getFirstHeader("Set-Cookie").getValue().toString();
-            	user.setUsername(username);
-            	System.out.println(cookie);
-            	 return 0;
-            	 
-            }else{
-            	return -2;
-            }
-        } catch (IOException ex) {
-        	ex.printStackTrace();
+        HttpPost httpPost = new HttpPost(url);         
+        JSONObject jsonuser=new JSONObject();
+        
+        httpPost.setHeader("Accept", "application/json");
+        	
+		jsonuser.put("name", username);
+		jsonuser.put("password", password);
+		
+		
+		String POSTText = jsonuser.toString();
+        StringEntity entity; 
+    	 
+		entity = new StringEntity(POSTText, "UTF-8");
+		BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+        httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+        entity.setContentType(basicHeader);
+        httpPost.setEntity(entity);
+        response = httpClient.execute(httpPost);
+     
+        
+        if(response.getStatusLine().getStatusCode() == 200){
+        	cookie = response.getFirstHeader("Set-Cookie").getValue().toString();
+        	user.setUsername(username);
+        	System.out.println(cookie);
+        	 return 0;
+        	 
+        }else{
+        	return -2;
         }
-    	return -3;
-
+        
 	}
 	
 	
@@ -87,7 +97,7 @@ public class Api extends Application{
 		HttpResponse response=null;
         try {
         	
-            String url = IP + "/user/profile";       
+            String url = IP + "/users/profile";       
  
             HttpGet httpget = new HttpGet(url);
             
@@ -107,13 +117,15 @@ public class Api extends Application{
 
             	
             	//guardar os dados comuns
-            	user.setName(messageReceived.get("name").toString());
-    	        JSONObject utilizadorInfo =messageReceived.getJSONObject("utilizador");	
-            	
+            	user.setName(messageReceived.getString("name"));
+            	user.setEmail(messageReceived.getString("email"));
+            	user.setId(messageReceived.getInt("id"));
+    	        
+    	        /*
             	System.out.println(utilizadorInfo.get("photo").toString());
             		
 	            user.setPhoto(utilizadorInfo.get("photo").toString());
-            	
+            	*/
             	
             	return true;
             }	

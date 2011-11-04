@@ -3,6 +3,26 @@ package dspot.client;
 
 public class User {
 	
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
 	public boolean isConnected() {
 		return isConnected;
 	}
@@ -53,6 +73,8 @@ public class User {
 	private String username;
 	private String name;
 	private String photo;
+	private String email;
+	private int id;
 	private boolean isConnected = true;
 	
 }

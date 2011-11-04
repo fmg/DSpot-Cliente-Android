@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="Registo"></activity>
+        <activity android:name="Registo" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="Inicial"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="MeTab"></activity>

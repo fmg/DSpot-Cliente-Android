@@ -20,6 +20,7 @@ public final class R {
         public static final int ic_tab_me_unselected=0x7f020006;
         public static final int ic_tab_search_selected=0x7f020007;
         public static final int ic_tab_search_unselected=0x7f020008;
+        public static final int profile_picture=0x7f020009;
     }
     public static final class id {
         public static final int RelativeLayout1=0x7f050001;
@@ -59,6 +60,7 @@ public final class R {
         public static final int login=0x7f030004;
         public static final int registo=0x7f030005;
         public static final int tab_map=0x7f030006;
+        public static final int tab_me=0x7f030007;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
