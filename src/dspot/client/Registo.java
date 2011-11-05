@@ -1,26 +1,24 @@
 package dspot.client;
 
-import java.util.Calendar;
+
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
+import com.facebook.android.Facebook.DialogListener;
+import com.facebook.android.FacebookError;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Registo extends Activity {
 		
 	Api api;
-	
-	
 	
     /** Called when the activity is first created. */
     @Override
@@ -34,6 +32,14 @@ public class Registo extends Activity {
 			@Override
 			public void onClick(View v) {
 				registAction();
+			}
+        });
+        
+        
+        (findViewById(R.id.regist_facebookButton)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				facebookAction();
 			}
         });
 
@@ -91,7 +97,64 @@ public class Registo extends Activity {
     }
     
     
+    public void facebookAction(){
+    	
+    	api.mPrefs = getPreferences(MODE_PRIVATE);
+        String access_token = api.mPrefs.getString("access_token", null);
+        long expires = api.mPrefs.getLong("access_expires", 0);
+        if(access_token != null) {
+            api.facebook.setAccessToken(access_token);
+        }
+        if(expires != 0) {
+            api.facebook.setAccessExpires(expires);
+        }
+        
+        /*
+         * Only call authorize if the access_token has expired.
+         */
+        if(!api.facebook.isSessionValid()) {
+
+            api.facebook.authorize(this, new String[] {"email"}, new DialogListener() {
+                @Override
+                public void onComplete(Bundle values) {
+                    SharedPreferences.Editor editor = api.mPrefs.edit();
+                    editor.putString("access_token", api.facebook.getAccessToken());
+                    editor.putLong("access_expires", api.facebook.getAccessExpires());
+                    editor.commit();
+                }
     
+                @Override
+                public void onFacebookError(FacebookError error) {}
+    
+                @Override
+                public void onError(DialogError e) {}
+    
+                @Override
+                public void onCancel() {}
+            });
+        }
+    }
+    
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        api.facebook.authorizeCallback(requestCode, resultCode, data);
+        
+        Bundle bundle = data.getExtras();
+        
+        Log.e("AKI",bundle.toString());
+        
+    }
+    
+    
+    /*
+     
+     public void facebookLogout(){
+     
+      
+     */
     
 
 }

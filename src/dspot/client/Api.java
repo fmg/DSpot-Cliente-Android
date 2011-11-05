@@ -6,11 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -22,11 +17,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.android.Facebook;
+
 import android.app.Application;
+import android.content.SharedPreferences;
 
 public class Api extends Application{
 	
@@ -35,7 +32,9 @@ public class Api extends Application{
 	String IP = "http://172.30.1.57:3000";
 	public static User user = new User();
 	
-	
+	static public Facebook facebook = new Facebook("312262358799303 ");
+	static public final String FILENAME = "DSpot_data";
+    static public SharedPreferences mPrefs;
 	
 	
 	
@@ -141,61 +140,6 @@ public class Api extends Application{
         
         return false;
 		
-	}
-	
-	
-	public User getFrientProfile(String id){
-		
-		final HttpClient httpClient =  new DefaultHttpClient();
-		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
-		HttpResponse response=null;
-		
-		
-		
-		User user = new User();
-		
-		try {
-        	
-			String url = IP + "/patient/show?patient_id=" + id;
-			
-			System.out.println(url);
-			
-            HttpGet httpget = new HttpGet(url);
-            
-            httpget.setHeader("Accept", "application/json");
-            httpget.setHeader("Cookie", cookie);
-            
-            response = httpClient.execute(httpget);
-            
-            if(response.getStatusLine().getStatusCode() == 200){	
-            	
-                InputStream instream = response.getEntity().getContent();
-                String tmp = read(instream);
-                
-            	
-    	        JSONObject messageReceived = new JSONObject(tmp.toString());
-            	System.out.println(messageReceived.toString());
-            	
-            	
-    	        JSONObject utilizadorInfo =messageReceived.getJSONObject("user");
-    	        
-    	        user.setUsername("");
-            	
-            	
-            	
-            	
-            	return user;
-            }	
-            
-        } catch (IOException ex) {
-        	ex.printStackTrace();    	
-        } catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-        
-        return null;
 	}
 
 	
