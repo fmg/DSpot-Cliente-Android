@@ -20,6 +20,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
 import android.app.Application;
@@ -32,9 +33,10 @@ public class Api extends Application{
 	String IP = "http://172.30.1.57:3000";
 	public static User user = new User();
 	
-	static public Facebook facebook = new Facebook("312262358799303 ");
+	static public Facebook facebook = new Facebook("177730402315866");
 	static public final String FILENAME = "DSpot_data";
     static public SharedPreferences mPrefs;
+    public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	
 	
 	

@@ -1,6 +1,12 @@
 package dspot.client;
 
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -9,16 +15,22 @@ import com.facebook.android.FacebookError;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Registo extends Activity {
 		
-	Api api;
+	private Api api;
+	private Handler mHandler;
+	String name, email, picURL;
 	
     /** Called when the activity is first created. */
     @Override
@@ -132,6 +144,16 @@ public class Registo extends Activity {
                 @Override
                 public void onCancel() {}
             });
+        }else{
+        	
+        	Toast toast = Toast.makeText(getApplicationContext(), "Working. Please wait...", Toast.LENGTH_SHORT);
+     		toast.show();
+        	
+        	Bundle params = new Bundle();
+       		params.putString("fields", "name, email ,picture");
+    		api.mAsyncRunner.request("me", params, new UserRequestListener());
+    		
+    		fillTheForm();
         }
     }
     
@@ -141,20 +163,60 @@ public class Registo extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         api.facebook.authorizeCallback(requestCode, resultCode, data);
+        //a data nao traz nada de especial, so o access token...
         
-        Bundle bundle = data.getExtras();
-        
-        Log.e("AKI",bundle.toString());
-        
+    	Bundle params = new Bundle();
+   		params.putString("fields", "name, email ,picture");
+		api.mAsyncRunner.request("me", params, new UserRequestListener());
+		
+		Toast toast = Toast.makeText(getApplicationContext(), "Working. Please wait...", Toast.LENGTH_SHORT);
+ 		toast.show();
+		
+		fillTheForm();
     }
     
     
-    /*
-     
-     public void facebookLogout(){
-     
-      
-     */
+    
+    public void fillTheForm(){
+    	
+    	try{
+    		((EditText)findViewById(R.id.register_email)).setText(email);
+        	((EditText)findViewById(R.id.register_name)).setText(name);
+        	
+        	URL newurl;
+			Bitmap mIcon_val;
+			
+			newurl = new URL(picURL);
+			mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
+			((ImageView)findViewById(R.id.register_profileImage)).setImageBitmap(mIcon_val);
+    	}catch (IOException e) {
+			Toast toast = Toast.makeText(getApplicationContext(), "Error downloading image", Toast.LENGTH_SHORT);
+     		toast.show();
+		} 
+    	
+    }
+    
+    
+    public class UserRequestListener extends BaseRequestListener {
+
+        public void onComplete(final String response, final Object state) {
+        	JSONObject jsonObject;
+			try {
+				jsonObject = new JSONObject(response);
+				
+	        	picURL = jsonObject.getString("picture");
+	        	name = jsonObject.getString("name");
+	        	email = jsonObject.getString("email");
+	        	
+	        	System.out.println("AKI-> " + name + " "+ email + " " + picURL);
+	        					
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+        }
+
+    }
     
 
 }
