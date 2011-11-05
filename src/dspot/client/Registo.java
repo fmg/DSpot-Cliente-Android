@@ -7,19 +7,20 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.os.Message;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,6 +32,8 @@ public class Registo extends Activity {
 	private Api api;
 	private Handler mHandler;
 	String name, email, picURL;
+	ProgressDialog dialog;
+
 	
     /** Called when the activity is first created. */
     @Override
@@ -51,6 +54,7 @@ public class Registo extends Activity {
         (findViewById(R.id.regist_facebookButton)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				dialog = ProgressDialog.show(Registo.this, "", "Working. Please wait...", true);
 				facebookAction();
 			}
         });
@@ -146,14 +150,10 @@ public class Registo extends Activity {
             });
         }else{
         	
-        	Toast toast = Toast.makeText(getApplicationContext(), "Working. Please wait...", Toast.LENGTH_SHORT);
-     		toast.show();
-        	
         	Bundle params = new Bundle();
        		params.putString("fields", "name, email ,picture");
-    		api.mAsyncRunner.request("me", params, new UserRequestListener());
+    		api.mAsyncRunner.request("me", params, new UserRequestListener(handler));
     		
-    		fillTheForm();
         }
     }
     
@@ -167,12 +167,11 @@ public class Registo extends Activity {
         
     	Bundle params = new Bundle();
    		params.putString("fields", "name, email ,picture");
-		api.mAsyncRunner.request("me", params, new UserRequestListener());
+		api.mAsyncRunner.request("me", params, new UserRequestListener(handler));
 		
 		Toast toast = Toast.makeText(getApplicationContext(), "Working. Please wait...", Toast.LENGTH_SHORT);
  		toast.show();
 		
-		fillTheForm();
     }
     
     
@@ -185,6 +184,8 @@ public class Registo extends Activity {
         	
         	URL newurl;
 			Bitmap mIcon_val;
+			
+			System.out.println("VAI FAZER LOAD DA IMAGEM");
 			
 			newurl = new URL(picURL);
 			mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
@@ -199,6 +200,11 @@ public class Registo extends Activity {
     
     public class UserRequestListener extends BaseRequestListener {
 
+    	Handler mHandler;
+    	public UserRequestListener(Handler h) {
+    		mHandler = h;
+		}
+    	
         public void onComplete(final String response, final Object state) {
         	JSONObject jsonObject;
 			try {
@@ -209,14 +215,30 @@ public class Registo extends Activity {
 	        	email = jsonObject.getString("email");
 	        	
 	        	System.out.println("AKI-> " + name + " "+ email + " " + picURL);
+	        	
+	        	
 	        					
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
+			
+			Message msg = mHandler.obtainMessage();
+			mHandler.sendMessage(msg);
         }
 
     }
+    
+    
+    
+    // Define the Handler that receives messages from the thread and update the progress
+    final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+
+            fillTheForm();
+            dialog.dismiss();
+        }
+    };
     
 
 }

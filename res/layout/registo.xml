@@ -90,8 +90,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignRight="@+id/tableLayout3"
-            android:layout_below="@+id/tableLayout3" android:stretchColumns="1">
+            android:layout_alignRight="@+id/registarTV"
+            android:layout_below="@+id/tableLayout3"
+            android:stretchColumns="1" >
 
             <TableRow
                 android:id="@+id/tableRow1"
@@ -149,8 +150,9 @@
 
         <TableLayout
             android:id="@+id/tableLayout3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_below="@+id/registarTV">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/registarTV" >
 
             <TableRow
                 android:id="@+id/tableRow6"
@@ -168,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|center_horizontal"
-                    android:text="Register With Facebook" />
+                    android:text="Get Data from Facebook" />
             </TableRow>
 
         </TableLayout>
@@ -180,7 +182,7 @@
             android:layout_alignBottom="@+id/tableLayout2"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/tableLayout2"
-            android:layout_toRightOf="@+id/tableLayout3"
+            android:layout_toRightOf="@+id/tableLayout2"
             android:src="@drawable/profile_picture" />
 
     </RelativeLayout>
