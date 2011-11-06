@@ -30,7 +30,7 @@ public class Api extends Application{
 	
 	public static String cookie;
 	//public static final String IP = "http://95.92.200.69:3000";
-	String IP = "http://172.30.1.57:3000";
+	public static String IP = "http://172.29.145.84:3000";
 	public static User user = new User();
 	
 	static public Facebook facebook = new Facebook("177730402315866");
