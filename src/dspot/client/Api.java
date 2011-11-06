@@ -29,7 +29,7 @@ import android.content.SharedPreferences;
 public class Api extends Application{
 	
 	public static String cookie;
-	//public static final String IP = "http://95.92.200.69:3000";
+	//andrepublic static final String IP = "http://95.92.200.69:3000";
 	public static String IP = "http://172.29.145.84:3000";
 	public static User user = new User();
 	
