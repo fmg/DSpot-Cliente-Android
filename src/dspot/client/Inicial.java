@@ -54,12 +54,12 @@ public class Inicial extends TabActivity{
 	    	
 	    	// Do the same for the other tabs
 		    intent = new Intent().setClass(this, SearchTab.class);
-		    spec = tabHost.newTabSpec("appointments").setIndicator("Appointments",res.getDrawable(R.layout.ic_tab_search)).setContent(intent);
+		    spec = tabHost.newTabSpec("seach").setIndicator("Search",res.getDrawable(R.layout.ic_tab_search)).setContent(intent);
 		    tabHost.addTab(spec);
 		    
 		    
 		    intent = new Intent().setClass(this, MapTab.class);
-		    spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",res.getDrawable(R.layout.ic_tab_map)).setContent(intent);
+		    spec = tabHost.newTabSpec("map").setIndicator("Map",res.getDrawable(R.layout.ic_tab_map)).setContent(intent);
 		    tabHost.addTab(spec);
 	    }
 
