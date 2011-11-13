@@ -29,18 +29,18 @@ public final class R {
     public static final class id {
         public static final int RelativeLayout1=0x7f050001;
         public static final int ScrollView1=0x7f050000;
-        public static final int TableLayout1=0x7f050024;
-        public static final int content=0x7f050022;
-        public static final int expandableListView1=0x7f050026;
-        public static final int handle=0x7f050023;
+        public static final int TableLayout1=0x7f050025;
+        public static final int content=0x7f050023;
+        public static final int expandableListView1=0x7f050027;
+        public static final int handle=0x7f050024;
         public static final int imageView1=0x7f050003;
-        public static final int listView1=0x7f050027;
+        public static final int listView1=0x7f050028;
         public static final int login_guestButton=0x7f05000f;
         public static final int login_loginButton=0x7f05000b;
         public static final int login_password=0x7f05000a;
         public static final int login_registerButton=0x7f05000e;
         public static final int login_username=0x7f050007;
-        public static final int mapView=0x7f050020;
+        public static final int mapView=0x7f050021;
         public static final int regist_facebookButton=0x7f05001d;
         public static final int regist_registButton=0x7f050017;
         public static final int registarTV=0x7f050010;
@@ -50,8 +50,9 @@ public final class R {
         public static final int register_passwordConf=0x7f05001b;
         public static final int register_profileImage=0x7f05001f;
         public static final int register_username=0x7f050019;
-        public static final int seekBar1=0x7f050025;
-        public static final int slidingDrawer1=0x7f050021;
+        public static final int search_by_location_editText=0x7f050020;
+        public static final int seekBar1=0x7f050026;
+        public static final int slidingDrawer1=0x7f050022;
         public static final int tableLayout1=0x7f050004;
         public static final int tableLayout2=0x7f05000c;
         public static final int tableLayout3=0x7f050018;
@@ -75,9 +76,10 @@ public final class R {
         public static final int ic_tab_search=0x7f030003;
         public static final int login=0x7f030004;
         public static final int registo=0x7f030005;
-        public static final int tab_map=0x7f030006;
-        public static final int tab_me=0x7f030007;
-        public static final int tab_search=0x7f030008;
+        public static final int search_by_location=0x7f030006;
+        public static final int tab_map=0x7f030007;
+        public static final int tab_me=0x7f030008;
+        public static final int tab_search=0x7f030009;
     }
     public static final class string {
         public static final int app_name=0x7f040000;

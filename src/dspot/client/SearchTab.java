@@ -4,8 +4,8 @@ package dspot.client;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.DataSetObserver;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -51,28 +51,16 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	    elv.setAdapter(new ExpandableListAdapter() {
 			
 			@Override
-			public void unregisterDataSetObserver(DataSetObserver observer) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void unregisterDataSetObserver(DataSetObserver observer) {}
 			
 			@Override
-			public void registerDataSetObserver(DataSetObserver observer) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void registerDataSetObserver(DataSetObserver observer) {}
 			
 			@Override
-			public void onGroupExpanded(int groupPosition) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onGroupExpanded(int groupPosition) {}
 			
 			@Override
-			public void onGroupCollapsed(int groupPosition) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onGroupCollapsed(int groupPosition) {}
 			
 			@Override
 			public boolean isEmpty() {
@@ -115,13 +103,11 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 			
 			@Override
 			public long getCombinedGroupId(long groupId) {
-				// TODO Auto-generated method stub
 				return 0;
 			}
 			
 			@Override
 			public long getCombinedChildId(long groupId, long childId) {
-				// TODO Auto-generated method stub
 				return 0;
 			}
 			
@@ -168,7 +154,6 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 			
 			@Override
 			public boolean areAllItemsEnabled() {
-				// TODO Auto-generated method stub
 				return false;
 			}
 		});
@@ -178,8 +163,16 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	    	@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-	    		Toast toast = Toast.makeText(getApplicationContext(), "AKI", Toast.LENGTH_SHORT);
-	    		toast.show();
+
+	    		
+	    		if(Options[arg2].equals("Search Near Me")){
+	    			searchNearMe();	
+	    		}else if(Options[arg2].equals("Search By Location")){
+	    			searchByLocation();
+	    		}else if(Options[arg2].equals("Last Search")){
+	    			lastSearch();
+	    		}
+	    		
 				
 			}
 	    });
@@ -196,8 +189,8 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	
 	
 	public void searchByLocation(){
-		Toast toast = Toast.makeText(getApplicationContext(), "Search By Location", Toast.LENGTH_SHORT);
-		toast.show();
+		Intent intent = new Intent(getApplicationContext(),SearchByLocation.class);
+        startActivity(intent);
 	}
 	
 	public void lastSearch(){
@@ -221,26 +214,20 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	@Override
 	public void onBackPressed() {
 		
-		// prepare the alert box
         AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
 
-        // set the message to display
         alertbox.setMessage("Do you want to quit the application?");
 
-        // set a positive/yes button and create a listener
         alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
 
-            // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 //Do nothing
             }
         });
 
-        // set a negative/no button and create a listener
-        alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
 
-            // do something when the button is clicked
-            public void onClick(DialogInterface arg0, int arg1) {
+                        public void onClick(DialogInterface arg0, int arg1) {
             	
             	if(api.logout()){
             		finish();
@@ -251,7 +238,6 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
             }
         });
 
-        // display box
         alertbox.show();
 
 	}
@@ -259,7 +245,6 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 
 	@Override
 	public void onDrawerClosed() {
-		// TODO Auto-generated method stub
 		lv.setVisibility(ListView.VISIBLE);
 		((ImageView)findViewById(R.id.handle)).setImageResource(R.drawable.expander_up);
 		
@@ -268,7 +253,6 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 
 	@Override
 	public void onDrawerOpened() {
-		// TODO Auto-generated method stub
 		lv.setVisibility(ListView.GONE);
 		((ImageView)findViewById(R.id.handle)).setImageResource(R.drawable.expander_down);
 
