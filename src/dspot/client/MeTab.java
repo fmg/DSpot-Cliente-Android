@@ -48,12 +48,15 @@ public class MeTab extends Activity{
             public void onClick(DialogInterface arg0, int arg1) {
             	
             	
-            	if(api.logout()){
+            	//if(api.logout()){
+            	
+            		//TODO: fazer logout do facebook
+            	
             		finish();
-            	}else{
+            	/*}else{
             		Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
             		toast.show();
-            	}
+            	}*/
             	
             	
                 
