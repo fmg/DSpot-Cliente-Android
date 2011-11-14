@@ -33,6 +33,7 @@
         <activity android:name="SearchTab"></activity>
         <activity android:name="MapTab"></activity>
         <activity android:name="SearchByLocation" android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="NewSpot" android:theme="@android:style/Theme.NoTitleBar"></activity>
         
             
        

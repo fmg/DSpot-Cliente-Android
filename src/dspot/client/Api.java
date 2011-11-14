@@ -20,6 +20,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
@@ -32,6 +33,7 @@ public class Api extends Application{
 	//andrepublic static final String IP = "http://95.92.200.69:3000";
 	public static String IP = "http://172.29.145.84:3000";
 	public static User user = new User();
+	public static dspot.client.database.DatabaseAdapter dbAdapter;
 	
 	static public Facebook facebook = new Facebook("177730402315866");
 	static public final String FILENAME = "DSpot_data";

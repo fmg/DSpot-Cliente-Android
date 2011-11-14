@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -257,5 +260,33 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 		((ImageView)findViewById(R.id.handle)).setImageResource(R.drawable.expander_down);
 
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.new_spot_menu, menu);
+	    return true;
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.spot_menu_new:
+	    	Intent intent = new Intent(getApplicationContext(),NewSpot.class);
+	        startActivity(intent);
+	        return true;
+	    case R.id.spot_menu_refresh:
+	    	Toast toast = Toast.makeText(getApplicationContext(), "Refresh to be done in a near future", Toast.LENGTH_SHORT);
+    		toast.show();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	
+	
 
 }
