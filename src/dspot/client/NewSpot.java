@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.text.AlteredCharSequence;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class NewSpot extends Activity{
@@ -48,6 +50,13 @@ public class NewSpot extends Activity{
 				setSports();
 			}
 		});
+		
+		String[] tmp = new String[]{"RED2", "GREEN2", "BLUE2"};
+		Spinner s = (Spinner) findViewById(R.id.new_spot_setLocation_spinner);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, tmp);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    s.setAdapter(adapter);
 		
 		
 	}
