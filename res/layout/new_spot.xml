@@ -1,8 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    
+	<RelativeLayout
+	    android:id="@+id/RelativeLayout1"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical" >
 
-</RelativeLayout>
+	    <ImageView
+	        android:id="@+id/new_spot_picture"
+	        android:layout_width="150dp"
+	        android:layout_height="150dp"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:clickable="true"
+	        android:src="@drawable/camera_icon" >
+	    </ImageView>
+
+	    <Button
+	        android:id="@+id/button1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/tableLayout1"
+	        android:layout_centerHorizontal="true"
+	        android:text="Create Spot" android:layout_marginTop="30dp"/>
+
+	    <TableLayout
+	        android:id="@+id/tableLayout1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@id/new_spot_picture"
+	        android:stretchColumns="1" >
+
+	        <TableRow
+	            android:id="@+id/tableRow1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/textView1"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="Name"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	            <EditText
+	                android:id="@+id/editText1"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" >
+
+	                <requestFocus />
+	            </EditText>
+
+	        </TableRow>
+
+	        <TableRow
+	            android:id="@+id/tableRow2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/textView2"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="Address"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	            <EditText
+	                android:id="@+id/editText2"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:inputType="textPostalAddress" />
+
+	        </TableRow>
+
+	        <TableRow
+	            android:id="@+id/tableRow4"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/textView4"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="Location"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	            <Spinner
+	                android:id="@+id/spinner1"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+
+	        </TableRow>
+
+	        <TableRow
+	            android:id="@+id/tableRow3"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" >
+
+	            <TextView
+	                android:id="@+id/textView3"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="Sports"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	            <Button
+	                android:id="@+id/new_spot_setSports"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="Tap to set sports" />
+
+	        </TableRow>
+	    </TableLayout>
+
+	</RelativeLayout>
+	
+</ScrollView>
