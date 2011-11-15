@@ -1,12 +1,17 @@
 package dspot.client;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
-import android.text.AlteredCharSequence;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -108,6 +113,20 @@ public class NewSpot extends Activity{
 		    	
 		    	ImageView image = (ImageView) findViewById(R.id.new_spot_picture);  
 		    	image.setImageBitmap(thumbnail);
+		    	
+		    	
+		    	Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+		    	List<Address> addresses;
+				try {
+					addresses = gcd.getFromLocation(41.173396, -8.591801, 1);
+					if (addresses.size() > 0) 
+			    	    System.out.println(addresses.get(0).getLocality());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    	
+
 	    	}
 	    }  
 	}  
