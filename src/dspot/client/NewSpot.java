@@ -6,12 +6,19 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -21,12 +28,24 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class NewSpot extends Activity{
+public class NewSpot extends Activity implements Runnable{
 	
 	private Api api;
 	private static final int CAMERA_PIC_REQUEST = 1337;
+<<<<<<< HEAD
 	AlertDialog alert;  
 
+=======
+	  
+	private double lastLatitude, lastLongitude, deltaLatitude , deltaLongitude = 9999.9; 
+	LocationManager locationManager;
+	LocationListener locationListener;
+	
+	ProgressDialog dialog;
+	AlertDialog alert;
+	
+	
+>>>>>>> ja vai buscar a localização por torre e gps
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,7 +78,43 @@ public class NewSpot extends Activity{
 		t.setEnabled(false);
 		
 		t= (EditText)findViewById(R.id.new_spot_addressEdit);
+<<<<<<< HEAD
 		t.setEnabled(false);			
+=======
+		t.setEnabled(false);
+		
+		
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+		locationListener = new LocationListener() {
+		    public void onLocationChanged(Location location) {
+			    
+			      Toast toast = Toast.makeText(getApplicationContext(), location.getProvider() + ": " + location.getLatitude() +" , " + location.getLongitude(), Toast.LENGTH_LONG);
+				  toast.show();
+				  System.out.println(location.getLatitude() + " , " + location.getLongitude());
+			    
+				  double deltaLat, deltaLon;
+				  deltaLat = Math.abs(location.getLatitude() - lastLatitude);
+				  deltaLon = Math.abs(location.getLongitude() - lastLongitude);
+				  
+				  if((deltaLat + deltaLon) < (deltaLatitude + deltaLongitude)){
+					  lastLatitude = location.getLatitude();
+					  lastLongitude = location.getLongitude();
+					  deltaLatitude = deltaLat;
+					  deltaLongitude = deltaLon;
+			      }
+		    }
+
+		    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+		    public void onProviderEnabled(String provider) {
+		    }
+
+		    public void onProviderDisabled(String provider) {
+		    }
+		  };
+		
+>>>>>>> ja vai buscar a localização por torre e gps
 	}
 		
 	public void setSports(){
@@ -102,7 +157,10 @@ public class NewSpot extends Activity{
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
 	    if (requestCode == CAMERA_PIC_REQUEST) {  
-	        // do something  
+	        if(data == null)
+	        	return;
+	    	
+	    	// do something  
 	    	if(data.hasExtra("data")){
 		    	Bitmap thumbnail = (Bitmap) data.getExtras().get("data");  
 		    	
@@ -110,29 +168,74 @@ public class NewSpot extends Activity{
 		    	image.setImageBitmap(thumbnail);
 		    	
 		    	
-		    	Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
-		    	List<Address> addresses;
-				try {
-					addresses = gcd.getFromLocation(41.173396, -8.591801, 1);
-					if (addresses.size() > 0) 
-			    	    System.out.println(addresses.get(0).getLocality());
-						EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
-						t.setText(addresses.get(0).getLocality());
-						
-						EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
-						t2.setText(addresses.get(0).getAddressLine(0).toString());
-						
-						
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		    	// Register the listener with the Location Manager to receive location updates
+				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 				
 				
-		    	
-
+				dialog = ProgressDialog.show(NewSpot.this, "", "Obtaining your location. Please don't move and wait...", true);
+	    		Thread thread = new Thread(this);
+	            thread.start();
 	    	}
 	    }  
+	}
+
+
+	@Override
+	public void run() {
+		while(deltaLatitude + deltaLongitude > 0.0){
+			try {
+			System.out.println("Sleeping. zZzZzZzzzzz");
+			Thread.sleep(15000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		locationManager.removeUpdates(locationListener);
+		System.out.println("vai sair da thread");
+		Message msg = handler.obtainMessage();
+		handler.sendMessage(msg);
+		
 	}  
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		locationManager.removeUpdates(locationListener);
+	}
+	
+	
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+        	
+        	Locale l = new Locale("pt-PT");
+        	Geocoder gcd = new Geocoder(getApplicationContext(), l);
+        	List<Address> addresses;
+    		try {
+    			locationManager.removeUpdates(locationListener);
+    			addresses = gcd.getFromLocation(lastLatitude, lastLongitude, 10);
+    			
+    			
+    			
+    			if (addresses.size() > 0) 
+    	    	    System.out.println(addresses.get(0).getLocality());
+    				EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
+    				t.setText(addresses.get(0).getLocality());
+    				
+    				EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
+    				t2.setText(addresses.get(0).getAddressLine(0).toString());
+    				
+    				
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+            
+            dialog.dismiss();
+        }
+    };
+
 	
 	
 
