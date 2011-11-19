@@ -11,8 +11,8 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int camera_icon=0x7f020000;
-        public static final int close=0x7f020001;
+        public static final int black_white_gradient=0x7f020000;
+        public static final int camera_icon=0x7f020001;
         public static final int expander_down=0x7f020002;
         public static final int expander_up=0x7f020003;
         public static final int facebook_icon=0x7f020004;
@@ -34,7 +34,6 @@ public final class R {
         public static final int button1=0x7f060011;
         public static final int content=0x7f06002b;
         public static final int editText1=0x7f060012;
-        public static final int editText2=0x7f060013;
         public static final int editText3=0x7f060016;
         public static final int editText4=0x7f060019;
         public static final int expandableListView1=0x7f06002f;
@@ -47,8 +46,9 @@ public final class R {
         public static final int login_registerButton=0x7f06000e;
         public static final int login_username=0x7f060007;
         public static final int mapView=0x7f060029;
+        public static final int new_spot_addressEdit=0x7f060013;
+        public static final int new_spot_locationEdit=0x7f06001c;
         public static final int new_spot_picture=0x7f060010;
-        public static final int new_spot_setLocation_spinner=0x7f06001c;
         public static final int new_spot_setSports=0x7f06001d;
         public static final int regist_facebookButton=0x7f060026;
         public static final int regist_registButton=0x7f060021;

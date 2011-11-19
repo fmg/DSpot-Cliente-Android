@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -56,12 +57,11 @@ public class NewSpot extends Activity{
 			}
 		});
 		
-		String[] tmp = new String[]{"RED2", "GREEN2", "BLUE2"};
-		Spinner s = (Spinner) findViewById(R.id.new_spot_setLocation_spinner);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, tmp);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    s.setAdapter(adapter);
+		EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
+		t.setEnabled(false);
+		
+		t= (EditText)findViewById(R.id.new_spot_addressEdit);
+		t.setEnabled(false);
 		
 		
 	}
@@ -121,10 +121,18 @@ public class NewSpot extends Activity{
 					addresses = gcd.getFromLocation(41.173396, -8.591801, 1);
 					if (addresses.size() > 0) 
 			    	    System.out.println(addresses.get(0).getLocality());
+						EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
+						t.setText(addresses.get(0).getLocality());
+						
+						EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
+						t2.setText(addresses.get(0).getAddressLine(0).toString());
+						
+						
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				
 		    	
 
 	    	}

@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -85,7 +86,7 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 					View convertView, ViewGroup parent) {
 				TextView textView = getGenericView();
 	            textView.setText(getGroup(groupPosition).toString());
-	            textView.setTextSize(25);
+	            //textView.setTextSize(25);
 	            return textView;
 			}
 			
@@ -130,7 +131,7 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	            // Center the text vertically
 	            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 	            // Set the text starting position
-	            textView.setPadding(36, 0, 0, 0);
+	            textView.setPadding(40, 0, 0, 0);
 	            return textView;
 	        }
 			
@@ -140,7 +141,7 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 					boolean isLastChild, View convertView, ViewGroup parent) {
 				TextView textView = getGenericView();
 	            textView.setText(getChild(groupPosition, childPosition).toString());
-	            textView.setTextSize(15);
+	            //textView.setTextSize(15);
 	            textView.setPadding(60, 0,0,0);
 	            return textView;
 			}
@@ -181,9 +182,9 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	    });
 	    
 	    
+	    
 	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerOpenListener(this);
 	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerCloseListener(this);
-	    
 	    
 	    
 	    Toast toast = Toast.makeText(getApplicationContext(), "Click the icon below, to costumize the search", Toast.LENGTH_LONG);

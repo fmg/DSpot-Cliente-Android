@@ -71,7 +71,7 @@
 	                android:textAppearance="?android:attr/textAppearanceLarge" />
 
 	            <EditText
-	                android:id="@+id/editText2"
+	                android:id="@+id/new_spot_addressEdit"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:inputType="textPostalAddress" />
@@ -130,8 +130,8 @@
 	                android:text="Location"
 	                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-	            <Spinner
-	                android:id="@+id/new_spot_setLocation_spinner"
+	            <EditText
+	                android:id="@+id/new_spot_locationEdit"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
 
