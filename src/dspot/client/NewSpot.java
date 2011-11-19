@@ -32,10 +32,6 @@ public class NewSpot extends Activity implements Runnable{
 	
 	private Api api;
 	private static final int CAMERA_PIC_REQUEST = 1337;
-<<<<<<< HEAD
-	AlertDialog alert;  
-
-=======
 	  
 	private double lastLatitude, lastLongitude, deltaLatitude , deltaLongitude = 9999.9; 
 	LocationManager locationManager;
@@ -45,7 +41,6 @@ public class NewSpot extends Activity implements Runnable{
 	AlertDialog alert;
 	
 	
->>>>>>> ja vai buscar a localização por torre e gps
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -78,11 +73,8 @@ public class NewSpot extends Activity implements Runnable{
 		t.setEnabled(false);
 		
 		t= (EditText)findViewById(R.id.new_spot_addressEdit);
-<<<<<<< HEAD
 		t.setEnabled(false);			
-=======
-		t.setEnabled(false);
-		
+
 		
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -114,7 +106,6 @@ public class NewSpot extends Activity implements Runnable{
 		    }
 		  };
 		
->>>>>>> ja vai buscar a localização por torre e gps
 	}
 		
 	public void setSports(){
