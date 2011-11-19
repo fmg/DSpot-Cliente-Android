@@ -1,6 +1,5 @@
 package dspot.client;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -32,8 +31,9 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	private Api api;
 	private ListView lv = null;
 	private ExpandableListView elv = null;
+	AlertDialog alert;
 	
-	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search"};
+	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports"};
 	
 	
 	private String[] groups = { "Sports" };
@@ -165,28 +165,23 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	    lv.setOnItemClickListener(new ListView.OnItemClickListener() {
 			
 	    	@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	    		
 	    		
-	    		if(Options[arg2].equals("Search Near Me")){
-	    			searchNearMe();	
-	    		}else if(Options[arg2].equals("Search By Location")){
+	    		if (Options[arg2].equals("Search Near Me"))
+	    			searchNearMe();		    	
+    			else if (Options[arg2].equals("Search By Location"))
 	    			searchByLocation();
-	    		}else if(Options[arg2].equals("Last Search")){
+	    		else if (Options[arg2].equals("Last Search"))
 	    			lastSearch();
-	    		}
-	    		
-				
+	    		else if (Options[arg2].equals("Sports"))
+	    			sports();
+//	    			System.out.println("Desportos clicked");
 			}
 	    });
-	    
-	    
-	    
+	    	    	   
 	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerOpenListener(this);
 	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerCloseListener(this);
-	    
-	    
+	    	    
 	    Toast toast = Toast.makeText(getApplicationContext(), "Click the icon below, to costumize the search", Toast.LENGTH_LONG);
 	    toast.show();
     }
@@ -197,12 +192,37 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
         startActivity(intent);
 	}
 	
-	public void lastSearch(){
+	public void sports() {
+//		final CharSequence[] items = {"Soccer", "Basketball", "Running"};
+		boolean[] checkeditems = {false, false, false};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Sports");
+		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				alert.dismiss();			
+				}
+			});
+		
+		builder.setMultiChoiceItems(Api.sports, checkeditems, new DialogInterface.OnMultiChoiceClickListener(){
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which,
+					boolean isChecked) {
+				Toast.makeText(getApplicationContext(), Api.sports[which], Toast.LENGTH_SHORT).show();
+			}
+		});
+		alert = builder.create();
+		alert.show();
+	}
+	
+	public void lastSearch() {
 		Toast toast = Toast.makeText(getApplicationContext(), "Last Search", Toast.LENGTH_SHORT);
 		toast.show();
 	}
 	
-	public void searchBySports(){
+	public void searchBySports() {
 		Toast toast = Toast.makeText(getApplicationContext(), "Search By Sports", Toast.LENGTH_SHORT);
 		toast.show();
 	}
@@ -217,33 +237,33 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	
 	@Override
 	public void onBackPressed() {
-		
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-
+		AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
         alertbox.setMessage("Do you want to quit the application?");
-
         alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
-
             public void onClick(DialogInterface arg0, int arg1) {
                 //Do nothing
             }
         });
-
-                alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface arg0, int arg1) {
-            	
-            	if(api.logout()){
-            		finish();
-            	}else{
-            		Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
-            		toast.show();
-            	}        
-            }
+        
+        alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {            	            	
+            	if (Api.guestMode == true) {
+            		System.out.println("guest mode is true");
+            		finish();            			
+            	}
+            	else if (Api.guestMode == false) {
+            		System.out.println("guest mode is false");
+            		if (api.logout())
+            			finish();
+            		else {
+            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
+            			toast.show();
+            		}
+            	}
+            }       
         });
-
-        alertbox.show();
-
+        
+        alertbox.show();        
 	}
 
 

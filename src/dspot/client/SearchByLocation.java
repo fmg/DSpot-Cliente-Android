@@ -8,12 +8,12 @@ import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
-public class SearchByLocation extends ListActivity{
+public class SearchByLocation extends ListActivity {
 	
 	Api api;
 	ArrayAdapter<String> adapter;
 	private EditText filterText = null;
-	String[] locations = new String[]{"Vila Royal", "Porto", "Amanarante", "Alijo"};
+	String[] locations = new String[]{"Vila Real", "Porto", "Amanarante", "Alijo"};
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

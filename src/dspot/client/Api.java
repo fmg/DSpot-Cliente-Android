@@ -24,37 +24,37 @@ import org.json.JSONObject;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
-public class Api extends Application{
+public class Api extends Application {
 	
 	public static String cookie;
-	//andrepublic static final String IP = "http://95.92.200.69:3000";
 	public static String IP = "http://172.29.145.84:3000";
 	public static User user = new User();
 	public static dspot.client.database.DatabaseAdapter dbAdapter;
+	public static final CharSequence[] sports = {"Soccer", "Basketball", "Running"};
 	
 	static public Facebook facebook = new Facebook("177730402315866");
 	static public final String FILENAME = "DSpot_data";
     static public SharedPreferences mPrefs;
     public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-	
-	
-	
-	
+	public static boolean guestMode;
+		
 	public int login(String username, String password) throws JSONException, ClientProtocolException, IOException{
 		
-		if(username.length() == 0 || password.length() == 0){
+		if (username.length() == 0 || password.length() == 0) {
 			return -1;
 		}
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
-		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		
 		HttpResponse response=null;
-        
-        	
+               
         String url = IP + "/login"; 
         
         System.out.println(url);
@@ -66,8 +66,7 @@ public class Api extends Application{
         	
 		jsonuser.put("name", username);
 		jsonuser.put("password", password);
-		
-		
+				
 		String POSTText = jsonuser.toString();
         StringEntity entity; 
     	 
@@ -77,15 +76,15 @@ public class Api extends Application{
         entity.setContentType(basicHeader);
         httpPost.setEntity(entity);
         response = httpClient.execute(httpPost);
-     
-        
-        if(response.getStatusLine().getStatusCode() == 200){
+            
+        if (response.getStatusLine().getStatusCode() == 200) {
+        	Api.guestMode = false;
         	cookie = response.getFirstHeader("Set-Cookie").getValue().toString();
         	user.setUsername(username);
         	System.out.println(cookie);
-        	 return 0;
+        	return 0;
         	 
-        }else{
+        } else {
         	return -2;
         }
         
@@ -207,12 +206,12 @@ public class Api extends Application{
 	
 	
 	
-	public boolean logout(){
+	public boolean logout() {
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
-		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		
-		HttpResponse response=null;
+		HttpResponse response = null;
         try {
         	
             String url = IP + "/user/logout";  
@@ -243,14 +242,13 @@ public class Api extends Application{
 		return false;	
 	}
 
-	 private String read(InputStream in) throws IOException {
-	        StringBuilder sb = new StringBuilder();
-	        BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
-	        for (String line = r.readLine(); line != null; line = r.readLine()) {
-	            sb.append(line);
-	        }
-	        in.close();
-	        return sb.toString();
-	    }
-	
+	private String read(InputStream in) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
+		for (String line = r.readLine(); line != null; line = r.readLine()) {
+		    sb.append(line);
+		}
+		in.close();
+		return sb.toString();
+	}	
 }

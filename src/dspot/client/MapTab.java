@@ -8,7 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.Toast;
 
-public class MapTab  extends MapActivity{
+public class MapTab  extends MapActivity {
 	
 	Api api;
     
@@ -35,43 +35,32 @@ public class MapTab  extends MapActivity{
 	@Override
 	public void onBackPressed() {
 		
-		// prepare the alert box
         AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-
-        // set the message to display
         alertbox.setMessage("Do you want to quit the application?");
-
-        // set a positive/yes button and create a listener
         alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
-
-            // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 //Do nothing
             }
         });
-
-        // set a negative/no button and create a listener
+        
         alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-
-            // do something when the button is clicked
-            public void onClick(DialogInterface arg0, int arg1) {
-            	
-            	
-            	if(api.logout()){
-            		finish();
-            	}else{
-            		Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
-            		toast.show();
+            public void onClick(DialogInterface arg0, int arg1) {            	            	
+            	if (Api.guestMode == true) {
+            		System.out.println("guest mode is true");
+            		finish();            			
             	}
-            	
-            	
-                
-            }
+            	else if (Api.guestMode == false) {
+            		System.out.println("guest mode is false");
+            		if (api.logout())
+            			finish();
+            		else {
+            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
+            			toast.show();
+            		}
+            	}
+            }       
         });
-
-        // display box
+        
         alertbox.show();
-
 	}
-
 }

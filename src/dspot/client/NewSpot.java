@@ -27,7 +27,6 @@ public class NewSpot extends Activity{
 	private static final int CAMERA_PIC_REQUEST = 1337;
 	AlertDialog alert;  
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,8 +43,7 @@ public class NewSpot extends Activity{
 				
 			}
 		});
-		
-		
+				
 		Toast toast = Toast.makeText(getApplicationContext(), "Tap the camera icon to take picture", Toast.LENGTH_SHORT);
 		toast.show();
 		
@@ -61,12 +59,9 @@ public class NewSpot extends Activity{
 		t.setEnabled(false);
 		
 		t= (EditText)findViewById(R.id.new_spot_addressEdit);
-		t.setEnabled(false);
-		
-		
+		t.setEnabled(false);			
 	}
-	
-	
+		
 	public void setSports(){
 		final CharSequence[] items = {"Red", "Green", "Blue"};
 		boolean[] checkeditems = {false, false, false};

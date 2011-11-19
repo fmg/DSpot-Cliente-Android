@@ -49,7 +49,8 @@ public class DSpotActivity extends Activity implements Runnable {
 			@Override
 			public void onClick(View v) {
 				api.user.setConnected(false);
-				Intent intent = new Intent(getApplicationContext(),Inicial.class);
+				Api.guestMode = true;
+				Intent intent = new Intent(getApplicationContext(), Inicial.class);
 	            startActivity(intent);
 	            finish();
 			}
@@ -204,6 +205,16 @@ public class DSpotActivity extends Activity implements Runnable {
 
     	}
         
-        
-        
+        @Override
+        public void onSaveInstanceState(Bundle savedInstanceState) {
+          // Save UI state changes to the savedInstanceState.
+          // This bundle will be passed to onCreate if the process is
+          // killed and restarted.
+          savedInstanceState.putBoolean("MyBoolean", true);
+          savedInstanceState.putDouble("myDouble", 1.9);
+          savedInstanceState.putInt("MyInt", 1);
+          savedInstanceState.putString("MyString", "Welcome back to Android");
+          // etc.
+          super.onSaveInstanceState(savedInstanceState);
+        }                     
 }

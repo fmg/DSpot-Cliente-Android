@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TabHost;
 
 public class Inicial extends TabActivity{
@@ -23,9 +24,8 @@ public class Inicial extends TabActivity{
 	    Intent intent;  // Reusable Intent for each tab
 
 	    
-	    if(api.user.isConnected()){
-		    
-		    
+	    if (api.user.isConnected()){
+		    		    
 		    // Do the same for the other tabs
 		    intent = new Intent().setClass(this, SearchTab.class);
 		    spec = tabHost.newTabSpec("seach").setIndicator("Search",res.getDrawable(R.layout.ic_tab_search)).setContent(intent);
@@ -50,19 +50,24 @@ public class Inicial extends TabActivity{
 		    spec = tabHost.newTabSpec("me").setIndicator("Me",res.getDrawable(R.layout.ic_tab_me)).setContent(intent);
 		    tabHost.addTab(spec);
 		    
-	    }else {
+	    } 
+	    
+	    // se utilizador é guest
+	    else {
 	    	
-	    	// Do the same for the other tabs
+	    	// cria Search tab
 		    intent = new Intent().setClass(this, SearchTab.class);
 		    spec = tabHost.newTabSpec("seach").setIndicator("Search",res.getDrawable(R.layout.ic_tab_search)).setContent(intent);
 		    tabHost.addTab(spec);
 		    
-		    
+		    // cria Map tab
 		    intent = new Intent().setClass(this, MapTab.class);
 		    spec = tabHost.newTabSpec("map").setIndicator("Map",res.getDrawable(R.layout.ic_tab_map)).setContent(intent);
 		    tabHost.addTab(spec);
+		    
 	    }
 
+	    // tab pré definida é a primeira (search)
 	    tabHost.setCurrentTab(0);
 		
 	}
