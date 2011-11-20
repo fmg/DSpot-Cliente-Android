@@ -13,7 +13,6 @@ public class Inicial extends TabActivity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		api = ((Api)getApplicationContext());
@@ -52,7 +51,7 @@ public class Inicial extends TabActivity{
 		    
 	    } 
 	    
-	    // se utilizador é guest
+	    // se utilizador for guest
 	    else {
 	    	
 	    	// cria Search tab
@@ -67,7 +66,7 @@ public class Inicial extends TabActivity{
 		    
 	    }
 
-	    // tab pré definida é a primeira (search)
+	    // tab predefinida e a primeira (search)
 	    tabHost.setCurrentTab(0);
 		
 	}

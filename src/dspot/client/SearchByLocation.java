@@ -20,6 +20,9 @@ public class SearchByLocation extends ListActivity {
         
 		api = ((Api)getApplicationContext());
 		
+		
+		//TODO: falta receber os desportos
+		
 		setContentView(R.layout.search_by_location);
 		
 		filterText = (EditText) findViewById(R.id.search_by_location_editText);
