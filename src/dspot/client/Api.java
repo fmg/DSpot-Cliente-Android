@@ -34,15 +34,16 @@ public class Api extends Application {
 	
 	public static String cookie;
 	public static String IP = "http://172.29.145.84:3000";
+	
 	public static User user = new User();
+	
 	public static dspot.client.database.DatabaseAdapter dbAdapter;
-	public static final CharSequence[] sports = {"Soccer", "Basketball", "Running"};
 	
 	static public Facebook facebook = new Facebook("177730402315866");
 	static public final String FILENAME = "DSpot_data";
     static public SharedPreferences mPrefs;
     public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-	public static boolean guestMode;
+	
 		
 	public int login(String username, String password) throws JSONException, ClientProtocolException, IOException{
 		
@@ -78,7 +79,6 @@ public class Api extends Application {
         response = httpClient.execute(httpPost);
             
         if (response.getStatusLine().getStatusCode() == 200) {
-        	Api.guestMode = false;
         	cookie = response.getFirstHeader("Set-Cookie").getValue().toString();
         	user.setUsername(username);
         	System.out.println(cookie);

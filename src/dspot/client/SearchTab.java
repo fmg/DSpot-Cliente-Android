@@ -1,12 +1,17 @@
 package dspot.client;
 
+import dspot.client.ViewSpotList.MyListAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,175 +21,59 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
-public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDrawerCloseListener{
-	
-	private Api api;
-	private ListView lv = null;
-	private ExpandableListView elv = null;
-	AlertDialog alert;
-	
-	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports"};
-	
-	
-	private String[] groups = { "Sports" };
-    private String[][] children = {{"BasketBall", "Joggin", "Running", "Football"}};
+public class SearchTab  extends ListActivity{
 
-	static final String[] Sports = new String[] {"BasketBall", "Joggin", "Running", "Football"};
+	private Api api;
+	
+	MyListAdapter mAdapter;
+	
+	AlertDialog alert;
+	ProgressDialog dialog;
+	
+	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports", "Radius"};
+
+	static String[] Sports = new String[] {"BasketBall", "Joggin", "Running", "Football"};
+	boolean[] checkeditems = {false, false, false, false};
     
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
 		api = ((Api)getApplicationContext());
 		
-		setContentView(R.layout.tab_search);
-		
-		lv = (ListView)findViewById(R.id.listView1);
-		elv = (ExpandableListView)findViewById(R.id.expandableListView1);
-		
-		lv.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Options));
-	    elv.setAdapter(new ExpandableListAdapter() {
-			
-			@Override
-			public void unregisterDataSetObserver(DataSetObserver observer) {}
-			
-			@Override
-			public void registerDataSetObserver(DataSetObserver observer) {}
-			
-			@Override
-			public void onGroupExpanded(int groupPosition) {}
-			
-			@Override
-			public void onGroupCollapsed(int groupPosition) {}
-			
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
-			
-			@Override
-			public boolean isChildSelectable(int groupPosition, int childPosition) {
-				return true;
-			}
-			
-			@Override
-			public boolean hasStableIds() {
-				return true;
-			}
-			
-			@Override
-			public View getGroupView(int groupPosition, boolean isExpanded,
-					View convertView, ViewGroup parent) {
-				TextView textView = getGenericView();
-	            textView.setText(getGroup(groupPosition).toString());
-	            //textView.setTextSize(25);
-	            return textView;
-			}
-			
-			@Override
-			public long getGroupId(int groupPosition) {
-				return groupPosition;
-			}
-			
-			@Override
-			public int getGroupCount() {
-				return groups.length;
-			}
-			
-			@Override
-			public Object getGroup(int groupPosition) {
-				return groups[groupPosition];
-			}
-			
-			@Override
-			public long getCombinedGroupId(long groupId) {
-				return 0;
-			}
-			
-			@Override
-			public long getCombinedChildId(long groupId, long childId) {
-				return 0;
-			}
-			
-			@Override
-			public int getChildrenCount(int groupPosition) {
-				return children[groupPosition].length;
-			}
-			
-			
-			public TextView getGenericView() {
-	            // Layout parameters for the ExpandableListView
-	            AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-	                    ViewGroup.LayoutParams.MATCH_PARENT, 64);
-
-	            TextView textView = new TextView(SearchTab.this);
-	            textView.setLayoutParams(lp);
-	            // Center the text vertically
-	            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-	            // Set the text starting position
-	            textView.setPadding(40, 0, 0, 0);
-	            return textView;
-	        }
-			
-			
-			@Override
-			public View getChildView(int groupPosition, int childPosition,
-					boolean isLastChild, View convertView, ViewGroup parent) {
-				TextView textView = getGenericView();
-	            textView.setText(getChild(groupPosition, childPosition).toString());
-	            //textView.setTextSize(15);
-	            textView.setPadding(60, 0,0,0);
-	            return textView;
-			}
-			
-			@Override
-			public long getChildId(int groupPosition, int childPosition) {
-				return childPosition;
-			}
-			
-			@Override
-			public Object getChild(int groupPosition, int childPosition) {
-				return children[groupPosition][childPosition];
-			}
-			
-			@Override
-			public boolean areAllItemsEnabled() {
-				return false;
-			}
-		});
-	    
-	    lv.setOnItemClickListener(new ListView.OnItemClickListener() {
-			
-	    	@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	    		
-	    		
-	    		if (Options[arg2].equals("Search Near Me"))
-	    			searchNearMe();		    	
-    			else if (Options[arg2].equals("Search By Location"))
-	    			searchByLocation();
-	    		else if (Options[arg2].equals("Last Search"))
-	    			lastSearch();
-	    		else if (Options[arg2].equals("Sports"))
-	    			sports();
-//	    			System.out.println("Desportos clicked");
-			}
-	    });
+		mAdapter = new MyListAdapter();
+		setListAdapter(mAdapter);
 	    	    	   
-	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerOpenListener(this);
-	    ((SlidingDrawer)findViewById(R.id.slidingDrawer1)).setOnDrawerCloseListener(this);
-	    	    
-	    Toast toast = Toast.makeText(getApplicationContext(), "Click the icon below, to costumize the search", Toast.LENGTH_LONG);
-	    toast.show();
     }
+	
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		
+		if (Options[position].equals("Search Near Me"))
+			searchNearMe();		    	
+		else if (Options[position].equals("Search By Location"))
+			searchByLocation();
+		else if (Options[position].equals("Last Search"))
+			lastSearch();
+		else if (Options[position].equals("Sports"))
+			sports();
+		else
+			return;
+	}
 	
 	
 	public void searchByLocation(){
@@ -193,9 +82,7 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	}
 	
 	public void sports() {
-//		final CharSequence[] items = {"Soccer", "Basketball", "Running"};
-		boolean[] checkeditems = {false, false, false};
-
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Sports");
 		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
@@ -205,22 +92,24 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 				}
 			});
 		
-		builder.setMultiChoiceItems(Api.sports, checkeditems, new DialogInterface.OnMultiChoiceClickListener(){
+		builder.setMultiChoiceItems(Sports, checkeditems, new DialogInterface.OnMultiChoiceClickListener(){
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which,
 					boolean isChecked) {
-				Toast.makeText(getApplicationContext(), Api.sports[which], Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), Sports[which], Toast.LENGTH_SHORT).show();
 			}
 		});
 		alert = builder.create();
 		alert.show();
 	}
 	
+	
 	public void lastSearch() {
 		Toast toast = Toast.makeText(getApplicationContext(), "Last Search", Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	
 	
 	public void searchBySports() {
 		Toast toast = Toast.makeText(getApplicationContext(), "Search By Sports", Toast.LENGTH_SHORT);
@@ -247,40 +136,22 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
         
         alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {            	            	
-            	if (Api.guestMode == true) {
-            		System.out.println("guest mode is true");
-            		finish();            			
-            	}
-            	else if (Api.guestMode == false) {
-            		System.out.println("guest mode is false");
+            	if (Api.user.isConnected()) {
             		if (api.logout())
             			finish();
             		else {
-            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
+            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed, try again", Toast.LENGTH_SHORT);
             			toast.show();
-            		}
+            		}           			
             	}
+            	else
+            		finish();
             }       
         });
         
         alertbox.show();        
 	}
 
-
-	@Override
-	public void onDrawerClosed() {
-		lv.setVisibility(ListView.VISIBLE);
-		((ImageView)findViewById(R.id.handle)).setImageResource(R.drawable.expander_up);
-		
-	}
-
-
-	@Override
-	public void onDrawerOpened() {
-		lv.setVisibility(ListView.GONE);
-		((ImageView)findViewById(R.id.handle)).setImageResource(R.drawable.expander_down);
-
-	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -308,6 +179,70 @@ public class SearchTab  extends Activity implements OnDrawerOpenListener, OnDraw
 	}
 	
 	
-	
+	public class MyListAdapter extends BaseAdapter {
+
+		@Override
+		public int getCount() {
+			return Options.length;
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return Options[arg0];
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			 if (convertView == null) {
+	                
+	            	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	            	if(position == 4)
+	            		convertView = infalInflater.inflate(R.layout.search_tab_child_seek, null);
+	            	else
+	            		convertView = infalInflater.inflate(R.layout.search_tab_child_normal, null);
+	            		
+	            }
+	            
+			 if(position == 4){
+				 ((TextView) convertView.findViewById(R.id.search_tab_child_seek_text)).setText(Options[position]);		
+				 SeekBar sb = (SeekBar)convertView.findViewById(R.id.search_tab_child_seek_seekBar);
+				 sb.setMax(100);
+				 sb.setProgress(5);
+				 sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+					
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						Toast toast = Toast.makeText(getApplicationContext(), "SeekBar -> " + seekBar.getProgress(), Toast.LENGTH_SHORT);
+			    		toast.show();
+					}
+					
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						//nao faz nada
+						return;
+						
+					}
+					
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress,
+							boolean fromUser) {
+						//nao faz nada
+						return;
+						
+					}
+				});
+			 }else{
+				 ((TextView) convertView.findViewById(R.id.search_tab_child_normal_text)).setText(Options[position]); 
+				 
+			 }
+			 
+			return convertView;
+		}
+	}
 
 }

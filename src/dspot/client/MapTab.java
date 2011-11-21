@@ -45,12 +45,10 @@ public class MapTab  extends MapActivity {
         
         alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {            	            	
-            	if (Api.guestMode == true) {
-            		System.out.println("guest mode is true");
+            	if (Api.user.isConnected()) {
             		finish();            			
             	}
-            	else if (Api.guestMode == false) {
-            		System.out.println("guest mode is false");
+            	else if (!Api.user.isConnected()) {
             		if (api.logout())
             			finish();
             		else {

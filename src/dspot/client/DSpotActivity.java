@@ -49,7 +49,6 @@ public class DSpotActivity extends Activity implements Runnable {
 			@Override
 			public void onClick(View v) {
 				api.user.setConnected(false);
-				Api.guestMode = true;
 				Intent intent = new Intent(getApplicationContext(), Inicial.class);
 	            startActivity(intent);
 	            finish();
@@ -184,19 +183,8 @@ public class DSpotActivity extends Activity implements Runnable {
                 // do something when the button is clicked
                 public void onClick(DialogInterface arg0, int arg1) {
                 	
-                	
-                	//if(api.logout()){
-                	
-                		//TODO: fazer logout do facebook
-                	
-                		finish();
-                	/*}else{
-                		Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
-                		toast.show();
-                	}*/
-                	
-                	
-                    
+            		finish();
+          
                 }
             });
 
