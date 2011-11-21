@@ -12,6 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	
 	private static final String DATABASE_CREATE_SPORTS = " CREATE TABLE sports (id INTEGER PRIMARY KEY,  sport TEXT)";
 	private static final String DATABASE_CREATE_LOCATIONS = " CREATE TABLE locations (id INTEGER PRIMARY KEY,  location TEXT)";
+	private static final String DATABASE_CREATE_FAVOURITES = " CREATE TABLE favourites (id INTEGER PRIMARY KEY,  name TEXT, address, TEXT, photo TEXT)";
 
 
 	public DatabaseHelper(Context context) {
@@ -22,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE_SPORTS);
 		database.execSQL(DATABASE_CREATE_LOCATIONS);
+		database.execSQL(DATABASE_CREATE_FAVOURITES);
 	}
 	
 	@Override
@@ -33,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		
 		database.execSQL(" DROP TABLE IF EXISTS locations");
 		database.execSQL(" DROP TABLE IF EXISTS sports");
+		database.execSQL(" DROP TABLE IF EXISTS favourites");
 
 		onCreate(database);
 	}
