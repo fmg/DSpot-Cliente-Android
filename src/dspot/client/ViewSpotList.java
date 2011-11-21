@@ -4,11 +4,16 @@ import java.util.ArrayList;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewSpotList extends ListActivity implements Runnable{
@@ -26,13 +31,17 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		api = ((Api)getApplicationContext());
 		
 		mAdapter = new MyListAdapter();
-		 
+		spotList = new ArrayList<SpotShortInfo>();
+				
 		setListAdapter(mAdapter);
-		 
+		
+		
+		
 		dialog = ProgressDialog.show(ViewSpotList.this, "", "Obtaining Spot list. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
-		
+        
+        		
 	}
 	
 	
@@ -63,8 +72,19 @@ public class ViewSpotList extends ListActivity implements Runnable{
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			return null;
+			 if (convertView == null) {
+	                
+	            	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	                convertView = infalInflater.inflate(R.layout.spot_list_child, null);
+	            }
+	            TextView name = (TextView) convertView.findViewById(R.id.spotList_name_text);
+	            TextView address = (TextView) convertView.findViewById(R.id.spotList_address_text);
+
+	            name.setText(spotList.get(position).getName());
+	            address.setText(spotList.get(position).getAddress());
+
+			
+			return convertView;
 		}
 		
 	}
@@ -72,10 +92,22 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	@Override
 	public void run() {
 		//TODO: obter coisas da bd
-		//TODO: preencher o adapter
+				
+		SpotShortInfo s1 = new SpotShortInfo("gym 1", "algures numa ruma", 1);
+		SpotShortInfo s2 = new SpotShortInfo("gym 2", "algures numa ruma 2", 2);
+		spotList.add(s1);
+		spotList.add(s2);
 		
 		mAdapter.notifyDataSetChanged();
+		handler.sendMessage(handler.obtainMessage());
 		
 	}
+	
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+
+            dialog.dismiss();
+        }
+    };
 	
 }

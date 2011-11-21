@@ -2,14 +2,18 @@ package dspot.client;
 
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class SearchByLocation extends ListActivity {
-	
+
 	Api api;
 	ArrayAdapter<String> adapter;
 	private EditText filterText = null;
@@ -32,6 +36,19 @@ public class SearchByLocation extends ListActivity {
         setListAdapter(adapter);
 		
 		
+	}
+	
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		
+		Toast toast = Toast.makeText(getApplicationContext(), locations[position], Toast.LENGTH_SHORT);
+		toast.show();
+		
+		Intent intent = new Intent(getApplicationContext(), ViewSpotList.class);
+        startActivity(intent);
+        finish();
 	}
 	
 	

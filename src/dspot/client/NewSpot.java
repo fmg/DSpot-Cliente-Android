@@ -29,7 +29,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class NewSpot extends Activity implements Runnable{
-	
+
 	private Api api;
 	private static final int CAMERA_PIC_REQUEST = 1337;
 	  
@@ -83,7 +83,7 @@ public class NewSpot extends Activity implements Runnable{
 			    
 			      Toast toast = Toast.makeText(getApplicationContext(), location.getProvider() + ": " + location.getLatitude() +" , " + location.getLongitude(), Toast.LENGTH_LONG);
 				  toast.show();
-				  System.out.println(location.getLatitude() + " , " + location.getLongitude());
+				  System.out.println(location.getProvider() +": " +location.getLatitude() + " , " + location.getLongitude());
 			    
 				  double deltaLat, deltaLon;
 				  deltaLat = Math.abs(location.getLatitude() - lastLatitude);
@@ -226,6 +226,15 @@ public class NewSpot extends Activity implements Runnable{
             dialog.dismiss();
         }
     };
+    
+    
+    @Override
+	public void onBackPressed() {
+    	if(dialog.isShowing())
+    		dialog.dismiss();
+    	else
+    		finish();
+	}
 
 	
 	
