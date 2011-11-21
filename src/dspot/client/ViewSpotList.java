@@ -45,7 +45,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	}
 	
 	public class MyListAdapter extends BaseAdapter {
-
+		
 		@Override
 		public int getCount() {
 			return spotList.size();
@@ -62,7 +62,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		}
 
 		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			return null;
 		}

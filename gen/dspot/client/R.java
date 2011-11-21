@@ -90,9 +90,10 @@ public final class R {
         public static final int new_spot=0x7f030005;
         public static final int registo=0x7f030006;
         public static final int search_by_location=0x7f030007;
-        public static final int tab_map=0x7f030008;
-        public static final int tab_me=0x7f030009;
-        public static final int tab_search=0x7f03000a;
+        public static final int spot_list_child=0x7f030008;
+        public static final int tab_map=0x7f030009;
+        public static final int tab_me=0x7f03000a;
+        public static final int tab_search=0x7f03000b;
     }
     public static final class menu {
         public static final int new_spot_menu=0x7f050000;
