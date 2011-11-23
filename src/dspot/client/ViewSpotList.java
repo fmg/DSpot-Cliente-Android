@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,6 +52,9 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		super.onListItemClick(l, v, position, id);
 		Toast toast = Toast.makeText(getApplicationContext(), spotList.get(position).getName(), Toast.LENGTH_SHORT);
 		toast.show();
+		
+		Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
+        startActivity(intent);
 	}
 	
 	public class MyListAdapter extends BaseAdapter {

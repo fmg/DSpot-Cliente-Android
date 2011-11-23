@@ -33,7 +33,13 @@ public class NewSpot extends Activity implements Runnable{
 	private Api api;
 	private static final int CAMERA_PIC_REQUEST = 1337;
 	  
-	private double lastLatitude, lastLongitude, deltaLatitude , deltaLongitude = 9999.9; 
+	private double lastLatitude_network, lastLongitude_network, lastLatitude_gps, lastLongitude_gps, 
+					deltaLatitude_network = 9999.9, 
+					deltaLongitude_network = 9999.9 ,
+					deltaLatitude_gps = 9999.9, 
+					deltaLongitude_gps = 9999.9,
+					finalLocation_latitude, finalLocation_longitude;
+	
 	LocationManager locationManager;
 	LocationListener locationListener;
 	
@@ -86,15 +92,27 @@ public class NewSpot extends Activity implements Runnable{
 				  System.out.println(location.getProvider() +": " +location.getLatitude() + " , " + location.getLongitude());
 			    
 				  double deltaLat, deltaLon;
-				  deltaLat = Math.abs(location.getLatitude() - lastLatitude);
-				  deltaLon = Math.abs(location.getLongitude() - lastLongitude);
-				  
-				  if((deltaLat + deltaLon) < (deltaLatitude + deltaLongitude)){
-					  lastLatitude = location.getLatitude();
-					  lastLongitude = location.getLongitude();
-					  deltaLatitude = deltaLat;
-					  deltaLongitude = deltaLon;
-			      }
+				  if(location.getProvider().equals(LocationManager.GPS_PROVIDER)){
+					  deltaLat = Math.abs(location.getLatitude() - lastLatitude_gps);
+					  deltaLon = Math.abs(location.getLongitude() - lastLongitude_gps);
+					  
+					  if((deltaLat + deltaLon) < (deltaLatitude_gps + deltaLongitude_gps)){
+						  lastLatitude_gps = location.getLatitude();
+						  lastLongitude_gps = location.getLongitude();
+						  deltaLatitude_gps = deltaLat;
+						  deltaLongitude_gps = deltaLon;
+				      }
+				  }else{
+					  deltaLat = Math.abs(location.getLatitude() - lastLatitude_network);
+					  deltaLon = Math.abs(location.getLongitude() - lastLongitude_network);
+					  
+					  if((deltaLat + deltaLon) < (deltaLatitude_network + deltaLongitude_network)){
+						  lastLatitude_network = location.getLatitude();
+						  lastLongitude_network = location.getLongitude();
+						  deltaLatitude_network = deltaLat;
+						  deltaLongitude_network = deltaLon;
+				      }
+				  }
 		    }
 
 		    public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -174,13 +192,21 @@ public class NewSpot extends Activity implements Runnable{
 
 	@Override
 	public void run() {
-		while(deltaLatitude + deltaLongitude > 0.0){
+		while(deltaLatitude_network + deltaLongitude_network > 0.0 || deltaLatitude_gps + deltaLongitude_gps > 0.0){
 			try {
 			System.out.println("Sleeping. zZzZzZzzzzz");
-			Thread.sleep(15000);
+			Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		if(deltaLatitude_network + deltaLongitude_network == 0.0){
+			finalLocation_latitude = lastLatitude_network;
+			finalLocation_longitude = lastLongitude_network;
+		}else{
+			finalLocation_latitude = lastLatitude_gps;
+			finalLocation_longitude = lastLongitude_gps;
 		}
 		
 		locationManager.removeUpdates(locationListener);
@@ -206,9 +232,10 @@ public class NewSpot extends Activity implements Runnable{
         	List<Address> addresses;
     		try {
     			locationManager.removeUpdates(locationListener);
-    			addresses = gcd.getFromLocation(lastLatitude, lastLongitude, 10);
+    			addresses = gcd.getFromLocation(finalLocation_latitude, finalLocation_longitude, 10);
     			
     			
+    			//TODO: criar dialog com as localizacoes
     			
     			if (addresses.size() > 0) 
     	    	    System.out.println(addresses.get(0).getLocality());
@@ -226,17 +253,5 @@ public class NewSpot extends Activity implements Runnable{
             dialog.dismiss();
         }
     };
-    
-    
-    @Override
-	public void onBackPressed() {
-    	if(dialog.isShowing())
-    		dialog.dismiss();
-    	else
-    		finish();
-	}
-
-	
-	
 
 }
