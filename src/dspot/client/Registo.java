@@ -30,7 +30,6 @@ import android.widget.Toast;
 public class Registo extends Activity {
 		
 	private Api api;
-	private Handler mHandler;
 	String name, email, picURL;
 	ProgressDialog dialog;
 

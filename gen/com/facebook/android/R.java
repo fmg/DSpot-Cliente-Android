@@ -57,7 +57,6 @@ public final class R {
         public static final int gallery1=0x7f060036;
         public static final int imageView1=0x7f060006;
         public static final int imageView3=0x7f06003f;
-        public static final int imageView4=0x7f060043;
         public static final int imageView5=0x7f060045;
         public static final int linearLayout1=0x7f06003a;
         public static final int linearLayout2=0x7f06003c;
@@ -113,6 +112,7 @@ public final class R {
         public static final int textView6=0x7f06001b;
         public static final int textView7=0x7f060048;
         public static final int view_spot_actionCall=0x7f06003d;
+        public static final int view_spot_actionFacebook=0x7f060043;
         public static final int view_spot_actionMaps=0x7f06003b;
         public static final int view_spot_actionNavigation=0x7f060041;
         public static final int view_spot_adress=0x7f060038;

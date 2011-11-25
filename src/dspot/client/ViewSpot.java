@@ -2,11 +2,20 @@ package dspot.client;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.android.DialogError;
+import com.facebook.android.FacebookError;
+import com.facebook.android.Facebook.DialogListener;
+
+import dspot.client.Registo.UserRequestListener;
 import dspot.client.ViewSpotList.MyListAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
@@ -99,6 +108,14 @@ public class ViewSpot extends Activity implements Runnable{
 			@Override
 			public void onClick(View v) {
 				mapAction();				
+			}
+		});
+	    
+	    
+	    ((ImageView)findViewById(R.id.view_spot_actionFacebook)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				facebookAction();				
 			}
 		});
 	    
@@ -254,6 +271,77 @@ public class ViewSpot extends Activity implements Runnable{
     	}else
     		super.onBackPressed();
 	}
+    
+    
+    
+    
+    public void facebookAction(){
+    	
+    	api.mPrefs = getPreferences(MODE_PRIVATE);
+        String access_token = api.mPrefs.getString("access_token", null);
+        long expires = api.mPrefs.getLong("access_expires", 0);
+        if(access_token != null) {
+            api.facebook.setAccessToken(access_token);
+        }
+        if(expires != 0) {
+            api.facebook.setAccessExpires(expires);
+        }
+        
+        /*
+         * Only call authorize if the access_token has expired.
+         */
+        if(!api.facebook.isSessionValid()) {
+
+            api.facebook.authorize(this, new String[] {"email"}, new DialogListener() {
+                @Override
+                public void onComplete(Bundle values) {
+                    SharedPreferences.Editor editor = api.mPrefs.edit();
+                    editor.putString("access_token", api.facebook.getAccessToken());
+                    editor.putLong("access_expires", api.facebook.getAccessExpires());
+                    editor.commit();
+                }
+    
+                @Override
+                public void onFacebookError(FacebookError error) {}
+    
+                @Override
+                public void onError(DialogError e) {}
+    
+                @Override
+                public void onCancel() {}
+            });
+        }else{
+        	
+        	 //post on user's wall.
+    	    api.facebook.dialog(this, "feed", new PostDialogListener());
+    		
+        }
+    }
+    
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        api.facebook.authorizeCallback(requestCode, resultCode, data);
+        //a data nao traz nada de especial, so o access token...
+		
+		 //post on user's wall.
+	    api.facebook.dialog(this, "feed", new PostDialogListener());
+    }
+    
+    
+    public class PostDialogListener extends BaseDialogListener {
+        public void onComplete(Bundle values) {
+        	final String postId = values.getString("post_id");     
+        	if (postId != null) {                                                                                   
+        		Toast.makeText(getApplicationContext(), "Message posted on the wall.", Toast.LENGTH_SHORT).show();           
+        	} else {             
+        		Toast.makeText(getApplicationContext(), "No message posted on the wall.", Toast.LENGTH_SHORT).show();                                                                  
+        	}   
+        }
+    }
+    
 }
 
 
