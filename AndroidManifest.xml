@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.INTERNET"/>  
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
@@ -38,6 +38,7 @@
         <activity android:name="NewSpot" android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="ViewSpotList" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="ViewSpot" android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="ViewSpotMap" android:theme="@android:style/Theme.NoTitleBar"></activity>
         
             
        

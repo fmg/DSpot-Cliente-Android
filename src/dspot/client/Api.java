@@ -24,11 +24,8 @@ import org.json.JSONObject;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
-import android.app.AlertDialog;
 import android.app.Application;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 public class Api extends Application {
 	

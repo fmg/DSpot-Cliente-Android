@@ -16,24 +16,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewSpot extends Activity implements Runnable{
-	
+
+
 	Api api;
 	ProgressDialog dialog;
 	
 	MyListAdapter mAdapter;
 	ArrayList<Comment> commentList;
+	
+	boolean commentAreaVisible = false;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +48,36 @@ public class ViewSpot extends Activity implements Runnable{
 		Gallery gallery = (Gallery) findViewById(R.id.gallery1);
 	    gallery.setAdapter(new ImageAdapter(this));
 
+	    
+	    ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
+	    
+	    
+	    ((RatingBar)findViewById(R.id.view_spot_rateSpot)).setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+			
+			@Override
+			public void onRatingChanged(RatingBar ratingBar, float rating,
+					boolean fromUser) {
+				((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.VISIBLE);
+				commentAreaVisible = true;
+			}
+		});
+	    
+	    ((Button)findViewById(R.id.view_spot_sendComment)).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				sendCommentAction();
+			}
+		});
+	    /*
 	    gallery.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
 	            Toast.makeText(ViewSpot.this, "" + position, Toast.LENGTH_SHORT).show();
 	        }
 	    });
-	  
+	  	*/
+	    
+	    
 	    commentList = new ArrayList<Comment>();
 	    
 	    ((ImageView)findViewById(R.id.view_spot_actionCall)).setOnClickListener(new OnClickListener() {
@@ -82,6 +109,13 @@ public class ViewSpot extends Activity implements Runnable{
 	}
 	
 	
+	
+	public void sendCommentAction(){
+        Toast.makeText(ViewSpot.this, "To be done in a near future", Toast.LENGTH_SHORT).show();
+	}
+
+	
+	
 	public void navigationAction(){
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=41.178767,-8.598862"));
 		startActivity(intent);
@@ -89,8 +123,14 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	public void mapAction(){
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:41.178767,-8.598862?z=18"));
-		startActivity(intent);
+		Intent intent = new Intent(getApplicationContext(), ViewSpotMap.class);
+		Bundle b = new Bundle();
+		b.putDouble("lat", 41.178767);
+		b.putDouble("lon", -8.598862);
+		b.putString("name", "lalalaalla");
+		b.putString("address", "rua lalal");
+		intent.putExtra("location",b);
+        startActivity(intent);
 	}
 	
 	
@@ -146,14 +186,6 @@ public class ViewSpot extends Activity implements Runnable{
 		        return imageView;
 		    }
 	}
-	
-	
-	
-	
-
-
-
-
 
 
 
@@ -211,6 +243,17 @@ public class ViewSpot extends Activity implements Runnable{
 
         }
     };
+    
+    
+    @Override
+	public void onBackPressed() {
+    	
+    	if(commentAreaVisible){
+    		 ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
+    		 commentAreaVisible = false;
+    	}else
+    		super.onBackPressed();
+	}
 }
 
 

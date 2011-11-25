@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent">
+ 
+    <com.google.android.maps.MapView 
+        android:id="@+id/mapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:enabled="true"
+        android:clickable="true"
+        android:apiKey="0ceVXImK0gcWgXBN9eUqhVax_2KFjC3vSRun0Hw"
+        />
+ 
+</RelativeLayout>
+
+<!-- NAO APAGAR ISTO, FAZ SE AKI UM DICIONARIO DE KEYS PRA NAO TER DE ANDAR SEMPRE A GERAR -->
+<!--  android:apiKey="0ceVXImK0gcWgXBN9eUqhVax_2KFjC3vSRun0Hw" --> <!-- Fernando Mac Key -->
+<!--  android:apiKey="0ceVXImK0gcV9NIBk6NX3qw_gaTtxXUWjrRbVZA" --> <!-- Fernando Ubuntu FEUP Key -->
+<!--  android:apiKey="0ceVXImK0gcVvMUs1KX1f2kKY94sBWnWfHCLpNQ" --> <!-- Fernando Desktop Ubuntu Key -->
