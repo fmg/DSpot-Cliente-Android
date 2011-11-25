@@ -31,8 +31,9 @@ import android.widget.Toast;
 public class NewSpot extends Activity implements Runnable{
 
 	private Api api;
+	
 	private static final int CAMERA_PIC_REQUEST = 1337;
-	  
+	private int retrys = 0, max_retrys = 6;
 	private double lastLatitude_network, lastLongitude_network, lastLatitude_gps, lastLongitude_gps, 
 					deltaLatitude_network = 9999.9, 
 					deltaLongitude_network = 9999.9 ,
@@ -42,9 +43,13 @@ public class NewSpot extends Activity implements Runnable{
 	
 	LocationManager locationManager;
 	LocationListener locationListener;
+	List<Address> addresses;
 	
 	ProgressDialog dialog;
-	AlertDialog alert;
+	AlertDialog alert_sports;
+	AlertDialog alert_address;
+
+	
 	
 	
 	@Override
@@ -136,7 +141,7 @@ public class NewSpot extends Activity implements Runnable{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				alert.dismiss();
+				alert_sports.dismiss();
 				
 			}
 		});
@@ -148,8 +153,8 @@ public class NewSpot extends Activity implements Runnable{
 				Toast.makeText(getApplicationContext(), items[which], Toast.LENGTH_SHORT).show();
 			}
 		});
-		alert = builder.create();
-		alert.show();
+		alert_sports = builder.create();
+		alert_sports.show();
 	}
 	
 	
@@ -192,10 +197,21 @@ public class NewSpot extends Activity implements Runnable{
 
 	@Override
 	public void run() {
-		while(deltaLatitude_network + deltaLongitude_network > 0.0 || deltaLatitude_gps + deltaLongitude_gps > 0.0){
+		while(deltaLatitude_network + deltaLongitude_network > 0.0 && deltaLatitude_gps + deltaLongitude_gps > 0.0){
 			try {
-			System.out.println("Sleeping. zZzZzZzzzzz");
-			Thread.sleep(10000);
+				
+				if(retrys > max_retrys){
+					locationManager.removeUpdates(locationListener);
+					System.out.println("vai sair da thread");
+					Message msg = handler.obtainMessage();
+					handler.sendMessage(msg);
+					return;
+				}	
+				
+				System.out.println("Sleeping. zZzZzZzzzzz");
+				Thread.sleep(10000);
+				retrys++;
+			
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -227,25 +243,25 @@ public class NewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
         	
+        	if(retrys> max_retrys){
+        		Toast.makeText(getApplicationContext(), "Cannot obtain your position. Please try in a again in a near open space", Toast.LENGTH_SHORT).show();
+				dialog.dismiss();
+        		return;
+        	}
+        	
+        	
         	Locale l = new Locale("pt-PT");
         	Geocoder gcd = new Geocoder(getApplicationContext(), l);
-        	List<Address> addresses;
+        	
     		try {
     			locationManager.removeUpdates(locationListener);
-    			addresses = gcd.getFromLocation(finalLocation_latitude, finalLocation_longitude, 10);
+    			addresses = gcd.getFromLocation(finalLocation_latitude, finalLocation_longitude, 5);
+ 
     			
-    			
-    			//TODO: criar dialog com as localizacoes
-    			
-    			if (addresses.size() > 0) 
-    	    	    System.out.println(addresses.get(0).getLocality());
-    				EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
-    				t.setText(addresses.get(0).getLocality());
-    				
-    				EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
-    				t2.setText(addresses.get(0).getAddressLine(0).toString());
-    				
-    				
+    			if (addresses.size() > 0) {
+    				showAddressDialog();
+    				dialog.dismiss();
+    			}
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
@@ -253,5 +269,42 @@ public class NewSpot extends Activity implements Runnable{
             dialog.dismiss();
         }
     };
+    
+    
+	public void showAddressDialog(){
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose the adress");
+		
+		for(int i = 0; i < addresses.size();i++){
+			System.out.println("localidade -> " + addresses.get(i).getLocality());
+			
+			for(int k= 0; k < addresses.get(i).getMaxAddressLineIndex(); k++){
+				
+				System.out.println("address - > " + addresses.get(i).getAddressLine(k).toString());
+			}
+				
+		}
+		/*
+		builder.setSingleChoiceItems((CharSequence[]) addresses.toArray(), -1, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int item) {
+		    	
+		    	System.out.println(addresses.get(0).getLocality());
+				EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
+				t.setText(addresses.get(0).getLocality());
+				
+				EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
+				t2.setText(addresses.get(0).getAddressLine(0).toString());
+				
+				alert_address.dismiss();
+		        
+		    }
+		});
+		alert_address = builder.create();
+		alert_address.show();
+		*/
+		
+		
+	}
 
 }

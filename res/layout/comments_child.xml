@@ -31,10 +31,13 @@
         android:text="A tua prima e mesmo boa!!!!" android:layout_marginTop="5dp"/>
     
     <TextView
-        android:layout_width="400px"
+        android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_below="@+id/comments_child_userComment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
         android:layout_marginTop="5dp"
-        android:background="#DADADA" android:layout_marginLeft="15px"/>
+        android:background="#DADADA" />
 
 </RelativeLayout>

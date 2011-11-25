@@ -6,12 +6,15 @@ import dspot.client.ViewSpotList.MyListAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -50,11 +53,51 @@ public class ViewSpot extends Activity implements Runnable{
 	  
 	    commentList = new ArrayList<Comment>();
 	    
-				
+	    ((ImageView)findViewById(R.id.view_spot_actionCall)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				callAction();				
+			}
+		});
+	    
+	    ((ImageView)findViewById(R.id.view_spot_actionNavigation)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				navigationAction();				
+			}
+		});
+	    
+	    
+	    ((ImageView)findViewById(R.id.view_spot_actionMaps)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mapAction();				
+			}
+		});
+	    
 	    dialog = ProgressDialog.show(ViewSpot.this, "", "Obtaining information of the Spot. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
-		
+        
+	}
+	
+	
+	public void navigationAction(){
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=41.178767,-8.598862"));
+		startActivity(intent);
+	}
+	
+	
+	public void mapAction(){
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:41.178767,-8.598862?z=18"));
+		startActivity(intent);
+	}
+	
+	
+	public void callAction(){
+		Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:*#100#"));
+        startActivity(intent);
 	}
 
 	public class ImageAdapter extends BaseAdapter {
