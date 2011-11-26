@@ -28,16 +28,15 @@
             </intent-filter>
         </activity>
         <activity android:name="Registo" android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name="Inicial"
-            android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="Inicial" android:theme="@android:style/Theme.NoTitleBar" android:configChanges="orientation"></activity>
         <activity android:name="MeTab"></activity>
         <activity android:name="FavouritesTab"></activity>
-        <activity android:name="SearchTab"></activity>
+        <activity android:name="SearchTab" android:configChanges="orientation"></activity>
         <activity android:name="MapTab"></activity>
         <activity android:name="SearchByLocation" android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name="NewSpot" android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="ViewSpotList" android:theme="@android:style/Theme.NoTitleBar"></activity>
-        <activity android:name="ViewSpot" android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="ViewSpot" android:theme="@android:style/Theme.NoTitleBar" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name="ViewSpotMap" android:theme="@android:style/Theme.NoTitleBar"></activity>
         
             

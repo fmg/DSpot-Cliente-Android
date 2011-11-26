@@ -1,11 +1,18 @@
 package dspot.client;
 
+import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.facebook.android.DialogError;
+import com.facebook.android.FacebookError;
+import com.facebook.android.Facebook.DialogListener;
+
+import dspot.client.ViewSpot.PostDialogListener;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -137,6 +144,72 @@ public class SearchTab  extends ListActivity{
         
         alertbox.show();        
 	}
+	
+	
+	
+	public void inviteFriendsFacebook(){
+		api.mPrefs = getPreferences(MODE_PRIVATE);
+        String access_token = api.mPrefs.getString("access_token", null);
+        long expires = api.mPrefs.getLong("access_expires", 0);
+        if(access_token != null) {
+            api.facebook.setAccessToken(access_token);
+        }
+        if(expires != 0) {
+            api.facebook.setAccessExpires(expires);
+        }
+        
+        /*
+         * Only call authorize if the access_token has expired.
+         */
+        if(!api.facebook.isSessionValid()) {
+
+            api.facebook.authorize(this, new String[] {"email","offline_access", "publish_checkins"}, new DialogListener() {
+                @Override
+                public void onComplete(Bundle values) {
+                    SharedPreferences.Editor editor = api.mPrefs.edit();
+                    editor.putString("access_token", api.facebook.getAccessToken());
+                    editor.putLong("access_expires", api.facebook.getAccessExpires());
+                    editor.commit();
+                }
+    
+                @Override
+                public void onFacebookError(FacebookError error) {}
+    
+                @Override
+                public void onError(DialogError e) {}
+    
+                @Override
+                public void onCancel() {}
+            });
+        }else{
+        	        	
+        	 //Send requests with no friend pre-selected and user
+            //selects friends on the dialog screen.
+        	Bundle params = new Bundle();
+    	    params.putString("message", "Want to join DSpot?");		
+            
+        	api.facebook.dialog(this,"apprequests", params ,new AppRequestsListener());
+    		
+        }
+	}
+	
+	
+	@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        api.facebook.authorizeCallback(requestCode, resultCode, data);
+        //a data nao traz nada de especial, so o access token...
+      
+        //Send requests with no friend pre-selected and user
+        //selects friends on the dialog screen.
+        
+        Bundle params = new Bundle();
+	    params.putString("message", "Want to join DSpot?");		
+    	api.facebook.dialog(this,"apprequests", params ,new AppRequestsListener());
+
+	  	    
+    }
 
 	
 	@Override
@@ -155,14 +228,38 @@ public class SearchTab  extends ListActivity{
 	    	Intent intent = new Intent(getApplicationContext(),NewSpot.class);
 	        startActivity(intent);
 	        return true;
+	    
 	    case R.id.spot_menu_refresh:
 	    	Toast toast = Toast.makeText(getApplicationContext(), "Refresh to be done in a near future", Toast.LENGTH_SHORT);
     		toast.show();
 	        return true;
+	        
+	    case R.id.spot_menu_invite:
+	    	inviteFriendsFacebook();
+	    	return true;
+	        
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
+
+	
+	
+	public class AppRequestsListener extends BaseDialogListener {
+        public void onComplete(Bundle values) {
+            Toast toast = Toast.makeText(getApplicationContext(), "App request sent", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        
+        public void onFacebookError(FacebookError error) {
+            Toast.makeText(getApplicationContext(), "Facebook Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+	    }
+        
+        public void onCancel() {
+            Toast toast = Toast.makeText(getApplicationContext(), "App request cancelled", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 	
 	
 	public class MyListAdapter extends BaseAdapter {
@@ -183,18 +280,11 @@ public class SearchTab  extends ListActivity{
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			 if (convertView == null) {
-	                
-	            	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	            	if(position == 4)
-	            		convertView = infalInflater.inflate(R.layout.search_tab_child_seek, null);
-	            	else
-	            		convertView = infalInflater.inflate(R.layout.search_tab_child_normal, null);
-	            		
-	            }
-	            
+		public View getView(int position, View convertView, ViewGroup parent) {    
 			 if(position == 4){
+            	 LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        		 convertView = infalInflater.inflate(R.layout.search_tab_child_seek, null);
+
 				 ((TextView) convertView.findViewById(R.id.search_tab_child_seek_text)).setText(Options[position]);		
 				 SeekBar sb = (SeekBar)convertView.findViewById(R.id.search_tab_child_seek_seekBar);
 				 sb.setMax(100);
@@ -223,6 +313,8 @@ public class SearchTab  extends ListActivity{
 					}
 				});
 			 }else{
+	             LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				 convertView = infalInflater.inflate(R.layout.search_tab_child_normal, null);
 				 ((TextView) convertView.findViewById(R.id.search_tab_child_normal_text)).setText(Options[position]); 
 				 
 			 }

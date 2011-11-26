@@ -2,18 +2,16 @@ package dspot.client;
 
 import java.util.ArrayList;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
-import dspot.client.Registo.UserRequestListener;
 import dspot.client.ViewSpotList.MyListAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -27,9 +25,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.RelativeLayout;
@@ -38,14 +39,21 @@ import android.widget.Toast;
 
 public class ViewSpot extends Activity implements Runnable{
 
-
 	Api api;
-	ProgressDialog dialog;
+	ProgressDialog progressDialog;
+	
+	AlertDialog reportDialog;
+	View reportDialogLayout;
+	
+	//AlertDialog inviteDialog;
+	//View inviteDialogLayout;
 	
 	MyListAdapter mAdapter;
 	ArrayList<Comment> commentList;
 	
 	boolean commentAreaVisible = false;
+	
+	
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,16 +123,77 @@ public class ViewSpot extends Activity implements Runnable{
 	    ((ImageView)findViewById(R.id.view_spot_actionFacebook)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				facebookAction();				
+				facebookShareAction();				
 			}
 		});
 	    
-	    dialog = ProgressDialog.show(ViewSpot.this, "", "Obtaining information of the Spot. Please wait...", true);
+	    
+	    ((ImageView)findViewById(R.id.view_spot_actionInvite)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//facebookInviteAction();	
+				//TODO:
+			}
+		});
+	    
+	    
+	    ((ImageView)findViewById(R.id.view_spot_actionReport)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reportAction();				
+			}
+		});
+	    
+	    progressDialog = ProgressDialog.show(ViewSpot.this, "", "Obtaining information of the Spot. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
         
 	}
 	
+	
+	
+	
+	
+	
+	public void reportAction(){
+		AlertDialog.Builder builder;
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		reportDialogLayout = inflater.inflate(R.layout.view_spot_report_dialog,
+		                               (ViewGroup) findViewById(R.id.layout_root));
+
+		RadioGroup rg = (RadioGroup) reportDialogLayout.findViewById(R.id.view_spot_report_options);
+		((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).setVisibility(View.GONE);
+		
+		rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				if(group.indexOfChild(group.findViewById(checkedId)) == 4){
+					((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).setVisibility(View.VISIBLE);
+				}else{
+					((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).setVisibility(View.GONE);
+				}
+			}
+		});
+
+		builder = new AlertDialog.Builder(this);
+		builder.setView(reportDialogLayout);
+		builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				RadioGroup rg = (RadioGroup)reportDialogLayout.findViewById(R.id.view_spot_report_options);
+				if(rg.indexOfChild(rg.findViewById(rg.getCheckedRadioButtonId())) == 4){
+					System.out.println(((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).getText().toString());
+				}
+				
+				dialog.dismiss();			
+			}	
+		});
+		
+		reportDialog = builder.create();
+		reportDialog.setTitle("What's the problem?");
+		reportDialog.show();
+	}
 	
 	
 	public void sendCommentAction(){
@@ -254,7 +323,7 @@ public class ViewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
-            dialog.dismiss();
+        	progressDialog.dismiss();
             
             PopulateScreenComments();
 
@@ -275,7 +344,7 @@ public class ViewSpot extends Activity implements Runnable{
     
     
     
-    public void facebookAction(){
+    public void facebookShareAction(){
     	
     	api.mPrefs = getPreferences(MODE_PRIVATE);
         String access_token = api.mPrefs.getString("access_token", null);
@@ -292,7 +361,7 @@ public class ViewSpot extends Activity implements Runnable{
          */
         if(!api.facebook.isSessionValid()) {
 
-            api.facebook.authorize(this, new String[] {"email"}, new DialogListener() {
+            api.facebook.authorize(this, new String[] {"email","offline_access", "publish_checkins"}, new DialogListener() {
                 @Override
                 public void onComplete(Bundle values) {
                     SharedPreferences.Editor editor = api.mPrefs.edit();
@@ -319,15 +388,17 @@ public class ViewSpot extends Activity implements Runnable{
     }
     
     
+    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         api.facebook.authorizeCallback(requestCode, resultCode, data);
         //a data nao traz nada de especial, so o access token...
-		
-		 //post on user's wall.
-	    api.facebook.dialog(this, "feed", new PostDialogListener());
+      
+        //post on user's wall.
+		api.facebook.dialog(this, "feed", new PostDialogListener());
+	  	    
     }
     
     

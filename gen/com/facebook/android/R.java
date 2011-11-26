@@ -56,8 +56,7 @@ public final class R {
         public static final int editText4=0x7f06001c;
         public static final int gallery1=0x7f060036;
         public static final int imageView1=0x7f060006;
-        public static final int imageView3=0x7f06003f;
-        public static final int imageView5=0x7f060045;
+        public static final int layout_root=0x7f06004c;
         public static final int linearLayout1=0x7f06003a;
         public static final int linearLayout2=0x7f06003c;
         public static final int linearLayout3=0x7f06003e;
@@ -70,12 +69,17 @@ public final class R {
         public static final int login_registerButton=0x7f060011;
         public static final int login_username=0x7f06000a;
         public static final int mapView=0x7f060032;
-        public static final int map_menu_satellite=0x7f06004c;
-        public static final int map_menu_street=0x7f06004d;
+        public static final int map_menu_satellite=0x7f060054;
+        public static final int map_menu_street=0x7f060055;
         public static final int new_spot_addressEdit=0x7f060016;
         public static final int new_spot_locationEdit=0x7f06001f;
         public static final int new_spot_picture=0x7f060013;
         public static final int new_spot_setSports=0x7f060020;
+        public static final int radio0=0x7f06004e;
+        public static final int radio1=0x7f06004f;
+        public static final int radio2=0x7f060050;
+        public static final int radio3=0x7f060051;
+        public static final int radio4=0x7f060052;
         public static final int regist_facebookButton=0x7f060029;
         public static final int regist_registButton=0x7f060024;
         public static final int registarTV=0x7f060021;
@@ -93,8 +97,9 @@ public final class R {
         public static final int search_tab_child_seek_text=0x7f06002e;
         public static final int spotList_address_text=0x7f060031;
         public static final int spotList_name_text=0x7f060030;
-        public static final int spot_menu_new=0x7f06004e;
-        public static final int spot_menu_refresh=0x7f06004f;
+        public static final int spot_menu_invite=0x7f060058;
+        public static final int spot_menu_new=0x7f060056;
+        public static final int spot_menu_refresh=0x7f060057;
         public static final int tableLayout1=0x7f060007;
         public static final int tableLayout2=0x7f06000f;
         public static final int tableLayout3=0x7f060025;
@@ -113,8 +118,10 @@ public final class R {
         public static final int textView7=0x7f060048;
         public static final int view_spot_actionCall=0x7f06003d;
         public static final int view_spot_actionFacebook=0x7f060043;
+        public static final int view_spot_actionInvite=0x7f06003f;
         public static final int view_spot_actionMaps=0x7f06003b;
         public static final int view_spot_actionNavigation=0x7f060041;
+        public static final int view_spot_actionReport=0x7f060045;
         public static final int view_spot_adress=0x7f060038;
         public static final int view_spot_commentHolder=0x7f06004b;
         public static final int view_spot_commentReview=0x7f06004a;
@@ -122,6 +129,8 @@ public final class R {
         public static final int view_spot_number=0x7f060039;
         public static final int view_spot_rateSpot=0x7f060046;
         public static final int view_spot_rating=0x7f060037;
+        public static final int view_spot_report_options=0x7f06004d;
+        public static final int view_spot_report_text=0x7f060053;
         public static final int view_spot_sendComment=0x7f060049;
         public static final int view_spot_spotName=0x7f060034;
     }
@@ -142,6 +151,7 @@ public final class R {
         public static final int tab_me=0x7f03000d;
         public static final int view_spot=0x7f03000e;
         public static final int view_spot_map=0x7f03000f;
+        public static final int view_spot_report_dialog=0x7f030010;
     }
     public static final class menu {
         public static final int map_menu=0x7f050000;

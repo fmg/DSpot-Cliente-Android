@@ -129,7 +129,7 @@ public class Registo extends Activity {
          */
         if(!api.facebook.isSessionValid()) {
 
-            api.facebook.authorize(this, new String[] {"email"}, new DialogListener() {
+            api.facebook.authorize(this, new String[] {"email","offline_access", "publish_checkins"}, new DialogListener() {
                 @Override
                 public void onComplete(Bundle values) {
                     SharedPreferences.Editor editor = api.mPrefs.edit();
