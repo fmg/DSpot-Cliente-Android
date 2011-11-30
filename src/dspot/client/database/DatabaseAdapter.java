@@ -85,7 +85,7 @@ public class DatabaseAdapter {
 	
 	public Cursor getSports(){
 		
-		ArrayList<Sport> sports = new ArrayList<Sport>();
+		//ArrayList<Sport> sports = new ArrayList<Sport>();
 		
 		String selectSports = "Select * from sports Order By name";  
 		
@@ -108,6 +108,14 @@ public class DatabaseAdapter {
 	 	
 	 	return sports;
 	 	*/
+	}
+	
+	
+	public void updateSportState(int id, int check){
+		
+		 ContentValues args = new ContentValues();
+		 args.put("ischecked", check);
+		 database.update("sports", args, "_id=" + id, null);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
+import dspot.utils.MyLocation;
 import dspot.utils.User;
 
 import android.app.Application;
@@ -272,6 +274,30 @@ public class Api extends Application {
 		dbAdapter.close();
 		
 		return Sports;
+	}
+	
+	
+	public Cursor updateSportsCheck(int id, int check){
+		Cursor Sports;
+		
+		dbAdapter.open();
+		dbAdapter.updateSportState(id, check);
+		Sports = dbAdapter.getSports();
+		Sports.moveToFirst();
+		dbAdapter.close();
+		
+		return Sports;
+	}
+	
+	
+	public ArrayList<MyLocation> getLocations(){
+		ArrayList<MyLocation> locations = new ArrayList<MyLocation>();
+		
+		dbAdapter.open();		
+		locations = dbAdapter.getLocations();
+		dbAdapter.close();
+		
+		return locations;
 	}
 
 }

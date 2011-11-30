@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -36,18 +37,16 @@ public class SearchTab  extends ListActivity{
 	private Api api;
 	
 	MyListAdapter mAdapter;
+	Context c = this;
 	
-	AlertDialog alert;
+	
 	ProgressDialog dialog;
 	
 	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports", "Radius"};
 
-	/*
-	private ArrayList<Sport> Sports;
-	boolean[] checkeditems = {false, false, false, false};
 	
-	*/
-	private Cursor Sports;
+	private AlertDialog sportsDialog;
+	private Cursor sports;
 	
     
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,9 @@ public class SearchTab  extends ListActivity{
 		mAdapter = new MyListAdapter();
 		setListAdapter(mAdapter);
 	    	
-		Sports = api.getSports();
+		sports = api.getSports();
+		
+		
     }
 	
 	
@@ -93,21 +94,38 @@ public class SearchTab  extends ListActivity{
 		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				alert.dismiss();			
+				sportsDialog.dismiss();			
 				}
 			});
 		
-		builder.setMultiChoiceItems(Sports, "ischecked", "name", new DialogInterface.OnMultiChoiceClickListener(){
+		builder.setMultiChoiceItems(sports, "ischecked", "name", new DialogInterface.OnMultiChoiceClickListener(){
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which,
 					boolean isChecked) {
-				Sports.moveToPosition(which);
-				Toast.makeText(getApplicationContext(), Sports.getString(1), Toast.LENGTH_SHORT).show();
+				
+				
+				int check;
+				if(isChecked)
+					check = 1;
+				else 
+					check = 0;
+				
+				
+				sports.moveToPosition(which);
+				sports = api.updateSportsCheck(sports.getInt(0), check);
+				
+				/*
+				sportsDialog.dismiss();
+				sports();
+				*/
+				
+				((BaseAdapter)sportsDialog.getListView().getAdapter()).notifyDataSetChanged();
 			}
 		});
-		alert = builder.create();
-		alert.show();
+		sportsDialog = builder.create();
+		sportsDialog.show();
+		
 	}
 	
 	

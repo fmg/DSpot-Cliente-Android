@@ -1,7 +1,11 @@
 package dspot.client;
 
 
+import java.util.ArrayList;
+
+import dspot.utils.MyLocation;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,9 +19,8 @@ import android.widget.Toast;
 public class SearchByLocation extends ListActivity {
 
 	Api api;
-	ArrayAdapter<String> adapter;
+	MyListAdapter adapter;
 	private EditText filterText = null;
-	String[] locations = new String[]{"Vila Real", "Porto", "Amanarante", "Alijo"};
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,16 +28,18 @@ public class SearchByLocation extends ListActivity {
 		api = ((Api)getApplicationContext());
 		
 		
-		//TODO: falta receber os desportos
 		
 		setContentView(R.layout.search_by_location);
+		
+		adapter = new MyListAdapter(this,  android.R.layout.simple_list_item_1, api.getLocations());
 		
 		filterText = (EditText) findViewById(R.id.search_by_location_editText);
 		filterText.addTextChangedListener(filterTextWatcher);
         
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, locations);
         setListAdapter(adapter);
 		
+        
+        
 		
 	}
 	
@@ -43,7 +48,7 @@ public class SearchByLocation extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		
-		Toast toast = Toast.makeText(getApplicationContext(), locations[position], Toast.LENGTH_SHORT);
+		Toast toast = Toast.makeText(getApplicationContext(), ((MyLocation)adapter.getItem(position)).getName() + " -> " + ((MyLocation)adapter.getItem(position)).getId(), Toast.LENGTH_SHORT);
 		toast.show();
 		
 		Intent intent = new Intent(getApplicationContext(), ViewSpotList.class);
@@ -73,5 +78,17 @@ public class SearchByLocation extends ListActivity {
 	protected void onDestroy() {
 	    super.onDestroy();
 	    filterText.removeTextChangedListener(filterTextWatcher);
+	}
+	
+	
+	
+	private class MyListAdapter extends ArrayAdapter<MyLocation>{
+
+		private ArrayList<MyLocation> locations;
+		
+		public MyListAdapter(Context context, int textViewResourceId, ArrayList<MyLocation> items) {
+			super(context, textViewResourceId, items);
+            this.locations = items;
+		}
 	}
 }
