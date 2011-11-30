@@ -1,7 +1,11 @@
 package dspot.client.database;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+
+import dspot.utils.MyLocation;
+import dspot.utils.Sport;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,16 +50,18 @@ public class DatabaseAdapter {
 		ContentValues initialvalues = new ContentValues();
 		initialvalues.put("id", id);
 		initialvalues.put("sport", name);
+		initialvalues.put("ischecked", 0);
+
 
 		return database.insert("sports", null, initialvalues);
 	}
 	
 	
-	public Map<String, Integer> getLocations(){
+	public ArrayList<MyLocation> getLocations(){
 		
-		Map<String, Integer> locations = new TreeMap<String, Integer>();
+		ArrayList<MyLocation> locations = new ArrayList<MyLocation>();
 		
-		String selectLocations = "Select * from locations";  
+		String selectLocations = "Select * from locations Order By name";  
 		
 	 	Cursor locationsCursor = database.rawQuery(selectLocations, null);
 	 	
@@ -67,7 +73,8 @@ public class DatabaseAdapter {
 	 	
 	 	locationsCursor.moveToFirst();
 	 	do {
-	 		locations.put(locationsCursor.getString(1), locationsCursor.getInt(0));
+	 		MyLocation mloc = new MyLocation(locationsCursor.getInt(0), locationsCursor.getString(1));
+	 		locations.add(mloc);
 	 	}while(locationsCursor.moveToNext());
 	 	locationsCursor.close();
 	 	
@@ -76,14 +83,16 @@ public class DatabaseAdapter {
 	
 	
 	
-	public Map<String, Integer> getSports(){
+	public Cursor getSports(){
 		
-		Map<String, Integer> sports = new TreeMap<String, Integer>();
+		ArrayList<Sport> sports = new ArrayList<Sport>();
 		
-		String selectVersion = "Select * from sports";  
+		String selectSports = "Select * from sports Order By name";  
 		
-	 	Cursor sportsCursor = database.rawQuery(selectVersion, null);
+	 	Cursor sportsCursor = database.rawQuery(selectSports, null);
 	 	
+	 	return sportsCursor;
+	 	/*
 	 	sportsCursor.moveToFirst();
 	 	if(sportsCursor.getCount() == 0){
 	 		sportsCursor.close();
@@ -92,11 +101,13 @@ public class DatabaseAdapter {
 	 	
 	 	sportsCursor.moveToFirst();
 	 	do {
-	 		sports.put(sportsCursor.getString(1), sportsCursor.getInt(0));
+	 		Sport s = new Sport(sportsCursor.getInt(0),sportsCursor.getString(1));
+	 		sports.add(s);
 	 	}while(sportsCursor.moveToNext());
 	 	sportsCursor.close();
 	 	
 	 	return sports;
+	 	*/
 	}
 
 }

@@ -1,11 +1,14 @@
 package dspot.client;
 
+import java.util.ArrayList;
+
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
 import dspot.client.ViewSpot.PostDialogListener;
+import dspot.utils.Sport;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -13,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,17 +42,25 @@ public class SearchTab  extends ListActivity{
 	
 	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports", "Radius"};
 
-	static String[] Sports = new String[] {"BasketBall", "Joggin", "Running", "Football"};
+	/*
+	private ArrayList<Sport> Sports;
 	boolean[] checkeditems = {false, false, false, false};
+	
+	*/
+	private Cursor Sports;
+	
     
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
 		api = ((Api)getApplicationContext());
 		
+
+		
 		mAdapter = new MyListAdapter();
 		setListAdapter(mAdapter);
-	    	    	   
+	    	
+		Sports = api.getSports();
     }
 	
 	
@@ -85,12 +97,13 @@ public class SearchTab  extends ListActivity{
 				}
 			});
 		
-		builder.setMultiChoiceItems(Sports, checkeditems, new DialogInterface.OnMultiChoiceClickListener(){
+		builder.setMultiChoiceItems(Sports, "ischecked", "name", new DialogInterface.OnMultiChoiceClickListener(){
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which,
 					boolean isChecked) {
-				Toast.makeText(getApplicationContext(), Sports[which], Toast.LENGTH_SHORT).show();
+				Sports.moveToPosition(which);
+				Toast.makeText(getApplicationContext(), Sports.getString(1), Toast.LENGTH_SHORT).show();
 			}
 		});
 		alert = builder.create();

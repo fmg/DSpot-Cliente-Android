@@ -2,6 +2,8 @@ package dspot.client;
 
 import java.util.ArrayList;
 
+import dspot.utils.SpotShortInfo;
+
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;

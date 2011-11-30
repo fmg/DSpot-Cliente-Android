@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import dspot.client.database.DatabaseAdapter;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -28,6 +30,8 @@ public class DSpotActivity extends Activity implements Runnable {
         setContentView(R.layout.login);
         
         api = new Api();
+        
+        api.dbAdapter = new DatabaseAdapter(getApplicationContext());
         
         (findViewById(R.id.login_loginButton)).setOnClickListener(new View.OnClickListener() {
 			@Override

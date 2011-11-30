@@ -10,9 +10,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	private static final String DATABASE_NAME = "dspot.db";
 	private static final int DATABASE_VERSION = 1;
 	
-	private static final String DATABASE_CREATE_SPORTS = " CREATE TABLE sports (id INTEGER PRIMARY KEY,  sport TEXT)";
-	private static final String DATABASE_CREATE_LOCATIONS = " CREATE TABLE locations (id INTEGER PRIMARY KEY,  location TEXT)";
-	private static final String DATABASE_CREATE_FAVOURITES = " CREATE TABLE favourites (id INTEGER PRIMARY KEY,  name TEXT, address, TEXT, photo TEXT)";
+	private static final String DATABASE_CREATE_SPORTS = " CREATE TABLE sports (_id INTEGER PRIMARY KEY,  name TEXT, ischecked INT)";
+	private static final String DATABASE_CREATE_LOCATIONS = " CREATE TABLE locations (_id INTEGER PRIMARY KEY,  location TEXT)";
+	private static final String DATABASE_CREATE_FAVOURITES = " CREATE TABLE favourites (_id INTEGER PRIMARY KEY,  name TEXT, address, TEXT, photo TEXT)";
+	private static final String DATABASE_CREATE_FRIENDS = "CREATE TABLE friends (_id INTEGER PRIMARY KEY, name TEXT)";
 
 
 	public DatabaseHelper(Context context) {
@@ -24,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		database.execSQL(DATABASE_CREATE_SPORTS);
 		database.execSQL(DATABASE_CREATE_LOCATIONS);
 		database.execSQL(DATABASE_CREATE_FAVOURITES);
+		database.execSQL(DATABASE_CREATE_FRIENDS);
 	}
 	
 	@Override
@@ -36,7 +38,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		database.execSQL(" DROP TABLE IF EXISTS locations");
 		database.execSQL(" DROP TABLE IF EXISTS sports");
 		database.execSQL(" DROP TABLE IF EXISTS favourites");
-
+		database.execSQL(" DROP TABLE IF EXISTS friends");
+		
 		onCreate(database);
 	}
 

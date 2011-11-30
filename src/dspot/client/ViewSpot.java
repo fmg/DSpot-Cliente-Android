@@ -7,6 +7,7 @@ import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
 import dspot.client.ViewSpotList.MyListAdapter;
+import dspot.utils.Comment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

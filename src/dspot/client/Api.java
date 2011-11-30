@@ -24,8 +24,11 @@ import org.json.JSONObject;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
+import dspot.utils.User;
+
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 
 public class Api extends Application {
 	
@@ -238,7 +241,8 @@ public class Api extends Application {
         }
 		return false;	
 	}
-
+	
+	
 	private String read(InputStream in) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
@@ -248,4 +252,26 @@ public class Api extends Application {
 		in.close();
 		return sb.toString();
 	}	
+	
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////
+	//					CHAMADAS A BD								////
+	
+	
+	
+	public Cursor getSports(){
+		Cursor Sports;
+		
+		dbAdapter.open();
+		Sports = dbAdapter.getSports();
+		Sports.moveToFirst();
+		dbAdapter.close();
+		
+		return Sports;
+	}
+
 }
