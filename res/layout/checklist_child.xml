@@ -9,7 +9,7 @@
     android:isIndicator="true">
 
     <CheckBox
-        android:id="@+id/invite_list_child_check"
+        android:id="@+id/checklist_child_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -19,13 +19,13 @@
         android:isIndicator="true"/>
     
     <TextView
-        android:id="@+id/invite_list_child_name"
+        android:id="@+id/checklist_child_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/invite_list_child_check"
+        android:layout_alignBottom="@id/checklist_child_check"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/invite_list_child_check"
+        android:layout_toLeftOf="@id/checklist_child_check"
         android:gravity="center_vertical"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium"

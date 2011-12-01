@@ -72,6 +72,10 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		setContentView(R.layout.view_spot);
 		
+		
+		buildInviteDialog();
+		buildReportDialog();
+		
 		Gallery gallery = (Gallery) findViewById(R.id.gallery1);
 	    gallery.setAdapter(new ImageAdapter(this));
 
@@ -161,7 +165,7 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	
-	public void inviteAction(){
+	public void buildInviteDialog(){
 		AlertDialog.Builder builder;
 		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 		inviteDialogLayout = inflater.inflate(R.layout.view_spot_invite_dialog,
@@ -195,13 +199,16 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		inviteDialog = builder.create();
 		inviteDialog.setTitle("Choose friends to send email");
-		inviteDialog.show();
+		//inviteDialog.show();
 	}
 
 	
+	public void inviteAction(){
+		inviteDialog.show();
+	}
 	
 	
-	public void reportAction(){
+	public void buildReportDialog(){
 		AlertDialog.Builder builder;
 		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 		reportDialogLayout = inflater.inflate(R.layout.view_spot_report_dialog,
@@ -238,6 +245,10 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		reportDialog = builder.create();
 		reportDialog.setTitle("What's the problem?");
+		
+	}
+	
+	public void reportAction(){
 		reportDialog.show();
 	}
 	
@@ -272,52 +283,7 @@ public class ViewSpot extends Activity implements Runnable{
         startActivity(intent);
 	}
 
-	public class ImageAdapter extends BaseAdapter {
-		int mGalleryItemBackground;
-	    private Context mContext;
-
-	    private Integer[] mImageIds = {
-	            R.drawable.sample_1,
-	            R.drawable.sample_2,
-	            R.drawable.sample_3,
-	            R.drawable.sample_4,
-	            R.drawable.sample_5,
-	            R.drawable.sample_6,
-	            R.drawable.sample_7
-	    };
-		
-		
-		public ImageAdapter(Context c) {
-	        mContext = c;
-	        TypedArray attr = mContext.obtainStyledAttributes(R.styleable.HelloGallery);
-	        mGalleryItemBackground = attr.getResourceId(
-	                R.styleable.HelloGallery_android_galleryItemBackground, 0);
-	        attr.recycle();
-	    }
-		
-		 public int getCount() {
-		        return mImageIds.length;
-		    }
-
-		    public Object getItem(int position) {
-		        return position;
-		    }
-
-		    public long getItemId(int position) {
-		        return position;
-		    }
-
-		    public View getView(int position, View convertView, ViewGroup parent) {
-		        ImageView imageView = new ImageView(mContext);
-
-		        imageView.setImageResource(mImageIds[position]);
-		        imageView.setLayoutParams(new Gallery.LayoutParams(350, 250));
-		        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-		        imageView.setBackgroundResource(mGalleryItemBackground);
-
-		        return imageView;
-		    }
-	}
+	
 
 
 
@@ -446,6 +412,9 @@ public class ViewSpot extends Activity implements Runnable{
     }
     
     
+    
+
+    
     public class PostDialogListener extends BaseDialogListener {
         public void onComplete(Bundle values) {
         	final String postId = values.getString("post_id");     
@@ -487,10 +456,10 @@ public class ViewSpot extends Activity implements Runnable{
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
         	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        	convertView = infalInflater.inflate(R.layout.invite_list_child, null);
+        	convertView = infalInflater.inflate(R.layout.checklist_child, null);
             
-            TextView name = (TextView) convertView.findViewById(R.id.invite_list_child_name);
-            CheckBox check = (CheckBox) convertView.findViewById(R.id.invite_list_child_check);
+            TextView name = (TextView) convertView.findViewById(R.id.checklist_child_name);
+            CheckBox check = (CheckBox) convertView.findViewById(R.id.checklist_child_check);
 
             name.setText(friends.get(position).getName());
             check.setChecked(friends.get(position).isSelected());
@@ -519,6 +488,55 @@ public class ViewSpot extends Activity implements Runnable{
 		}
     	
     }
+    
+    
+    
+    public class ImageAdapter extends BaseAdapter {
+		int mGalleryItemBackground;
+	    private Context mContext;
+
+	    private Integer[] mImageIds = {
+	            R.drawable.sample_1,
+	            R.drawable.sample_2,
+	            R.drawable.sample_3,
+	            R.drawable.sample_4,
+	            R.drawable.sample_5,
+	            R.drawable.sample_6,
+	            R.drawable.sample_7
+	    };
+		
+		
+		public ImageAdapter(Context c) {
+	        mContext = c;
+	        TypedArray attr = mContext.obtainStyledAttributes(R.styleable.HelloGallery);
+	        mGalleryItemBackground = attr.getResourceId(
+	                R.styleable.HelloGallery_android_galleryItemBackground, 0);
+	        attr.recycle();
+	    }
+		
+		 public int getCount() {
+		        return mImageIds.length;
+		    }
+
+		    public Object getItem(int position) {
+		        return position;
+		    }
+
+		    public long getItemId(int position) {
+		        return position;
+		    }
+
+		    public View getView(int position, View convertView, ViewGroup parent) {
+		        ImageView imageView = new ImageView(mContext);
+
+		        imageView.setImageResource(mImageIds[position]);
+		        imageView.setLayoutParams(new Gallery.LayoutParams(350, 250));
+		        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+		        imageView.setBackgroundResource(mGalleryItemBackground);
+
+		        return imageView;
+		    }
+	}
     
 }
 

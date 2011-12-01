@@ -1,10 +1,13 @@
 package dspot.client;
 
 
+import java.util.ArrayList;
+
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
+import dspot.utils.Sport;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -13,7 +16,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,9 +23,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +45,8 @@ public class SearchTab  extends ListActivity{
 
 	
 	private AlertDialog sportsDialog;
-	private Cursor sports;
+	View sportsDialogLayout;
+	MySportsListAdapter sportsDialogAdapter;
 	
     
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,9 +59,9 @@ public class SearchTab  extends ListActivity{
 		mAdapter = new MyListAdapter();
 		setListAdapter(mAdapter);
 	    	
-		sports = api.getSports();
 		
 		
+		buildSportsDialog();
     }
 	
 	
@@ -70,7 +76,7 @@ public class SearchTab  extends ListActivity{
 		else if (Options[position].equals("Last Search"))
 			lastSearch();
 		else if (Options[position].equals("Sports"))
-			sports();
+			showSports();
 		else
 			return;
 	}
@@ -81,46 +87,47 @@ public class SearchTab  extends ListActivity{
         startActivity(intent);
 	}
 	
-	public void sports() {
+	public void buildSportsDialog() {
 		
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Sports");
-		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				sportsDialog.dismiss();			
-				}
-			});
+		AlertDialog.Builder builder;
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		sportsDialogLayout = inflater.inflate(R.layout.search_tab_sports_dialog,
+		                               (ViewGroup) findViewById(R.id.layout_root3));
+
+		ListView lv = (ListView) sportsDialogLayout.findViewById(R.id.listView1);
 		
-		builder.setMultiChoiceItems(sports, "ischecked", "name", new DialogInterface.OnMultiChoiceClickListener(){
-			
+		sportsDialogAdapter = new MySportsListAdapter();
+		lv.setAdapter(sportsDialogAdapter);
+		
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
 			@Override
-			public void onClick(DialogInterface dialog, int which,
-					boolean isChecked) {
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				sportsDialogAdapter.setChecked(position);
+				sportsDialogAdapter.notifyDataSetChanged();
+				System.out.println("tlalalala");
 				
-				
-				int check;
-				if(isChecked)
-					check = 1;
-				else 
-					check = 0;
-				
-				
-				sports.moveToPosition(which);
-				sports = api.updateSportsCheck(sports.getInt(0), check);
-				
-				/*
-				sportsDialog.dismiss();
-				sports();
-				*/
-				
-				((BaseAdapter)sportsDialog.getListView().getAdapter()).notifyDataSetChanged();
 			}
 		});
 		
-		sportsDialog = builder.create();
-		sportsDialog.show();
+		builder = new AlertDialog.Builder(this);
+		builder.setView(sportsDialogLayout);
+		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();			
+			}	
+		});
 		
+		sportsDialog = builder.create();
+		sportsDialog.setTitle("Choose sports to filter");
+		//sportsDialog.show();
+		
+	}
+	
+	public void showSports(){
+		sportsDialog.show();
 	}
 	
 	
@@ -348,5 +355,68 @@ public class SearchTab  extends ListActivity{
 			return convertView;
 		}
 	}
+	
+	
+	
+	 private class MySportsListAdapter extends BaseAdapter {
+
+
+			private ArrayList<Sport> sports;
+	    	
+	    	public MySportsListAdapter() {
+	    		sports = api.getSports();
+			}
+
+			@Override
+			public int getCount() {
+				return sports.size();
+			}
+
+			@Override
+			public Object getItem(int arg0) {
+				return sports.get(arg0);
+			}
+
+			@Override
+			public long getItemId(int arg0) {
+				return 0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				
+	        	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        	convertView = infalInflater.inflate(R.layout.checklist_child, null);
+	            
+	            TextView name = (TextView) convertView.findViewById(R.id.checklist_child_name);
+	            CheckBox check = (CheckBox) convertView.findViewById(R.id.checklist_child_check);
+
+	            name.setText(sports.get(position).getName());
+	            check.setChecked(sports.get(position).isChecked());
+
+			
+			return convertView;
+			}
+			
+			
+			public void setChecked(int position){
+				if(sports.get(position).isChecked()){
+					sports.get(position).setChecked(false);
+					api.updateSportsCheck(sports.get(position).getId(), 0);
+					
+				}else{
+					sports.get(position).setChecked(true);
+					api.updateSportsCheck(sports.get(position).getId(), 1);
+				}
+
+			}
+			
+			
+			@Override
+			public void notifyDataSetChanged() {
+				super.notifyDataSetChanged();
+			}
+	    	
+	    }
 
 }

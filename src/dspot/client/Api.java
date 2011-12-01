@@ -26,6 +26,7 @@ import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
 import dspot.utils.MyLocation;
+import dspot.utils.Sport;
 import dspot.utils.User;
 
 import android.app.Application;
@@ -272,30 +273,27 @@ public class Api extends Application {
 
 	
 	
-	public Cursor getSports(){
-		Cursor Sports;
+/////////////////////////////////////////////////////////////////////
+	
+	public ArrayList<Sport> getSports(){
 		
 		dbAdapter.open();
-		Sports = dbAdapter.getSports();
-		Sports.moveToFirst();
+		ArrayList<Sport> sports = dbAdapter.getSports();
 		dbAdapter.close();
 		
-		return Sports;
+		return sports;
 	}
 	
 	
-	public Cursor updateSportsCheck(int id, int check){
-		Cursor Sports;
-		
+	public void updateSportsCheck(int id, int check){
 		dbAdapter.open();
 		dbAdapter.updateSportState(id, check);
-		Sports = dbAdapter.getSports();
-		Sports.moveToFirst();
 		dbAdapter.close();
-		
-		return Sports;
 	}
 	
+	
+	
+	/////////////////////////////////////////////////////////////////////
 	
 	public ArrayList<MyLocation> getLocations(){
 		
@@ -306,6 +304,8 @@ public class Api extends Application {
 		return locations;
 	}
 	
+	
+	/////////////////////////////////////////////////////////////////////
 	
 	public ArrayList<User> getFriends(){	
 		

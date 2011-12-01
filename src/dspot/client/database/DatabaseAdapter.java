@@ -3,6 +3,7 @@ package dspot.client.database;
 import java.util.ArrayList;
 
 import dspot.utils.MyLocation;
+import dspot.utils.Sport;
 import dspot.utils.User;
 
 import android.content.ContentValues;
@@ -123,16 +124,15 @@ public class DatabaseAdapter {
 	
 	
 	
-	public Cursor getSports(){
+	public ArrayList<Sport> getSports(){
 		
-		//ArrayList<Sport> sports = new ArrayList<Sport>();
+		ArrayList<Sport> sports = new ArrayList<Sport>();
 		
 		String selectSports = "Select * from sports Order By name";  
 		
 	 	Cursor sportsCursor = database.rawQuery(selectSports, null);
 	 	
-	 	return sportsCursor;
-	 	/*
+	 	
 	 	sportsCursor.moveToFirst();
 	 	if(sportsCursor.getCount() == 0){
 	 		sportsCursor.close();
@@ -141,13 +141,13 @@ public class DatabaseAdapter {
 	 	
 	 	sportsCursor.moveToFirst();
 	 	do {
-	 		Sport s = new Sport(sportsCursor.getInt(0),sportsCursor.getString(1));
+	 		Sport s = new Sport(sportsCursor.getInt(0),sportsCursor.getString(1), sportsCursor.getInt(2));
 	 		sports.add(s);
 	 	}while(sportsCursor.moveToNext());
 	 	sportsCursor.close();
 	 	
 	 	return sports;
-	 	*/
+	 	
 	}
 	
 	
