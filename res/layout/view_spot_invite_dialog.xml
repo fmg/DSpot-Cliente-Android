@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+ -->
+ 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/layout_root2"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#FFFFFF"
+	    android:orientation="vertical"
+	    android:padding="10dp" >
+	    
+ 	    <EditText
+	        android:id="@+id/view_spot_invite_text"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:inputType="textMultiLine"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#000000" >
+	
+	    </EditText>
+	
+	    <ListView
+	        android:id="@+id/listView1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true" android:layout_above="@id/view_spot_invite_text">
+	
+	    </ListView>
+	
+	    
+	
+	</RelativeLayout>
+	

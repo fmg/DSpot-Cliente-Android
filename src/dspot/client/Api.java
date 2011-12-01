@@ -29,6 +29,7 @@ import dspot.utils.MyLocation;
 import dspot.utils.User;
 
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
@@ -46,6 +47,11 @@ public class Api extends Application {
     static public SharedPreferences mPrefs;
     public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	
+    
+	/////////////////////////////////////////////////////////////////////
+	//					CHAMADAS AO SERVIDOR						 ////
+	/////////////////////////////////////////////////////////////////////
+    
 		
 	public int login(String username, String password) throws JSONException, ClientProtocolException, IOException{
 		
@@ -262,7 +268,8 @@ public class Api extends Application {
 	
 	/////////////////////////////////////////////////////////////////////
 	//					CHAMADAS A BD								////
-	
+   /////////////////////////////////////////////////////////////////////
+
 	
 	
 	public Cursor getSports(){
@@ -291,13 +298,31 @@ public class Api extends Application {
 	
 	
 	public ArrayList<MyLocation> getLocations(){
-		ArrayList<MyLocation> locations = new ArrayList<MyLocation>();
 		
 		dbAdapter.open();		
-		locations = dbAdapter.getLocations();
+		ArrayList<MyLocation> locations = dbAdapter.getLocations();
 		dbAdapter.close();
 		
 		return locations;
+	}
+	
+	
+	public ArrayList<User> getFriends(){	
+		
+		dbAdapter.open();
+		ArrayList<User> friends = dbAdapter.getFriends();
+		dbAdapter.close();
+		
+		return friends;
+	}
+	
+	public void updateFrienState(int id, int check){
+		
+		dbAdapter.open();
+		dbAdapter.updateFrienState(id, check);
+		dbAdapter.close();
+		
+		
 	}
 
 }

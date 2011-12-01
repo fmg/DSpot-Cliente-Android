@@ -1,11 +1,9 @@
 package dspot.client.database;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 
 import dspot.utils.MyLocation;
-import dspot.utils.Sport;
+import dspot.utils.User;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -80,6 +78,48 @@ public class DatabaseAdapter {
 	 	
 	 	return locations;
 	}
+	
+	
+	public ArrayList<User> getFriends(){
+		
+		ArrayList<User> friends = new ArrayList<User>();
+		
+		String selectFriends = "Select * from friends Order By name";  
+		
+	 	Cursor friendsCursor = database.rawQuery(selectFriends, null);
+	 	
+	 	friendsCursor.moveToFirst();
+	 	if(friendsCursor.getCount() == 0){
+	 		friendsCursor.close();
+	 		return friends;
+	 	}
+	 	
+	 	friendsCursor.moveToFirst();
+	 	do {
+	 		User u = new User(friendsCursor.getInt(0), friendsCursor.getString(1), friendsCursor.getInt(2));
+	 		friends.add(u);
+	 	}while(friendsCursor.moveToNext());
+	 	friendsCursor.close();
+	 	
+	 	return friends;
+	}
+	
+	
+	
+	public void updateFrienState(int id, int check){
+		
+		 ContentValues args = new ContentValues();
+		 args.put("ischecked", check);
+		 database.update("friends", args, "_id=" + id, null);
+	}
+	
+	public void resetFrienState(){
+		
+		 ContentValues args = new ContentValues();
+		 args.put("ischecked", 0);
+		 database.update("friends", args, null, null);
+	}
+
 	
 	
 	

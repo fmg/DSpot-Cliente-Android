@@ -8,6 +8,7 @@ import com.facebook.android.Facebook.DialogListener;
 
 import dspot.client.ViewSpotList.MyListAdapter;
 import dspot.utils.Comment;
+import dspot.utils.User;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -16,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,17 +26,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.RelativeLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +54,9 @@ public class ViewSpot extends Activity implements Runnable{
 	AlertDialog reportDialog;
 	View reportDialogLayout;
 	
-	//AlertDialog inviteDialog;
-	//View inviteDialogLayout;
+	AlertDialog inviteDialog;
+	View inviteDialogLayout;
+	MyCustomAdapter inviteDialogAdapter;
 	
 	MyListAdapter mAdapter;
 	ArrayList<Comment> commentList;
@@ -132,8 +141,7 @@ public class ViewSpot extends Activity implements Runnable{
 	    ((ImageView)findViewById(R.id.view_spot_actionInvite)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//facebookInviteAction();	
-				//TODO:
+				inviteAction();	
 			}
 		});
 	    
@@ -153,6 +161,43 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	
+	public void inviteAction(){
+		AlertDialog.Builder builder;
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		inviteDialogLayout = inflater.inflate(R.layout.view_spot_invite_dialog,
+		                               (ViewGroup) findViewById(R.id.layout_root2));
+
+		ListView lv = (ListView) inviteDialogLayout.findViewById(R.id.listView1);
+		
+		inviteDialogAdapter = new MyCustomAdapter();
+		lv.setAdapter(inviteDialogAdapter);
+		
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				inviteDialogAdapter.setChecked(position);
+				inviteDialogAdapter.notifyDataSetChanged();
+				System.out.println("tlalalala");
+				
+			}
+		});
+		
+		builder = new AlertDialog.Builder(this);
+		builder.setView(inviteDialogLayout);
+		builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();			
+			}	
+		});
+		
+		inviteDialog = builder.create();
+		inviteDialog.setTitle("Choose friends to send email");
+		inviteDialog.show();
+	}
+
 	
 	
 	
@@ -281,15 +326,13 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		//TODO:buscar as coisas ao site
 		
-		Comment c1 = new Comment("Eu", "A tua prima de 4!!!!", 5);
-		Comment c2 = new Comment("Eu", "A tua prima!!!!", 3);
-		Comment c3 = new Comment("Eu", "A tua prima de costas!!!!", 5);
-		Comment c4 = new Comment("Eu", "A prima do xpto!!!!", 4);
+		Comment c1 = new Comment("weird", "excelente!!!!", 5);
+		Comment c2 = new Comment("al", "podia ser melhor...", 3);
+		Comment c3 = new Comment("Yankovic", "tem tudo tudo tudo!!!!", 5);
 		
 		commentList.add(c1);
 		commentList.add(c2);
 		commentList.add(c3);
-		commentList.add(c4);
 		
 		
 		handler.sendMessage(handler.obtainMessage());
@@ -412,6 +455,69 @@ public class ViewSpot extends Activity implements Runnable{
         		Toast.makeText(getApplicationContext(), "No message posted on the wall.", Toast.LENGTH_SHORT).show();                                                                  
         	}   
         }
+    }
+    
+    
+    
+    private class MyCustomAdapter extends BaseAdapter {
+
+
+		private ArrayList<User> friends;
+    	
+    	public MyCustomAdapter() {
+			friends = api.getFriends();
+		}
+
+		@Override
+		public int getCount() {
+			return friends.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return friends.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+        	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        	convertView = infalInflater.inflate(R.layout.invite_list_child, null);
+            
+            TextView name = (TextView) convertView.findViewById(R.id.invite_list_child_name);
+            CheckBox check = (CheckBox) convertView.findViewById(R.id.invite_list_child_check);
+
+            name.setText(friends.get(position).getName());
+            check.setChecked(friends.get(position).isSelected());
+
+		
+		return convertView;
+		}
+		
+		
+		public void setChecked(int position){
+			if(friends.get(position).isSelected()){
+				friends.get(position).setSelected(false);
+				api.updateFrienState(friends.get(position).getId(), 0);
+				
+			}else{
+				friends.get(position).setSelected(true);
+				api.updateFrienState(friends.get(position).getId(), 1);
+			}
+
+		}
+		
+		
+		@Override
+		public void notifyDataSetChanged() {
+			super.notifyDataSetChanged();
+		}
+    	
     }
     
 }

@@ -1,14 +1,11 @@
 package dspot.client;
 
-import java.util.ArrayList;
 
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
-import dspot.client.ViewSpot.PostDialogListener;
-import dspot.utils.Sport;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -25,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -36,9 +32,7 @@ public class SearchTab  extends ListActivity{
 
 	private Api api;
 	
-	MyListAdapter mAdapter;
-	Context c = this;
-	
+	MyListAdapter mAdapter;	
 	
 	ProgressDialog dialog;
 	
@@ -123,6 +117,7 @@ public class SearchTab  extends ListActivity{
 				((BaseAdapter)sportsDialog.getListView().getAdapter()).notifyDataSetChanged();
 			}
 		});
+		
 		sportsDialog = builder.create();
 		sportsDialog.show();
 		

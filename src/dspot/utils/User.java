@@ -2,7 +2,15 @@ package dspot.utils;
 
 
 public class User {
-	
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -63,6 +71,18 @@ public class User {
 	public String toString(){
 		return name;
 	}
+	
+	
+	public User(int id, String name, int check){
+		this.id = id;
+		this.name = name;
+		if(check == 0)
+			this.isSelected = false;
+		else
+			this.isSelected = true;
+	}
+
+	public User(){}
 
 
 	private String username;
@@ -71,5 +91,6 @@ public class User {
 	private String email;
 	private int id;
 	private boolean isConnected = true;
+	private boolean isSelected = false;
 	
 }
