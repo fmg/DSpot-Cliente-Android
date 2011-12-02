@@ -272,6 +272,46 @@ public class Api extends Application {
    /////////////////////////////////////////////////////////////////////
 
 	
+	public void populateBatabase(){
+		dbAdapter.open();
+		
+		dbAdapter.createFriend(1, "Fernando");
+		dbAdapter.createFriend(2, "André");
+		dbAdapter.createFriend(3, "Nuno");
+		dbAdapter.createFriend(4, "Gaspar");
+		
+		dbAdapter.createFriend(5, "Claudio");
+		dbAdapter.createFriend(6, "Jorge");
+		dbAdapter.createFriend(7, "Daniel");
+		dbAdapter.createFriend(8, "Yuno");
+		
+		dbAdapter.createFriend(9, "Diogo");
+		dbAdapter.createFriend(10, "José");
+		dbAdapter.createFriend(11, "Filipe");
+		dbAdapter.createFriend(12, "Francisco");
+		
+		
+		
+		dbAdapter.createLocation(1, "Porto");
+		dbAdapter.createLocation(2, "Lisboa");
+		dbAdapter.createLocation(3, "Viseu");
+		dbAdapter.createLocation(4, "Vila Real");
+		
+		
+		dbAdapter.createSport(1, "Soccer");
+		dbAdapter.createSport(2, "Swimming");
+		dbAdapter.createSport(3, "FootBall");
+		dbAdapter.createSport(4, "BasketBall");
+
+		dbAdapter.close();
+	}
+	
+	public void resetDatabase(){
+		dbAdapter.open();
+		dbAdapter.reset();
+		dbAdapter.close();
+	}
+	
 	
 /////////////////////////////////////////////////////////////////////
 	

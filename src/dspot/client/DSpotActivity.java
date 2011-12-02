@@ -33,6 +33,12 @@ public class DSpotActivity extends Activity implements Runnable {
         
         api.dbAdapter = new DatabaseAdapter(getApplicationContext());
         
+        
+        //TODO:REMOVER
+        api.resetDatabase();
+        api.populateBatabase();
+		//////////////////////
+        
         (findViewById(R.id.login_loginButton)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -52,7 +58,7 @@ public class DSpotActivity extends Activity implements Runnable {
         (findViewById(R.id.login_guestButton)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				api.user.setConnected(false);
+				api.user.setConnected(false);				
 				Intent intent = new Intent(getApplicationContext(), Inicial.class);
 	            startActivity(intent);
 	            finish();
@@ -61,139 +67,138 @@ public class DSpotActivity extends Activity implements Runnable {
     }
     
         
-        public void connectAction(){
-        	
+    public void connectAction(){
+    	
+		dialog = ProgressDialog.show(DSpotActivity.this, "", "Loading. Please wait...", true);
+		Thread thread = new Thread(this);
+        thread.start();
+
+    }
+    
+    
+    @Override
+	public void run() {
+		
+		EditText user = (EditText) findViewById(R.id.login_username); 
+		EditText pass = (EditText) findViewById(R.id.login_password); 
+		
+		int success;
+		try {
 			
-    		dialog = ProgressDialog.show(DSpotActivity.this, "", "Loading. Please wait...", true);
-    		Thread thread = new Thread(this);
-            thread.start();
-
-        }
-        
-        
-        @Override
-    	public void run() {
-    		
-    		EditText user = (EditText) findViewById(R.id.login_username); 
-    		EditText pass = (EditText) findViewById(R.id.login_password); 
-    		
-    		int success;
-			try {
-				
-				success = api.login(user.getText().toString(), pass.getText().toString());
-				
-				if(success == -2){
-					
-					dialog.dismiss();
-					
-					Looper.prepare();
-	        		Toast toast = Toast.makeText(getApplicationContext(), "Autentication failed", Toast.LENGTH_SHORT);
-	        		toast.show();
-	        		Looper.loop();
-				}else if (success == -1){
-	    			
-					dialog.dismiss();
-
-					Looper.prepare();
-	    			Toast toast = Toast.makeText(getApplicationContext(), "Insert your credentials or register", Toast.LENGTH_SHORT);
-	        		toast.show();
-	    			Looper.loop();
-	    		}else if (success == 0){
-	    			
-	    			boolean retsuccess = api.getProfile();
-	    			
-	    			if(retsuccess){
-	    				
-	    				api.user.setConnected(true);
-	    				
-	    				dialog.dismiss();
-	    				
-	    				Intent intent = new Intent(getApplicationContext(),Inicial.class);
-	    	            startActivity(intent);
-	    	            finish();
-	    	            
-	    			}else{
-	    				
-	    				dialog.dismiss();
-
-	    				
-	    				Looper.prepare();
-	    				Toast toast = Toast.makeText(getApplicationContext(), "Error obtaining profile, try logging in again", Toast.LENGTH_SHORT);
-	    	    		toast.show();
-	    				Looper.loop();
-
-	    			}
-	    		}
-				
-			} catch (ClientProtocolException e) {
+			success = api.login(user.getText().toString(), pass.getText().toString());
+			
+			if(success == -2){
 				
 				dialog.dismiss();
 				
 				Looper.prepare();
-    			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server", Toast.LENGTH_SHORT);
+        		Toast toast = Toast.makeText(getApplicationContext(), "Autentication failed", Toast.LENGTH_SHORT);
         		toast.show();
         		Looper.loop();
-        		
-        		e.printStackTrace();
-        		
-			} catch (JSONException e) {
-				
+			}else if (success == -1){
+    			
 				dialog.dismiss();
 
 				Looper.prepare();
-    			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server", Toast.LENGTH_SHORT);
+    			Toast toast = Toast.makeText(getApplicationContext(), "Insert your credentials or register", Toast.LENGTH_SHORT);
         		toast.show();
-        		Looper.loop();
-				
-				e.printStackTrace();
-				
-			} catch (IOException e) {
-				
-				dialog.dismiss();
+    			Looper.loop();
+    		}else if (success == 0){
+    			
+    			boolean retsuccess = api.getProfile();
+    			
+    			if(retsuccess){
+    				
+    				api.user.setConnected(true);
+    				
+    				dialog.dismiss();
+    				
+    				Intent intent = new Intent(getApplicationContext(),Inicial.class);
+    	            startActivity(intent);
+    	            finish();
+    	            
+    			}else{
+    				
+    				dialog.dismiss();
 
-				Looper.prepare();
-    			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information from server", Toast.LENGTH_SHORT);
-        		toast.show();
-        		Looper.loop();
-				
-				e.printStackTrace();
-			}
+    				
+    				Looper.prepare();
+    				Toast toast = Toast.makeText(getApplicationContext(), "Error obtaining profile, try logging in again", Toast.LENGTH_SHORT);
+    	    		toast.show();
+    				Looper.loop();
+
+    			}
+    		}
+			
+		} catch (ClientProtocolException e) {
+			
+			dialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
     		
-    	}
-        
-        
-        
-        @Override
-    	public void onBackPressed() {
+    		e.printStackTrace();
     		
-    		// prepare the alert box
-            AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+		} catch (JSONException e) {
+			
+			dialog.dismiss();
 
-            // set the message to display
-            alertbox.setMessage("Do you want to quit the application?");
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+			
+			e.printStackTrace();
+			
+		} catch (IOException e) {
+			
+			dialog.dismiss();
 
-            // set a positive/yes button and create a listener
-            alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information from server", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+			
+			e.printStackTrace();
+		}
+		
+	}
+    
+    
+    
+    @Override
+	public void onBackPressed() {
+		
+		// prepare the alert box
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
 
-                // do something when the button is clicked
-                public void onClick(DialogInterface arg0, int arg1) {
-                    //Do nothing
-                }
-            });
+        // set the message to display
+        alertbox.setMessage("Do you want to quit the application?");
 
-            // set a negative/no button and create a listener
-            alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+        // set a positive/yes button and create a listener
+        alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
 
-                // do something when the button is clicked
-                public void onClick(DialogInterface arg0, int arg1) {
-                	
-            		finish();
-          
-                }
-            });
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                //Do nothing
+            }
+        });
 
-            // display box
-            alertbox.show();
+        // set a negative/no button and create a listener
+        alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
 
-    	}              
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            	
+        		finish();
+      
+            }
+        });
+
+        // display box
+        alertbox.show();
+
+	}              
 }

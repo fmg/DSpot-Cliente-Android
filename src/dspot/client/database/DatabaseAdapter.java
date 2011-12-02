@@ -34,25 +34,33 @@ public class DatabaseAdapter {
 	}
 	
 	
-	public long createLocation(int id, String name) {
-		
-		ContentValues initialvalues = new ContentValues();
-		initialvalues.put("id", id);
-		initialvalues.put("location", name);
+	public void reset() {
+		String resetLocations = "delete from locations";  
+		String resetFriends = "delete from friends";  
+		String resetFavourites = "delete from favourites";  
+		String resetSports = "delete from sports";  
 
-		return database.insert("locations", null, initialvalues);
+		
+	 	database.execSQL(resetLocations);
+	 	database.execSQL(resetFriends);
+	 	database.execSQL(resetFavourites);
+	 	database.execSQL(resetSports);
 	}
 	
 	
-	public long createSport(int id, String name) {
+	
+	
+	
+	
+/////////////////////////////////////////////////////////////////////
+
+	public long createLocation(int id, String name) {
 		
 		ContentValues initialvalues = new ContentValues();
-		initialvalues.put("id", id);
-		initialvalues.put("sport", name);
-		initialvalues.put("ischecked", 0);
+		initialvalues.put("_id", id);
+		initialvalues.put("name", name);
 
-
-		return database.insert("sports", null, initialvalues);
+		return database.insert("locations", null, initialvalues);
 	}
 	
 	
@@ -78,6 +86,19 @@ public class DatabaseAdapter {
 	 	locationsCursor.close();
 	 	
 	 	return locations;
+	}
+	
+	
+/////////////////////////////////////////////////////////////////////
+	
+	public long createFriend(int id, String name) {
+		
+		ContentValues initialvalues = new ContentValues();
+		initialvalues.put("_id", id);
+		initialvalues.put("name", name);
+		initialvalues.put("ischecked", 0);
+
+		return database.insert("friends", null, initialvalues);
 	}
 	
 	
@@ -122,7 +143,18 @@ public class DatabaseAdapter {
 	}
 
 	
+/////////////////////////////////////////////////////////////////////
 	
+	public long createSport(int id, String name) {
+		
+		ContentValues initialvalues = new ContentValues();
+		initialvalues.put("_id", id);
+		initialvalues.put("name", name);
+		initialvalues.put("ischecked", 1);
+
+
+		return database.insert("sports", null, initialvalues);
+	}
 	
 	public ArrayList<Sport> getSports(){
 		
