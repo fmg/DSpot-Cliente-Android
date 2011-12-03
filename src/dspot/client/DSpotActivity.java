@@ -36,7 +36,6 @@ public class DSpotActivity extends Activity implements Runnable {
         
         //TODO:REMOVER
         api.resetDatabase();
-        api.populateBatabase();
 		//////////////////////
         
         (findViewById(R.id.login_loginButton)).setOnClickListener(new View.OnClickListener() {
@@ -157,7 +156,7 @@ public class DSpotActivity extends Activity implements Runnable {
 			dialog.dismiss();
 
 			Looper.prepare();
-			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information from server", Toast.LENGTH_SHORT);
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server", Toast.LENGTH_SHORT);
     		toast.show();
     		Looper.loop();
 			

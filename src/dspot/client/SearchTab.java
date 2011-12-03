@@ -328,6 +328,7 @@ public class SearchTab  extends ListActivity{
 					public void onStopTrackingTouch(SeekBar seekBar) {
 						Toast toast = Toast.makeText(getApplicationContext(), "SeekBar -> " + seekBar.getProgress(), Toast.LENGTH_SHORT);
 			    		toast.show();
+			    		api.radious =  seekBar.getProgress();
 					}
 					
 					@Override

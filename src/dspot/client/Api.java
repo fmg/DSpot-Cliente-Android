@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -37,9 +38,10 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://172.29.145.84:3000";
+	public static String IP = "http://95.92.112.141:3000";
 	
 	public static User user = new User();
+	public static int radious;
 	
 	public static dspot.client.database.DatabaseAdapter dbAdapter;
 	
@@ -109,7 +111,8 @@ public class Api extends Application {
         try {
         	
             String url = IP + "/users/profile";       
- 
+            System.out.println(url);
+            
             HttpGet httpget = new HttpGet(url);
             
             httpget.setHeader("Accept", "application/json");
@@ -125,19 +128,18 @@ public class Api extends Application {
             	
     	        JSONObject messageReceived = new JSONObject(tmp.toString());
             	System.out.println(messageReceived.toString());
-
             	
             	//guardar os dados comuns
             	user.setName(messageReceived.getString("name"));
             	user.setEmail(messageReceived.getString("email"));
             	user.setId(messageReceived.getInt("id"));
-    	        
-    	        /*
-            	System.out.println(utilizadorInfo.get("photo").toString());
-            		
-	            user.setPhoto(utilizadorInfo.get("photo").toString());
-            	*/
+            	user.setPhoto(messageReceived.getString("avatar_file_name"));
             	
+            	//TODO:compor url da photo
+            	//String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/avatar_file_name
+            	
+            	
+      	
             	return true;
             }	
             
@@ -155,14 +157,15 @@ public class Api extends Application {
 	}
 
 	
-	public int regist(String username, String pass, String nome, String email){
+	public int registrate(String username, String pass, String nome, String email,String pictureURL){
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		 
 		 HttpResponse response=null;
 		 
-		 String url = IP + "/user/create";        
+		 String url = IP + "/user/create";  
+		 
 		
          HttpPost httpPost = new HttpPost(url);         
          JSONObject jsonuser=new JSONObject();
@@ -172,6 +175,7 @@ public class Api extends Application {
         	jsonuser.put("password", pass);
         	jsonuser.put("name", nome);
         	jsonuser.put("email", email);
+        	jsonuser.put("picture", pictureURL);
         	
              
              
@@ -185,6 +189,7 @@ public class Api extends Application {
 	        httpPost.setEntity(entity);
 	        response = httpClient.execute(httpPost);
          
+	        System.out.println(url);
 	        
 	        if(response.getStatusLine().getStatusCode() == 200){
             	
@@ -192,11 +197,10 @@ public class Api extends Application {
             	
             	 return 0;
             	 
-            }else
+            }else{
             	System.out.println("peido");
             	return -1;
-	        
-         
+            }
          } catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 			return -3;
@@ -223,17 +227,17 @@ public class Api extends Application {
 		HttpResponse response = null;
         try {
         	
-            String url = IP + "/user/logout";  
+            String url = IP + "/logout";  
             
-            
+            System.out.println(url);
  
-            HttpGet httpget = new HttpGet(url);
+            HttpDelete httdel = new HttpDelete(url);
             
             
-            httpget.setHeader("Cookie", cookie);
-            httpget.setHeader("Accept", "application/json");
+            httdel.setHeader("Cookie", cookie);
+            httdel.setHeader("Accept", "application/json");
             
-            response = httpClient.execute(httpget);
+            response = httpClient.execute(httdel);
             
             if(response.getStatusLine().getStatusCode() == 200){
             	System.out.println("fim");
@@ -275,20 +279,20 @@ public class Api extends Application {
 	public void populateBatabase(){
 		dbAdapter.open();
 		
-		dbAdapter.createFriend(1, "Fernando");
-		dbAdapter.createFriend(2, "André");
-		dbAdapter.createFriend(3, "Nuno");
-		dbAdapter.createFriend(4, "Gaspar");
+		dbAdapter.createFriend(1, "Fernando",2);
+		dbAdapter.createFriend(2, "Andr√©",2);
+		dbAdapter.createFriend(3, "Nuno",2);
+		dbAdapter.createFriend(4, "Gaspar",2);
 		
-		dbAdapter.createFriend(5, "Claudio");
-		dbAdapter.createFriend(6, "Jorge");
-		dbAdapter.createFriend(7, "Daniel");
-		dbAdapter.createFriend(8, "Yuno");
+		dbAdapter.createFriend(5, "Claudio",2);
+		dbAdapter.createFriend(6, "Jorge",2);
+		dbAdapter.createFriend(7, "Daniel",2);
+		dbAdapter.createFriend(8, "Yuno",2);
 		
-		dbAdapter.createFriend(9, "Diogo");
-		dbAdapter.createFriend(10, "José");
-		dbAdapter.createFriend(11, "Filipe");
-		dbAdapter.createFriend(12, "Francisco");
+		dbAdapter.createFriend(9, "Diogo",2);
+		dbAdapter.createFriend(10, "Jos√©",2);
+		dbAdapter.createFriend(11, "Filipe",2);
+		dbAdapter.createFriend(12, "Francisco",2);
 		
 		
 		
@@ -308,7 +312,13 @@ public class Api extends Application {
 	
 	public void resetDatabase(){
 		dbAdapter.open();
-		dbAdapter.reset();
+		dbAdapter.resetAll();
+		dbAdapter.close();
+	}
+	
+	public void resetUserInfo(){
+		dbAdapter.open();
+		dbAdapter.resetUserInfo(user.getId());
 		dbAdapter.close();
 	}
 	
@@ -350,7 +360,7 @@ public class Api extends Application {
 	public ArrayList<User> getFriends(){	
 		
 		dbAdapter.open();
-		ArrayList<User> friends = dbAdapter.getFriends();
+		ArrayList<User> friends = dbAdapter.getFriends(user.getId());
 		dbAdapter.close();
 		
 		return friends;

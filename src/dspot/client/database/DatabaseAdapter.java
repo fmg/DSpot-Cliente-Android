@@ -34,17 +34,34 @@ public class DatabaseAdapter {
 	}
 	
 	
-	public void reset() {
+	public void resetAll() {
 		String resetLocations = "delete from locations";  
 		String resetFriends = "delete from friends";  
 		String resetFavourites = "delete from favourites";  
-		String resetSports = "delete from sports";  
+		String resetSports = "delete from sports";
+		String resetUser = "delete from user";
+		String resetVersion = "delete from versions";
 
 		
 	 	database.execSQL(resetLocations);
 	 	database.execSQL(resetFriends);
 	 	database.execSQL(resetFavourites);
 	 	database.execSQL(resetSports);
+	 	database.execSQL(resetUser);
+	 	database.execSQL(resetVersion);
+	}
+	
+	
+	public void resetUserInfo(int id) {
+		
+		String resetFriends = "delete from friends where user_id= " + id;
+		String resetFavourites = "delete from favourites where user_id= " + id;
+		String resetUser = "delete from user where _id= " + id;
+
+		
+	 	database.execSQL(resetFriends);
+	 	database.execSQL(resetFavourites);
+	 	database.execSQL(resetUser);
 	}
 	
 	
@@ -91,22 +108,23 @@ public class DatabaseAdapter {
 	
 /////////////////////////////////////////////////////////////////////
 	
-	public long createFriend(int id, String name) {
+	public long createFriend(int id, String friendName, int user_id) {
 		
 		ContentValues initialvalues = new ContentValues();
 		initialvalues.put("_id", id);
-		initialvalues.put("name", name);
+		initialvalues.put("name", friendName);
+		initialvalues.put("user_id", user_id);
 		initialvalues.put("ischecked", 0);
 
 		return database.insert("friends", null, initialvalues);
 	}
 	
 	
-	public ArrayList<User> getFriends(){
+	public ArrayList<User> getFriends(int id){
 		
 		ArrayList<User> friends = new ArrayList<User>();
 		
-		String selectFriends = "Select * from friends Order By name";  
+		String selectFriends = "Select * from friends Where user_id= "+ id + " Order By name";  
 		
 	 	Cursor friendsCursor = database.rawQuery(selectFriends, null);
 	 	
@@ -135,11 +153,11 @@ public class DatabaseAdapter {
 		 database.update("friends", args, "_id=" + id, null);
 	}
 	
-	public void resetFrienState(){
+	public void resetFrienState(int id){
 		
 		 ContentValues args = new ContentValues();
 		 args.put("ischecked", 0);
-		 database.update("friends", args, null, null);
+		 database.update("friends", args, "user_id=?", new String[]{String.valueOf(id)});
 	}
 
 	

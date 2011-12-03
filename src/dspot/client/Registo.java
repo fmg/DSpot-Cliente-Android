@@ -30,7 +30,7 @@ import android.widget.Toast;
 public class Registo extends Activity {
 		
 	private Api api;
-	String name, email, picURL;
+	String name, email, picURL = null;
 	ProgressDialog dialog;
 
 	
@@ -89,12 +89,10 @@ public class Registo extends Activity {
     	}
  
         
-    	//int ret = api.regist(user, pass, nome, email);
-    	//TODO:
-    	int ret = 0;
+    	int ret = api.registrate(user, pass, nome, email, picURL);
     	
     	if(ret ==  0){
-	    	Toast toast = Toast.makeText(getApplicationContext(), "Registed with success", Toast.LENGTH_LONG);
+	    	Toast toast = Toast.makeText(getApplicationContext(), "Registered with success", Toast.LENGTH_LONG);
 			toast.show();
 	    	
 	    	Intent intent = new Intent(getApplicationContext(),DSpotActivity.class);
@@ -102,7 +100,7 @@ public class Registo extends Activity {
 	        finish();
 	        
     	}else if(ret == -1){
-    		Toast toast = Toast.makeText(getApplicationContext(), "Error registing", Toast.LENGTH_SHORT);
+    		Toast toast = Toast.makeText(getApplicationContext(), "Error on regristration", Toast.LENGTH_SHORT);
 			toast.show();
     	}
     	else if(ret == -3){
@@ -189,6 +187,10 @@ public class Registo extends Activity {
 			newurl = new URL(picURL);
 			mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
 			((ImageView)findViewById(R.id.register_profileImage)).setImageBitmap(mIcon_val);
+			
+			((EditText)findViewById(R.id.register_email)).setEnabled(false);
+        	((EditText)findViewById(R.id.register_name)).setEnabled(false);
+			
     	}catch (IOException e) {
 			Toast toast = Toast.makeText(getApplicationContext(), "Error downloading image", Toast.LENGTH_SHORT);
      		toast.show();
@@ -209,16 +211,16 @@ public class Registo extends Activity {
 			try {
 				jsonObject = new JSONObject(response);
 				
-	        	picURL = jsonObject.getString("picture");
+	        	
 	        	name = jsonObject.getString("name");
 	        	email = jsonObject.getString("email");
+	        	picURL = jsonObject.getString("picture");
 	        	
 	        	System.out.println("AKI-> " + name + " "+ email + " " + picURL);
 	        	
 	        	
 	        					
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 			

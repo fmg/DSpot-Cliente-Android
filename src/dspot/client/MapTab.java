@@ -9,7 +9,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 public class MapTab  extends MapActivity {
-	
+
+	private int radious;
 	Api api;
     
 	@Override
@@ -29,6 +30,16 @@ public class MapTab  extends MapActivity {
 	@Override
 	protected boolean isRouteDisplayed() {
 	    return false;
+	}
+	
+	
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		Toast toast = Toast.makeText(getApplicationContext(), "SeekBar -> " + api.radious, Toast.LENGTH_SHORT);
+		toast.show();
 	}
 	
 	
