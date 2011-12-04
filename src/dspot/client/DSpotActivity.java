@@ -36,6 +36,7 @@ public class DSpotActivity extends Activity implements Runnable {
         
         //TODO:REMOVER
         api.resetDatabase();
+        api.populateBatabase();
 		//////////////////////
         
         (findViewById(R.id.login_loginButton)).setOnClickListener(new View.OnClickListener() {
@@ -91,9 +92,10 @@ public class DSpotActivity extends Activity implements Runnable {
 				dialog.dismiss();
 				
 				Looper.prepare();
-        		Toast toast = Toast.makeText(getApplicationContext(), "Autentication failed", Toast.LENGTH_SHORT);
+        		Toast toast = Toast.makeText(getApplicationContext(), "Invalid user/password combination", Toast.LENGTH_SHORT);
         		toast.show();
         		Looper.loop();
+        		
 			}else if (success == -1){
     			
 				dialog.dismiss();
@@ -102,6 +104,7 @@ public class DSpotActivity extends Activity implements Runnable {
     			Toast toast = Toast.makeText(getApplicationContext(), "Insert your credentials or register", Toast.LENGTH_SHORT);
         		toast.show();
     			Looper.loop();
+    			
     		}else if (success == 0){
     			
     			boolean retsuccess = api.getProfile();

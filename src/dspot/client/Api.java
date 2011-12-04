@@ -38,7 +38,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://95.92.112.141:3000";
+	public static String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	public static int radious;
@@ -76,7 +76,7 @@ public class Api extends Application {
         
         httpPost.setHeader("Accept", "application/json");
         	
-		jsonuser.put("name", username);
+		jsonuser.put("username", username);
 		jsonuser.put("password", password);
 				
 		String POSTText = jsonuser.toString();
@@ -89,15 +89,17 @@ public class Api extends Application {
         httpPost.setEntity(entity);
         response = httpClient.execute(httpPost);
             
-        if (response.getStatusLine().getStatusCode() == 200) {
+        int code = response.getStatusLine().getStatusCode();
+        if (code == 200) {
         	cookie = response.getFirstHeader("Set-Cookie").getValue().toString();
         	user.setUsername(username);
         	System.out.println(cookie);
         	return 0;
         	 
-        } else {
+        } else if (code == 401){
         	return -2;
-        }
+        } else
+        	return -3;
         
 	}
 	
@@ -174,7 +176,7 @@ public class Api extends Application {
          try {
         	
         	 
-        	 //jsonuserinfo.put("username", username);
+        	 jsonuserinfo.put("username", username);
         	 jsonuserinfo.put("password", pass);
         	 jsonuserinfo.put("password_confirmation", pass);
         	 jsonuserinfo.put("name", nome);
@@ -290,6 +292,7 @@ public class Api extends Application {
 	public void populateBatabase(){
 		dbAdapter.open();
 		
+		/*
 		dbAdapter.createFriend(1, "Fernando",2);
 		dbAdapter.createFriend(2, "André",2);
 		dbAdapter.createFriend(3, "Nuno",2);
@@ -304,7 +307,7 @@ public class Api extends Application {
 		dbAdapter.createFriend(10, "José",2);
 		dbAdapter.createFriend(11, "Filipe",2);
 		dbAdapter.createFriend(12, "Francisco",2);
-		
+		*/
 		
 		
 		dbAdapter.createLocation(1, "Porto");
