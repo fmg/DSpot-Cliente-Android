@@ -164,25 +164,36 @@ public class Api extends Application {
 		 
 		 HttpResponse response=null;
 		 
-		 String url = IP + "/user/create";  
+		 String url = IP + "/users";  
 		 
 		
          HttpPost httpPost = new HttpPost(url);         
          JSONObject jsonuser=new JSONObject();
-
+         JSONObject jsonuserinfo=new JSONObject();
+         httpPost.setHeader("Accept", "application/json");
          try {
-        	jsonuser.put("username", username);
-        	jsonuser.put("password", pass);
-        	jsonuser.put("name", nome);
-        	jsonuser.put("email", email);
-        	jsonuser.put("picture", pictureURL);
         	
-             
-             
-            String POSTText = jsonuser.toString();
-            StringEntity entity; 
         	 
-			entity = new StringEntity(POSTText, "UTF-8");
+        	 //jsonuserinfo.put("username", username);
+        	 jsonuserinfo.put("password", pass);
+        	 jsonuserinfo.put("password_confirmation", pass);
+        	 jsonuserinfo.put("name", nome);
+        	 jsonuserinfo.put("email", email);
+         	
+        	 /*
+        	 jsonuser.put("password", pass);
+        	 jsonuser.put("password_confirmation", pass);
+        	 jsonuser.put("name", nome);
+        	 jsonuser.put("email", email);
+         	*/
+         	//TODO: ver cena da foto
+         	//jsonuser.put("picture", pictureURL);
+         	jsonuser.put("user", jsonuserinfo);
+        
+            String POSTText = jsonuser.toString();
+            System.out.println(POSTText);
+            
+            StringEntity entity = new StringEntity(POSTText, "UTF-8");
 			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
 	        httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
 	        entity.setContentType(basicHeader);
@@ -191,14 +202,14 @@ public class Api extends Application {
          
 	        System.out.println(url);
 	        
-	        if(response.getStatusLine().getStatusCode() == 200){
+	        if(response.getStatusLine().getStatusCode() == 201){
             	
-	        	 System.out.println("aki");
+	        	 System.out.println("success");
             	
             	 return 0;
             	 
             }else{
-            	System.out.println("peido");
+            	System.out.println("erro -> "+ response.getStatusLine().getStatusCode());
             	return -1;
             }
          } catch (UnsupportedEncodingException e1) {

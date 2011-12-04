@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable.Factory;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -211,6 +212,7 @@ public class Registo extends Activity {
 			try {
 				jsonObject = new JSONObject(response);
 				
+				System.out.println(response.toString());
 	        	
 	        	name = jsonObject.getString("name");
 	        	email = jsonObject.getString("email");
