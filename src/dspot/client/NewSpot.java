@@ -1,8 +1,11 @@
 package dspot.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import dspot.utils.Sport;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,14 +22,20 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class NewSpot extends Activity implements Runnable{
 
@@ -46,7 +55,12 @@ public class NewSpot extends Activity implements Runnable{
 	List<Address> addresses;
 	
 	ProgressDialog dialog;
+	
 	AlertDialog alert_sports;
+	View sportsDialogLayout;
+	MySportsListAdapter sportsDialogAdapter;
+	
+	
 	AlertDialog alert_address;
 
 	
@@ -128,33 +142,54 @@ public class NewSpot extends Activity implements Runnable{
 		    public void onProviderDisabled(String provider) {
 		    }
 		  };
+		  
+		  buildSportsDialog();
 		
 	}
 		
 	public void setSports(){
-		final CharSequence[] items = {"Red", "Green", "Blue"};
-		boolean[] checkeditems = {false, false, false};
+		
+		alert_sports.show();
+	}
+	
+	
+	
+	public void buildSportsDialog() {
+		
+		AlertDialog.Builder builder;
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		sportsDialogLayout = inflater.inflate(R.layout.search_tab_sports_dialog,
+		                               (ViewGroup) findViewById(R.id.layout_root3));
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Pick a color");
-		builder.setNeutralButton("ok", new DialogInterface.OnClickListener() {
-			
+		ListView lv = (ListView) sportsDialogLayout.findViewById(R.id.listView1);
+		
+		sportsDialogAdapter = new MySportsListAdapter();
+		lv.setAdapter(sportsDialogAdapter);
+		
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				alert_sports.dismiss();
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				sportsDialogAdapter.setChecked(position);
+				sportsDialogAdapter.notifyDataSetChanged();
+				System.out.println("tlalalala");
 				
 			}
 		});
-		builder.setMultiChoiceItems(items,checkeditems, new DialogInterface.OnMultiChoiceClickListener(){
-			
+		
+		builder = new AlertDialog.Builder(this);
+		builder.setView(sportsDialogLayout);
+		builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {			
 			@Override
-			public void onClick(DialogInterface dialog, int which,
-					boolean isChecked) {
-				Toast.makeText(getApplicationContext(), items[which], Toast.LENGTH_SHORT).show();
-			}
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();			
+			}	
 		});
+		
 		alert_sports = builder.create();
-		alert_sports.show();
+		alert_sports.setTitle("Choose sports");
+		
 	}
 	
 	
@@ -306,5 +341,67 @@ public class NewSpot extends Activity implements Runnable{
 		
 		
 	}
+	
+	
+	
+	
+	 private class MySportsListAdapter extends BaseAdapter {
+
+
+			private ArrayList<Sport> sports;
+	    	
+	    	public MySportsListAdapter() {
+	    		sports = api.getSports();
+			}
+
+			@Override
+			public int getCount() {
+				return sports.size();
+			}
+
+			@Override
+			public Object getItem(int arg0) {
+				return sports.get(arg0);
+			}
+
+			@Override
+			public long getItemId(int arg0) {
+				return 0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				
+	        	LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        	convertView = infalInflater.inflate(R.layout.checklist_child, null);
+	            
+	            TextView name = (TextView) convertView.findViewById(R.id.checklist_child_name);
+	            CheckBox check = (CheckBox) convertView.findViewById(R.id.checklist_child_check);
+
+	            name.setText(sports.get(position).getName());
+	            check.setChecked(sports.get(position).isChecked());
+
+			
+			return convertView;
+			}
+			
+			
+			public void setChecked(int position){
+				if(sports.get(position).isChecked()){
+					sports.get(position).setChecked(false);
+					
+				}else{
+					sports.get(position).setChecked(true);
+				}
+
+			}
+			
+			
+			@Override
+			public void notifyDataSetChanged() {
+				super.notifyDataSetChanged();
+			}
+	    	
+	    }
 
 }

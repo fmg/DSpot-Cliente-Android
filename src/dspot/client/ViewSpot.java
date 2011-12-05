@@ -255,6 +255,9 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	public void sendCommentAction(){
         Toast.makeText(ViewSpot.this, "To be done in a near future", Toast.LENGTH_SHORT).show();
+        ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
+		commentAreaVisible = false;
+        
 	}
 
 	
