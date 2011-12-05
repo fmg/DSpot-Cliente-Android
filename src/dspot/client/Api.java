@@ -19,6 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -137,6 +138,20 @@ public class Api extends Application {
             	user.setId(messageReceived.getInt("id"));
             	user.setPhoto(messageReceived.getString("avatar_file_name"));
             	
+            	//elimina tudo do user
+            	resetUserInfo();
+            	
+            	createUserInfo(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getPhoto());
+            	
+            	//cria amigos
+            	JSONArray friends = messageReceived.getJSONArray("friends");
+            	createFriends(friends,user.getId());
+            	
+            	
+            	//cria favoritos
+            	JSONArray favourites = messageReceived.getJSONArray("spot_favs");
+            	createFavourites(favourites,user.getId());
+            	
             	//TODO:compor url da photo
             	//String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/avatar_file_name
             	
@@ -182,12 +197,6 @@ public class Api extends Application {
         	 jsonuserinfo.put("name", nome);
         	 jsonuserinfo.put("email", email);
          	
-        	 /*
-        	 jsonuser.put("password", pass);
-        	 jsonuser.put("password_confirmation", pass);
-        	 jsonuser.put("name", nome);
-        	 jsonuser.put("email", email);
-         	*/
          	//TODO: ver cena da foto
          	//jsonuser.put("picture", pictureURL);
          	jsonuser.put("user", jsonuserinfo);
@@ -337,6 +346,15 @@ public class Api extends Application {
 	}
 	
 	
+	
+	
+	public void createUserInfo(int id, String username, String name, String email, String photo){
+		dbAdapter.open();
+		dbAdapter.createUser(id, username, name, email);
+		dbAdapter.close();
+	}
+	
+	
 /////////////////////////////////////////////////////////////////////
 	
 	public ArrayList<Sport> getSports(){
@@ -387,6 +405,45 @@ public class Api extends Application {
 		dbAdapter.close();
 		
 		
+	}
+	
+	
+	public void createFriends(JSONArray friends, int user_id){
+		dbAdapter.open();
+		
+		for(int i = 0; i < friends.length(); i++){
+			JSONObject friend;
+			try {
+				friend = friends.getJSONObject(i);
+				dbAdapter.createFriend(friend.getInt("id"), friend.getString("name"), user_id);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		dbAdapter.close();
+	}
+	
+	
+	
+	//////////////////////////////////////////////////////////////////
+	
+	public void createFavourites(JSONArray favoutires, int user_id){
+		dbAdapter.open();
+		
+		for(int i = 0; i < favoutires.length(); i++){
+			JSONObject favoutire;
+			try {
+				favoutire = favoutires.getJSONObject(i);
+				dbAdapter.createFavourite(favoutire.getInt("id"), favoutire.getString("name"), favoutire.getString("address"),user_id);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		dbAdapter.close();
 	}
 
 }

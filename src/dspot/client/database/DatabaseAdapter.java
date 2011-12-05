@@ -67,6 +67,18 @@ public class DatabaseAdapter {
 	
 	
 	
+	public long createUser(int id, String username,  String name, String email) {
+		
+		ContentValues initialvalues = new ContentValues();
+		initialvalues.put("_id", id);
+		initialvalues.put("name", name);
+		initialvalues.put("email", email);
+		initialvalues.put("photo", "");
+		initialvalues.put("username", username);
+
+		return database.insert("user", null, initialvalues);
+	}
+	
 	
 	
 /////////////////////////////////////////////////////////////////////
@@ -206,6 +218,20 @@ public class DatabaseAdapter {
 		 ContentValues args = new ContentValues();
 		 args.put("ischecked", check);
 		 database.update("sports", args, "_id=" + id, null);
+	}
+	
+	
+/////////////////////////////////////////////////////////////////////
+
+	public long createFavourite(int id, String name, String address, int user_id) {
+		
+		ContentValues initialvalues = new ContentValues();
+		initialvalues.put("_id", id);
+		initialvalues.put("name", name);
+		initialvalues.put("photo", "");
+		initialvalues.put("user_id", user_id);
+
+		return database.insert("sports", null, initialvalues);
 	}
 
 }

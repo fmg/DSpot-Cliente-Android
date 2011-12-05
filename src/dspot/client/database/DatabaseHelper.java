@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	private static final String DATABASE_CREATE_LOCATIONS = " CREATE TABLE locations (_id INTEGER PRIMARY KEY,  name TEXT)";
 	private static final String DATABASE_CREATE_FAVOURITES = " CREATE TABLE favourites (_id INTEGER PRIMARY KEY, name TEXT, address, TEXT, photo TEXT, user_id INT)";
 	private static final String DATABASE_CREATE_FRIENDS = "CREATE TABLE friends (_id INTEGER PRIMARY KEY, name TEXT, ischecked INT, user_id INT)";
-	private static final String DATABASE_CREATE_USER = "CREATE TABLE user (_id INTEGER PRIMARY KEY, name TEXT, email TEXT, photo BLOB)";
+	private static final String DATABASE_CREATE_USER = "CREATE TABLE user (_id INTEGER PRIMARY KEY, username TEXT, name TEXT, email TEXT, photo BLOB)";
 	private static final String DATABASE_CREATE_VERSIONS = "CREATE TABLE versions (location_version INT, sport_version INT)";
 
 
