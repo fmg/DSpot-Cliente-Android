@@ -33,6 +33,8 @@ public class ViewSpotList extends ListActivity implements Runnable{
         
 		api = ((Api)getApplicationContext());
 		
+		setContentView(R.layout.spot_list);
+		
 		mAdapter = new MyListAdapter();
 		spotList = new ArrayList<SpotShortInfo>();
 				

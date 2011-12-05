@@ -53,7 +53,7 @@ public class SearchTab  extends ListActivity{
         super.onCreate(savedInstanceState);
         
 		api = ((Api)getApplicationContext());
-		
+		setContentView(R.layout.tab_search);
 
 		
 		mAdapter = new MyListAdapter();
