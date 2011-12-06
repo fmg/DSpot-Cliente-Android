@@ -8,7 +8,8 @@
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent" 
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/view_spot_spotName"
@@ -34,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/view_spot_favourite"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true" android:layout_marginTop="10dp"/>
 
         <RatingBar
             android:id="@+id/view_spot_rating"

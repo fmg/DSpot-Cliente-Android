@@ -95,6 +95,23 @@ public class ViewSpot extends Activity implements Runnable{
 			}
 		});
 	    
+	    
+	    ((RatingBar)findViewById(R.id.view_spot_favourite)).setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+			
+			@Override
+			public void onRatingChanged(RatingBar arg0, float arg1, boolean arg2) {
+				
+				if(arg0.getRating() == 1){
+         			//TODO: adicionar aos favoritos
+					 System.out.println("Adiciona aos favoritos");
+         		}else{
+         			//TODO: remover dos favoritos
+					 System.out.println("Remove dos favoritos");
+         		}
+				
+			}
+		});
+	    
 	    ((Button)findViewById(R.id.view_spot_sendComment)).setOnClickListener(new OnClickListener() {
 			
 			@Override
