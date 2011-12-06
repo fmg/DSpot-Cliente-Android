@@ -29,6 +29,7 @@ import com.facebook.android.Facebook;
 
 import dspot.utils.MyLocation;
 import dspot.utils.Sport;
+import dspot.utils.SpotShortInfo;
 import dspot.utils.User;
 
 import android.app.Application;
@@ -348,10 +349,19 @@ public class Api extends Application {
 	
 	
 	
-	public void createUserInfo(int id, String username, String name, String email, String photo){
+	private void createUserInfo(int id, String username, String name, String email, String photo){
 		dbAdapter.open();
 		dbAdapter.createUser(id, username, name, email);
 		dbAdapter.close();
+	}
+	
+	
+	public User getUserInfo(){
+		dbAdapter.open();
+		User u = dbAdapter.getUserInfo(user.getId());
+		dbAdapter.close();
+		
+		return u;
 	}
 	
 	
@@ -408,7 +418,7 @@ public class Api extends Application {
 	}
 	
 	
-	public void createFriends(JSONArray friends, int user_id){
+	private void createFriends(JSONArray friends, int user_id){
 		dbAdapter.open();
 		
 		for(int i = 0; i < friends.length(); i++){
@@ -429,7 +439,7 @@ public class Api extends Application {
 	
 	//////////////////////////////////////////////////////////////////
 	
-	public void createFavourites(JSONArray favoutires, int user_id){
+	private void createFavourites(JSONArray favoutires, int user_id){
 		dbAdapter.open();
 		
 		for(int i = 0; i < favoutires.length(); i++){
@@ -444,6 +454,16 @@ public class Api extends Application {
 		
 		
 		dbAdapter.close();
+	}
+	
+	
+	public ArrayList<SpotShortInfo> getFavourites(){
+		
+		dbAdapter.open();
+		ArrayList<SpotShortInfo> fav = dbAdapter.getFavourites(user.getId());
+		dbAdapter.close();
+		
+		return fav;
 	}
 
 }

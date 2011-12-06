@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import dspot.utils.MyLocation;
 import dspot.utils.Sport;
+import dspot.utils.SpotShortInfo;
 import dspot.utils.User;
 
 import android.content.ContentValues;
@@ -77,6 +78,30 @@ public class DatabaseAdapter {
 		initialvalues.put("username", username);
 
 		return database.insert("user", null, initialvalues);
+	}
+	
+	
+	public User getUserInfo(int user_id){
+		
+		User u = new User();
+		
+		String selectUser = "Select * from user Where _id="+ user_id;  
+		
+	 	Cursor userCursor = database.rawQuery(selectUser, null);
+	 	
+	 	userCursor.moveToFirst();
+	 	if(userCursor.getCount() == 0){
+	 		userCursor.close();
+	 		return u;
+	 	}
+	 	
+	 	userCursor.moveToFirst();
+	 	do {
+	 		
+	 	}while(userCursor.moveToNext());
+	 	userCursor.close();
+	 	
+	 	return u;
 	}
 	
 	
@@ -233,6 +258,33 @@ public class DatabaseAdapter {
 		initialvalues.put("user_id", user_id);
 
 		return database.insert("favourites", null, initialvalues);
+	}
+	
+	
+	
+	public ArrayList<SpotShortInfo> getFavourites(int user_id){
+		
+		ArrayList<SpotShortInfo> favourites = new ArrayList<SpotShortInfo>();
+		
+		String selectFavourites = "Select * from favourites Where user_id="+ user_id +" Order By name";  
+		
+	 	Cursor favouritesCursor = database.rawQuery(selectFavourites, null);
+	 	
+	 	favouritesCursor.moveToFirst();
+	 	if(favouritesCursor.getCount() == 0){
+	 		favouritesCursor.close();
+	 		return favourites;
+	 	}
+	 	
+	 	favouritesCursor.moveToFirst();
+	 	do {
+	 		SpotShortInfo s = new SpotShortInfo(favouritesCursor.getString(1), favouritesCursor.getString(2), favouritesCursor.getInt(0));
+	 		favourites.add(s);
+	 	}while(favouritesCursor.moveToNext());
+	 	favouritesCursor.close();
+	 	
+	 	return favourites;
+		
 	}
 
 }
