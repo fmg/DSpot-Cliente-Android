@@ -228,10 +228,11 @@ public class DatabaseAdapter {
 		ContentValues initialvalues = new ContentValues();
 		initialvalues.put("_id", id);
 		initialvalues.put("name", name);
+		initialvalues.put("address", address);
 		initialvalues.put("photo", "");
 		initialvalues.put("user_id", user_id);
 
-		return database.insert("sports", null, initialvalues);
+		return database.insert("favourites", null, initialvalues);
 	}
 
 }

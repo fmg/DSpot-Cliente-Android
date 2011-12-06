@@ -39,7 +39,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://89.214.145.37:3000";
+	public static String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	public static int radious;
