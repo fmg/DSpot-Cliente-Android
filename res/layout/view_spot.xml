@@ -222,7 +222,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/view_spot_rateSpot"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp" 
+            android:background="@drawable/comment_background">
 
             <TextView
                 android:id="@+id/textView7"
