@@ -7,8 +7,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	     android:background="@drawable/comment_background"
-	     android:layout_marginTop="10dp"
-	    >
+	     android:layout_marginTop="10dp">
 	
 	    <TextView
 	        android:id="@+id/comments_child_userName"
@@ -36,21 +35,6 @@
 	        android:layout_below="@+id/comments_child_userName"
 	        android:paddingLeft="15dp"
 	        android:text="Comment area" android:layout_marginTop="5dp"/>
-	    
-	    <!-- 
-	    
-	    <TextView
-	        android:layout_width="match_parent"
-	        android:layout_height="1px"
-	        android:layout_below="@+id/comments_child_userComment"
-	        android:layout_centerHorizontal="true"
-	        android:layout_marginLeft="20px"
-	        android:layout_marginRight="20px"
-	        android:layout_marginTop="5dp"
-	        android:background="#DADADA" />
-	        
-	       
-	         -->
 	
 	</RelativeLayout>
 

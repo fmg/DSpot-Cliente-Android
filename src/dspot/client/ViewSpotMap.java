@@ -49,7 +49,7 @@ public class ViewSpotMap extends MapActivity {
 		  
 		  
 		  List<Overlay> mapOverlays = mapView.getOverlays();
-		  Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+		  Drawable drawable = this.getResources().getDrawable(R.drawable.pin);
 		  MyItemizedOverlay itemizedoverlay = new MyItemizedOverlay(drawable);
 		  
 		  GeoPoint point = new GeoPoint((int)(lat*1e6),(int)(lon*1e6));
