@@ -132,16 +132,24 @@ public class SearchTab  extends ListActivity{
 	
 	
 	public void lastSearch() {
-		Toast toast = Toast.makeText(getApplicationContext(), "Last Search", Toast.LENGTH_SHORT);
-		toast.show();
+		if(api.last_visited_spot == 0){
+			Toast toast = Toast.makeText(getApplicationContext(), "You haven't searched anything in this session", Toast.LENGTH_SHORT);
+			toast.show();
+		}else{
+		
+			Intent intent = new Intent(getApplicationContext(),ViewSpot.class);
+			intent.putExtra("id", api.last_visited_spot);
+			intent.putExtra("index", 0);
+			
+			ArrayList<Integer> tmp = new ArrayList<Integer>();
+			tmp.add(api.last_visited_spot);
+			intent.putIntegerArrayListExtra("spotList_ids", tmp);
+			
+	        startActivity(intent);
+		}
+      
 	}
-	
-	
-	public void searchBySports() {
-		Toast toast = Toast.makeText(getApplicationContext(), "Search By Sports", Toast.LENGTH_SHORT);
-		toast.show();
-	}
-	
+
 	
 	public void searchNearMe(){
 		Toast toast = Toast.makeText(getApplicationContext(), "Search Near Me", Toast.LENGTH_SHORT);

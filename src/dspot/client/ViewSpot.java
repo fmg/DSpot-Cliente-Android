@@ -270,7 +270,7 @@ public class ViewSpot extends Activity implements Runnable{
 		if(api.user.isConnected())
 			inviteDialog.show();
 		else
-			Toast.makeText(ViewSpot.this, "You must loggin first", Toast.LENGTH_SHORT).show();
+			Toast.makeText(ViewSpot.this, "You must login first", Toast.LENGTH_SHORT).show();
 	}
 	
 	
@@ -318,7 +318,7 @@ public class ViewSpot extends Activity implements Runnable{
 		if(api.user.isConnected())
 			reportDialog.show();
 		else
-			Toast.makeText(ViewSpot.this, "You must loggin first", Toast.LENGTH_SHORT).show();
+			Toast.makeText(ViewSpot.this, "You must login first", Toast.LENGTH_SHORT).show();
 		
 	}
 	
@@ -451,12 +451,12 @@ public class ViewSpot extends Activity implements Runnable{
         	
         	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
         	((TextView)findViewById(R.id.view_spot_adress)).setText(sfi.getAddress());
-        	((TextView)findViewById(R.id.view_spot_sports)).setText((sfi.getSports().toString()).replace("[", "").replace("]", ""));
+        	((TextView)findViewById(R.id.view_spot_sports)).setText("Sports: "+(sfi.getSports().toString()).replace("[", "").replace("]", ""));
         	((TextView)findViewById(R.id.view_spot_location)).setText(sfi.getLocation());
         	
         	progressDialog.dismiss();
             
-            
+            api.last_visited_spot = sfi.getId();
 
         }
     };

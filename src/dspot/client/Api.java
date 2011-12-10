@@ -53,6 +53,8 @@ public class Api extends Application {
 	static public final String FILENAME = "DSpot_data";
     static public SharedPreferences mPrefs;
     public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
+    
+    public static int last_visited_spot = 0;
 	
     
 	/////////////////////////////////////////////////////////////////////

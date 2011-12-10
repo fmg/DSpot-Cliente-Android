@@ -64,8 +64,6 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Toast toast = Toast.makeText(getApplicationContext(), spotList.get(position).getName(), Toast.LENGTH_SHORT);
-		toast.show();
 		
 		Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
 		intent.putExtra("id", spotList.get(position).getId());
