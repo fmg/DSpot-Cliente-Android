@@ -52,6 +52,7 @@ public class SearchByLocation extends ListActivity {
 		toast.show();
 		
 		Intent intent = new Intent(getApplicationContext(), ViewSpotList.class);
+		intent.putExtra("id", ((MyLocation)adapter.getItem(position)).getId());
         startActivity(intent);
         finish();
 	}

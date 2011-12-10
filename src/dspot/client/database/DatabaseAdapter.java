@@ -35,23 +35,17 @@ public class DatabaseAdapter {
 	}
 	
 	
-	public void resetAll() {
-		String resetLocations = "delete from locations";  
-		String resetFriends = "delete from friends";  
-		String resetFavourites = "delete from favourites";  
+	
+	public void resetDefinitions(){
 		String resetSports = "delete from sports";
-		String resetUser = "delete from user";
 		String resetVersion = "delete from versions";
-
+		String resetLocations = "delete from locations"; 
 		
-	 	database.execSQL(resetLocations);
-	 	database.execSQL(resetFriends);
-	 	database.execSQL(resetFavourites);
+		database.execSQL(resetLocations);
 	 	database.execSQL(resetSports);
-	 	database.execSQL(resetUser);
 	 	database.execSQL(resetVersion);
 	}
-	
+
 	
 	public void resetUserInfo(int id) {
 		
@@ -64,8 +58,7 @@ public class DatabaseAdapter {
 	 	database.execSQL(resetFavourites);
 	 	database.execSQL(resetUser);
 	}
-	
-	
+
 	
 	
 	public long createUser(int id, String username,  String name, String email) {

@@ -23,6 +23,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 
 	Api api;
 	ProgressDialog dialog;
+	int location_id;
 
 	
 	MyListAdapter mAdapter;
@@ -35,21 +36,22 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		
 		setContentView(R.layout.spot_list);
 		
+		Bundle extras = getIntent().getExtras();
+		location_id = extras.getInt("id");
+		
 		mAdapter = new MyListAdapter();
 		spotList = new ArrayList<SpotShortInfo>();
 				
 		setListAdapter(mAdapter);
 		
-		
-		
+
 		dialog = ProgressDialog.show(ViewSpotList.this, "", "Obtaining Spot list. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
         
         		
 	}
-	
-	
+
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -58,6 +60,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		toast.show();
 		
 		Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
+		intent.putExtra("id", spotList.get(position).getId());
         startActivity(intent);
 	}
 	
@@ -99,21 +102,17 @@ public class ViewSpotList extends ListActivity implements Runnable{
 
 	@Override
 	public void run() {
-		//TODO: obter coisas da bd
-				
-		SpotShortInfo s1 = new SpotShortInfo("gym 1", "algures numa ruma", 1);
-		SpotShortInfo s2 = new SpotShortInfo("gym 2", "algures numa ruma 2", 2);
-		spotList.add(s1);
-		spotList.add(s2);
+		spotList = api.getSpotsByLocation(location_id);
+	
 		
-		mAdapter.notifyDataSetChanged();
 		handler.sendMessage(handler.obtainMessage());
 		
 	}
 	
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-
+        	
+        	mAdapter.notifyDataSetChanged();
             dialog.dismiss();
         }
     };

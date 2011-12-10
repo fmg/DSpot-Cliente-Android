@@ -65,6 +65,8 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	boolean commentAreaVisible = false;
 	
+	int spot_id;
+	
 	
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,8 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		setContentView(R.layout.view_spot);
 		
+		Bundle extras = getIntent().getExtras();
+		spot_id = extras.getInt("id");
 		
 		buildInviteDialog();
 		buildReportDialog();
@@ -327,7 +331,19 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	}
 	
-	public void PopulateScreenComments(){
+	
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+
+        	progressDialog.dismiss();
+            
+            PopulateScreenComments();
+
+        }
+    };
+    
+    
+    public void PopulateScreenComments(){
 		
 		LinearLayout list = (LinearLayout)this.findViewById(R.id.view_spot_commentHolder);
 		
@@ -350,17 +366,6 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		
 	}
-	
-	
-	final Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-
-        	progressDialog.dismiss();
-            
-            PopulateScreenComments();
-
-        }
-    };
     
     
     @Override

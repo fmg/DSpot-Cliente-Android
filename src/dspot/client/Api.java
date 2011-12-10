@@ -40,7 +40,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://172.30.1.57:3000";
+	public static String IP = "http://144.64.16.203:3000";
 	
 	public static User user = new User();
 	public static int radious;
@@ -173,6 +173,110 @@ public class Api extends Application {
         return false;
 		
 	}
+	
+	
+	
+	public int updateAplicationDefinitions(){
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       try {
+       	
+           String url = IP + "/version/show";       
+           System.out.println(url);
+           
+           HttpGet httpget = new HttpGet(url);
+           
+           httpget.setHeader("Accept", "application/json");
+           httpget.setHeader("Cookie", cookie);
+           
+           response = httpClient.execute(httpget);
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+           	
+			   InputStream instream = response.getEntity().getContent();
+			   String tmp = read(instream);
+			   
+			
+			    JSONObject messageReceived = new JSONObject(tmp.toString());
+			   	System.out.println(messageReceived.toString());
+			   	
+			   	
+			   	//TODO: ver cena das versoes
+			   	
+			   	JSONArray cities = messageReceived.getJSONArray("localidades");
+			   	createLocations(cities);
+			   	
+			   	JSONArray sports = messageReceived.getJSONArray("sports");
+			   	createSports(sports);
+			   	
+			   	
+           }
+       } catch (IOException ex) {
+       	ex.printStackTrace();    	
+       } catch (IllegalStateException e) {
+		e.printStackTrace();
+   		} catch (JSONException e) {
+   			e.printStackTrace();
+   		}
+		
+		return 0;
+	}
+	
+	
+	
+	public ArrayList<SpotShortInfo> getSpotsByLocation(int id){
+		
+		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       try {
+       	
+           String url = IP + "/spot_by_city?id="+id;       
+           System.out.println(url);
+           
+           HttpGet httpget = new HttpGet(url);
+           
+           httpget.setHeader("Accept", "application/json");
+           httpget.setHeader("Cookie", cookie);
+           
+           response = httpClient.execute(httpget);
+           
+           System.out.println(response.getStatusLine().getStatusCode());
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+        	   
+			   InputStream instream = response.getEntity().getContent();
+			   String tmp = read(instream);
+			
+			    JSONArray messageReceived = new JSONArray(tmp.toString());
+			   	System.out.println(messageReceived.toString());
+			   	
+			   	for(int i = 0; i<messageReceived.length(); i++){
+			   		JSONObject spot = messageReceived.getJSONObject(i);
+			   		
+			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"));
+			   		
+			   		spotlist.add(ssi);
+			   		
+			   	}
+	   	
+           }
+       } catch (IOException ex) {
+       	ex.printStackTrace();    	
+       } catch (IllegalStateException e) {
+		e.printStackTrace();
+   		} catch (JSONException e) {
+   			e.printStackTrace();
+   		}
+		
+		return spotlist;
+	}
+	
+	
+	
 
 	
 	public int registrate(String username, String pass, String nome, String email,String pictureURL){
@@ -297,57 +401,20 @@ public class Api extends Application {
 	/////////////////////////////////////////////////////////////////////
 	//					CHAMADAS A BD								////
    /////////////////////////////////////////////////////////////////////
-
 	
-	public void populateBatabase(){
+	public void resetDefinitions(){
 		dbAdapter.open();
-		
-		/*
-		dbAdapter.createFriend(1, "Fernando",2);
-		dbAdapter.createFriend(2, "André",2);
-		dbAdapter.createFriend(3, "Nuno",2);
-		dbAdapter.createFriend(4, "Gaspar",2);
-		
-		dbAdapter.createFriend(5, "Claudio",2);
-		dbAdapter.createFriend(6, "Jorge",2);
-		dbAdapter.createFriend(7, "Daniel",2);
-		dbAdapter.createFriend(8, "Yuno",2);
-		
-		dbAdapter.createFriend(9, "Diogo",2);
-		dbAdapter.createFriend(10, "José",2);
-		dbAdapter.createFriend(11, "Filipe",2);
-		dbAdapter.createFriend(12, "Francisco",2);
-		*/
-		
-		
-		dbAdapter.createLocation(1, "Porto");
-		dbAdapter.createLocation(2, "Lisboa");
-		dbAdapter.createLocation(3, "Viseu");
-		dbAdapter.createLocation(4, "Vila Real");
-		
-		
-		dbAdapter.createSport(1, "Soccer");
-		dbAdapter.createSport(2, "Swimming");
-		dbAdapter.createSport(3, "FootBall");
-		dbAdapter.createSport(4, "BasketBall");
-
+		dbAdapter.resetDefinitions();
 		dbAdapter.close();
 	}
 	
-	public void resetDatabase(){
-		dbAdapter.open();
-		dbAdapter.resetAll();
-		dbAdapter.close();
-	}
-	
+
 	public void resetUserInfo(){
 		dbAdapter.open();
 		dbAdapter.resetUserInfo(user.getId());
 		dbAdapter.close();
 	}
-	
-	
-	
+
 	
 	private void createUserInfo(int id, String username, String name, String email, String photo){
 		dbAdapter.open();
@@ -366,6 +433,24 @@ public class Api extends Application {
 	
 	
 /////////////////////////////////////////////////////////////////////
+	
+	private void createSports(JSONArray sports){
+		dbAdapter.open();
+		
+		for(int i = 0; i < sports.length(); i++){
+			JSONObject sport;
+			try {
+				sport = sports.getJSONObject(i);
+				dbAdapter.createSport(sport.getInt("id"), sport.getString("name"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		dbAdapter.close();
+	}
+	
+	
 	
 	public ArrayList<Sport> getSports(){
 		
@@ -386,6 +471,24 @@ public class Api extends Application {
 	
 	
 	/////////////////////////////////////////////////////////////////////
+	
+	
+	private void createLocations(JSONArray cities){
+		dbAdapter.open();
+		
+		for(int i = 0; i < cities.length(); i++){
+			JSONObject city;
+			try {
+				city = cities.getJSONObject(i);
+				dbAdapter.createLocation(city.getInt("id"), city.getString("name"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		dbAdapter.close();
+	}
+	
 	
 	public ArrayList<MyLocation> getLocations(){
 		
