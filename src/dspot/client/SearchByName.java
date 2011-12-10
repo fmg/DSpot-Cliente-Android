@@ -2,8 +2,6 @@ package dspot.client;
 
 import java.util.ArrayList;
 
-import dspot.client.ViewSpotList.MyListAdapter;
-import dspot.utils.MyLocation;
 import dspot.utils.SpotShortInfo;
 import android.app.ListActivity;
 import android.content.Context;
@@ -13,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;

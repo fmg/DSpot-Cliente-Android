@@ -364,18 +364,15 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	public void callAction(){
-		if(sfi.getPhoneNumber()==null){
+		
+		if(sfi.getPhoneNumber().equalsIgnoreCase("null")){
 			Toast toast = Toast.makeText(getApplicationContext(), "Phone number not provided", Toast.LENGTH_SHORT);
     		toast.show();
 		}else{
-			System.out.println(sfi.getPhoneNumber());
-			/*
 			Intent intent = new Intent(Intent.ACTION_CALL);
 	        intent.setData(Uri.parse("tel:"+sfi.getPhoneNumber()));
 	        startActivity(intent);
-	        */
-	        
-		}
+		} 
 	}
 
 	

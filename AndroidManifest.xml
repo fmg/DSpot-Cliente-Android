@@ -20,14 +20,15 @@
         <activity
             android:label="@string/app_name"
             android:name=".DSpotActivity"
-            android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden">
+            android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden"
+            android:configChanges="orientation|keyboardHidden">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="Registo" android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden"></activity>
+        <activity android:name="Registo" android:theme="@android:style/Theme.NoTitleBar" android:windowSoftInputMode="stateHidden" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name="Inicial" android:theme="@android:style/Theme.NoTitleBar" android:configChanges="orientation"></activity>
         <activity android:name="MeTab"></activity>
         <activity android:name="FavouritesTab"></activity>
