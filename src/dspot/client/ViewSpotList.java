@@ -28,6 +28,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	
 	MyListAdapter mAdapter;
 	ArrayList<SpotShortInfo> spotList;
+	ArrayList<Integer> spotList_ids;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +40,10 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		Bundle extras = getIntent().getExtras();
 		location_id = extras.getInt("id");
 		
+		
 		mAdapter = new MyListAdapter();
 		spotList = new ArrayList<SpotShortInfo>();
+		spotList_ids = new ArrayList<Integer>();
 				
 		setListAdapter(mAdapter);
 		
@@ -61,6 +64,8 @@ public class ViewSpotList extends ListActivity implements Runnable{
 		
 		Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
 		intent.putExtra("id", spotList.get(position).getId());
+		intent.putExtra("index", position);
+		intent.putIntegerArrayListExtra("spotList_ids", spotList_ids);
         startActivity(intent);
 	}
 	
@@ -103,7 +108,10 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	@Override
 	public void run() {
 		spotList = api.getSpotsByLocation(location_id);
-	
+		
+		for(SpotShortInfo ssi: spotList){
+			spotList_ids.add(ssi.getId());
+		}
 		
 		handler.sendMessage(handler.obtainMessage());
 		

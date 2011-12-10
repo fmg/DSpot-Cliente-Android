@@ -40,7 +40,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://144.64.16.203:3000";
+	public static String IP = "http://95.92.112.141:3000";
 	
 	public static User user = new User();
 	public static int radious;

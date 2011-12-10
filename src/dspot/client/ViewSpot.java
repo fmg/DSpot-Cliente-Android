@@ -6,7 +6,6 @@ import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
-import dspot.client.ViewSpotList.MyListAdapter;
 import dspot.utils.Comment;
 import dspot.utils.User;
 import android.app.Activity;
@@ -17,20 +16,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.database.Cursor;
-import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,7 +42,6 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,12 +57,20 @@ public class ViewSpot extends Activity implements Runnable{
 	View inviteDialogLayout;
 	MyCustomAdapter inviteDialogAdapter;
 	
-	MyListAdapter mAdapter;
-	ArrayList<Comment> commentList;
 	
 	boolean commentAreaVisible = false;
+	ArrayList<Comment> commentList;
+	
 	
 	int spot_id;
+	ArrayList<Integer> spotList_ids;
+	int index;
+
+	private static final int SWIPE_MIN_DISTANCE = 100;
+	private static final int SWIPE_MAX_OFF_PATH = 150;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 150;
+	private GestureDetector gestureDetector;
+	View.OnTouchListener gestureListener;
 	
 	
 	
@@ -78,6 +83,11 @@ public class ViewSpot extends Activity implements Runnable{
 		
 		Bundle extras = getIntent().getExtras();
 		spot_id = extras.getInt("id");
+		spotList_ids = extras.getIntegerArrayList("spotList_ids");
+		index = extras.getInt("index");
+		System.out.println(spotList_ids.toString()+ " -> " + index);
+		
+		
 		
 		buildInviteDialog();
 		buildReportDialog();
@@ -180,12 +190,30 @@ public class ViewSpot extends Activity implements Runnable{
 			}
 		});
 	    
+	    
+	    
+	    gestureDetector = new GestureDetector(new MyGestureDetector());
+        gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (gestureDetector.onTouchEvent(event)) {
+                    return true;
+                }
+                return false;
+            }
+        };
+	    
+	    
 	    progressDialog = ProgressDialog.show(ViewSpot.this, "", "Obtaining information of the Spot. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
         
 	}
 	
+	@Override
+  	public boolean dispatchTouchEvent(MotionEvent ev){
+  		super.dispatchTouchEvent(ev);
+  		return gestureDetector.onTouchEvent(ev);
+  	}
 	
 	
 	public void buildInviteDialog(){
@@ -564,6 +592,57 @@ public class ViewSpot extends Activity implements Runnable{
 		        return imageView;
 		    }
 	}
+    
+    
+    class MyGestureDetector extends SimpleOnGestureListener {
+        
+		@Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                    return false;
+                // right to left swipe
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	System.out.println("right to left");                	
+                	
+                	if(index +1 < spotList_ids.size()){
+	                	Intent intent = new Intent(getApplicationContext(),ViewSpot.class);
+	                	intent.putExtra("id", spotList_ids.get(index+1));
+	            		intent.putExtra("index", index+1);
+	            		intent.putIntegerArrayListExtra("spotList_ids", spotList_ids);
+	                    startActivity(intent);                   
+	                    overridePendingTransition  (R.anim.right_slide_in, R.anim.left_slide_out);
+	                    finish();
+                	}else{
+                		Toast toast = Toast.makeText(getApplicationContext(), "No more spots to show", Toast.LENGTH_SHORT);
+    	        		toast.show();
+                	}
+                    
+          
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	System.out.println("left to right");  
+                	
+                	if(index -1 >= 0){
+	                	Intent intent = new Intent(getApplicationContext(),ViewSpot.class);
+	                	intent.putExtra("id", spotList_ids.get(index-1));
+	            		intent.putExtra("index", index-1);
+	            		intent.putIntegerArrayListExtra("spotList_ids", spotList_ids);
+	                    startActivity(intent);
+	                    overridePendingTransition  (R.anim.left_slide_in, R.anim.right_slide_out);
+	                    
+	                    finish();
+                	}else{
+                		Toast toast = Toast.makeText(getApplicationContext(), "No more spots to show", Toast.LENGTH_SHORT);
+    	        		toast.show();
+                	}
+                    
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+    }
     
 }
 

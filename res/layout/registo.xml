@@ -85,7 +85,7 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/tableLayout1"
             android:text="@string/register"
-            android:background="@drawable/blue_button" 
+            android:background="@drawable/blue_button_selector" 
             android:layout_marginRight="5dp"
             android:textStyle="bold"
         	android:textColor="#FFFFFFFF"
