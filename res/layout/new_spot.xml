@@ -62,8 +62,7 @@
 	                android:layout_height="wrap_content"
 	                android:inputType="text" >
 
-	                <requestFocus />
-	            </EditText>
+                </EditText>
 
 	        </TableRow>
 

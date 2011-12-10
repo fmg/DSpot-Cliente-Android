@@ -36,11 +36,6 @@ public class DSpotActivity extends Activity implements Runnable {
         
         api.dbAdapter = new DatabaseAdapter(getApplicationContext());
         
-        
-        //TODO: apagar
-        api.resetDefinitions();
-
-        
         (findViewById(R.id.login_loginButton)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -84,18 +79,29 @@ public class DSpotActivity extends Activity implements Runnable {
     
     @Override
 	public void run() {
-    	
-    	api.updateAplicationDefinitions();
-    	
-		
-    	if(!guest_mode){
-			EditText user = (EditText) findViewById(R.id.login_username); 
-			EditText pass = (EditText) findViewById(R.id.login_password); 
+    	 //TODO: apagar
+        api.resetDefinitions();
+        
+        try {
+        	
+	    	int updated = api.updateApplicationDefinitions();
+	    	if(updated != 0){
+	    		
+	    		dialog.dismiss();
+	    		
+				Looper.prepare();
+    			Toast toast = Toast.makeText(getApplicationContext(), "Error updating application definitions, try again...", Toast.LENGTH_SHORT);
+        		toast.show();
+    			Looper.loop();
+    			return;
+	    	}
+	    	
 			
-			int success;
-			try {
-				
-				success = api.login(user.getText().toString(), pass.getText().toString());
+	    	if(!guest_mode){
+				EditText user = (EditText) findViewById(R.id.login_username); 
+				EditText pass = (EditText) findViewById(R.id.login_password); 
+
+				 int success = api.login(user.getText().toString(), pass.getText().toString());
 				
 				if(success == -2){
 					
@@ -142,46 +148,48 @@ public class DSpotActivity extends Activity implements Runnable {
 	    			}
 	    		}
 				
-			} catch (ClientProtocolException e) {
 				
-				dialog.dismiss();
-				
-				Looper.prepare();
-				Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server", Toast.LENGTH_SHORT);
-	    		toast.show();
-	    		Looper.loop();
-	    		
-	    		e.printStackTrace();
-	    		
-			} catch (JSONException e) {
-				
-				dialog.dismiss();
-	
-				Looper.prepare();
-				Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server", Toast.LENGTH_SHORT);
-	    		toast.show();
-	    		Looper.loop();
-				
-				e.printStackTrace();
-				
-			} catch (IOException e) {
-				
-				dialog.dismiss();
-	
-				Looper.prepare();
-				Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server", Toast.LENGTH_SHORT);
-	    		toast.show();
-	    		Looper.loop();
-				
-				e.printStackTrace();
-			}
-    	}else{
-    		api.user.setConnected(false);
-    		Intent intent = new Intent(getApplicationContext(), Inicial.class);
-            startActivity(intent);
-            finish();
-            dialog.dismiss();	
-    	}
+	    	}else{
+	    		api.user.setConnected(false);
+	    		Intent intent = new Intent(getApplicationContext(), Inicial.class);
+	            startActivity(intent);
+	            finish();
+	            dialog.dismiss();	
+	    	}
+    	
+        } catch (ClientProtocolException e) {
+			
+			dialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+    		
+    		e.printStackTrace();
+    		
+		} catch (JSONException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+			
+			e.printStackTrace();
+			
+		} catch (IOException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+			
+			e.printStackTrace();
+		}
 		
 	}
     

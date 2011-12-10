@@ -38,7 +38,6 @@ public class ViewSpotMap extends MapActivity {
 		  double lat = bundle.getDouble("lat");
 		  double lon = bundle.getDouble("lon");
 		  String name = bundle.getString("name");
-		  String address = bundle.getString("address");
 
 		  
 		  System.out.println(lat + " " + lon);
@@ -53,7 +52,7 @@ public class ViewSpotMap extends MapActivity {
 		  MyItemizedOverlay itemizedoverlay = new MyItemizedOverlay(drawable);
 		  
 		  GeoPoint point = new GeoPoint((int)(lat*1e6),(int)(lon*1e6));
-		  OverlayItem overlayitem = new OverlayItem(point, name, address);
+		  OverlayItem overlayitem = new OverlayItem(point, name, null);
 		  
 		  itemizedoverlay.addOverlay(overlayitem);
 		  mapOverlays.add(itemizedoverlay);

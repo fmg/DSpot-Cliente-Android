@@ -1,12 +1,19 @@
 package dspot.client;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Facebook.DialogListener;
 
 import dspot.utils.Comment;
+import dspot.utils.SpotFullInfo;
 import dspot.utils.User;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,9 +23,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -46,7 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewSpot extends Activity implements Runnable{
-
+	
 	Api api;
 	ProgressDialog progressDialog;
 	
@@ -58,6 +68,9 @@ public class ViewSpot extends Activity implements Runnable{
 	MyCustomAdapter inviteDialogAdapter;
 	
 	
+	ImageAdapter imageAdapter;
+	
+	
 	boolean commentAreaVisible = false;
 	ArrayList<Comment> commentList;
 	
@@ -65,10 +78,13 @@ public class ViewSpot extends Activity implements Runnable{
 	int spot_id;
 	ArrayList<Integer> spotList_ids;
 	int index;
+	
+	
+	SpotFullInfo sfi;
 
-	private static final int SWIPE_MIN_DISTANCE = 100;
-	private static final int SWIPE_MAX_OFF_PATH = 150;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 150;
+	private static final int SWIPE_MIN_DISTANCE = 300;
+	private static final int SWIPE_MAX_OFF_PATH = 350;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 300;
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
 	
@@ -93,10 +109,15 @@ public class ViewSpot extends Activity implements Runnable{
 		buildReportDialog();
 		
 		Gallery gallery = (Gallery) findViewById(R.id.gallery1);
-	    gallery.setAdapter(new ImageAdapter(this));
+		imageAdapter = new ImageAdapter(this);
+	    gallery.setAdapter(imageAdapter);
 
+	    commentList = new ArrayList<Comment>();
 	    
 	    ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
+	    if(!api.user.isConnected()){
+	    	((RatingBar)findViewById(R.id.view_spot_rateSpot)).setVisibility(View.GONE);
+	    }
 	    
 	    
 	    ((RatingBar)findViewById(R.id.view_spot_rateSpot)).setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
@@ -132,17 +153,8 @@ public class ViewSpot extends Activity implements Runnable{
 			public void onClick(View v) {
 				sendCommentAction();
 			}
-		});
-	    /*
-	    gallery.setOnItemClickListener(new OnItemClickListener() {
-	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	            Toast.makeText(ViewSpot.this, "" + position, Toast.LENGTH_SHORT).show();
-	        }
-	    });
-	  	*/
-	    
-	    
-	    commentList = new ArrayList<Comment>();
+		}); 
+	   
 	    
 	    ((ImageView)findViewById(R.id.view_spot_actionCall)).setOnClickListener(new OnClickListener() {
 			@Override
@@ -255,7 +267,10 @@ public class ViewSpot extends Activity implements Runnable{
 
 	
 	public void inviteAction(){
-		inviteDialog.show();
+		if(api.user.isConnected())
+			inviteDialog.show();
+		else
+			Toast.makeText(ViewSpot.this, "You must loggin first", Toast.LENGTH_SHORT).show();
 	}
 	
 	
@@ -300,7 +315,11 @@ public class ViewSpot extends Activity implements Runnable{
 	}
 	
 	public void reportAction(){
-		reportDialog.show();
+		if(api.user.isConnected())
+			reportDialog.show();
+		else
+			Toast.makeText(ViewSpot.this, "You must loggin first", Toast.LENGTH_SHORT).show();
+		
 	}
 	
 	
@@ -314,48 +333,107 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	public void navigationAction(){
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=41.178767,-8.598862"));
-		startActivity(intent);
+		if(sfi.getLatitude()== 0.0 && sfi.getLongitude() == 0.0){
+			Toast toast = Toast.makeText(getApplicationContext(), "Coordenates not provided", Toast.LENGTH_SHORT);
+    		toast.show();
+		}else{
+			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+					Uri.parse("google.navigation:q="+sfi.getLatitude()+","+sfi.getLongitude()));
+			startActivity(intent);
+		}
+		
+		
 	}
 	
 	
 	public void mapAction(){
-		Intent intent = new Intent(getApplicationContext(), ViewSpotMap.class);
-		Bundle b = new Bundle();
-		b.putDouble("lat", 41.178767);
-		b.putDouble("lon", -8.598862);
-		b.putString("name", "lalalaalla");
-		b.putString("address", "rua lalal");
-		intent.putExtra("location",b);
-        startActivity(intent);
+		
+		if(sfi.getLatitude()== 0.0 && sfi.getLongitude() == 0.0){
+			Toast toast = Toast.makeText(getApplicationContext(), "Coordenates not provided", Toast.LENGTH_SHORT);
+    		toast.show();
+		}else{
+			Intent intent = new Intent(getApplicationContext(), ViewSpotMap.class);
+			Bundle b = new Bundle();
+			b.putDouble("lat", sfi.getLatitude());
+			b.putDouble("lon", sfi.getLongitude());
+			b.putString("name", sfi.getName());
+			intent.putExtra("location",b);
+	        startActivity(intent);
+		}
 	}
 	
 	
 	public void callAction(){
-		Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:*#100#"));
-        startActivity(intent);
+		if(sfi.getPhoneNumber()==null){
+			Toast toast = Toast.makeText(getApplicationContext(), "Phone number not provided", Toast.LENGTH_SHORT);
+    		toast.show();
+		}else{
+			System.out.println(sfi.getPhoneNumber());
+			/*
+			Intent intent = new Intent(Intent.ACTION_CALL);
+	        intent.setData(Uri.parse("tel:"+sfi.getPhoneNumber()));
+	        startActivity(intent);
+	        */
+	        
+		}
 	}
 
 	
 
-
-
 	@Override
 	public void run() {
 		
-		//TODO:buscar as coisas ao site
+		try {
+			sfi = api.getSpotsFullInfo(spot_id);
+			imageAdapter.setImages(sfi.getPhotosURL());
+			commentList = sfi.getComments();
+			
+			handler.sendMessage(handler.obtainMessage());
+			
+		} catch (ClientProtocolException e) {
+			
+			progressDialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+    		finish();
+    		Looper.loop();
 		
-		Comment c1 = new Comment("weird", "excelente!!!!", 5);
-		Comment c2 = new Comment("al", "podia ser melhor...", 3);
-		Comment c3 = new Comment("Yankovic", "tem tudo tudo tudo!!!!", 5);
+    		
+		} catch (JSONException e) {
+			
+			progressDialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();
+    		Looper.loop();
+			
+			
+			
+		} catch (IOException e) {
+			
+			progressDialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();
+    		Looper.loop();
+			
+			
+		}
 		
-		commentList.add(c1);
-		commentList.add(c2);
-		commentList.add(c3);
 		
 		
-		handler.sendMessage(handler.obtainMessage());
 	
 	}
 	
@@ -363,12 +441,26 @@ public class ViewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
+        	imageAdapter.notifyDataSetChanged();
+        	
+        	
+        	PopulateScreenComments();
+        	
+        	
+        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
+        	
+        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
+        	((TextView)findViewById(R.id.view_spot_adress)).setText(sfi.getAddress());
+        	((TextView)findViewById(R.id.view_spot_sports)).setText((sfi.getSports().toString()).replace("[", "").replace("]", ""));
+        	((TextView)findViewById(R.id.view_spot_location)).setText(sfi.getLocation());
+        	
         	progressDialog.dismiss();
             
-            PopulateScreenComments();
+            
 
         }
     };
+    
     
     
     public void PopulateScreenComments(){
@@ -396,6 +488,7 @@ public class ViewSpot extends Activity implements Runnable{
 	}
     
     
+    
     @Override
 	public void onBackPressed() {
     	
@@ -407,8 +500,7 @@ public class ViewSpot extends Activity implements Runnable{
 	}
     
     
-    
-    
+       
     public void facebookShareAction(){
     	
     	api.mPrefs = getPreferences(MODE_PRIVATE);
@@ -467,9 +559,7 @@ public class ViewSpot extends Activity implements Runnable{
     }
     
     
-    
-
-    
+      
     public class PostDialogListener extends BaseDialogListener {
         public void onComplete(Bundle values) {
         	final String postId = values.getString("post_id");     
@@ -550,19 +640,32 @@ public class ViewSpot extends Activity implements Runnable{
 		int mGalleryItemBackground;
 	    private Context mContext;
 
-	    private Integer[] mImageIds = {
-	            R.drawable.sample_1,
-	            R.drawable.sample_2,
-	            R.drawable.sample_3,
-	            R.drawable.sample_4,
-	            R.drawable.sample_5,
-	            R.drawable.sample_6,
-	            R.drawable.sample_7
-	    };
+	    private ArrayList<Bitmap> photos; 
 		
+	    public void setImages(ArrayList<String> photosURL){
+	    	
+			
+			for(int i = 0; i < photosURL.size(); i++){
+				try {
+					System.out.println(photosURL.size()+" VAI FAZER DOWNLOAD DA IMAGEM -> " + photosURL.get(i));
+					
+					URL newurl = new URL(photosURL.get(i));
+					Bitmap mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());	
+					photos.add(mIcon_val.copy(mIcon_val.getConfig(), false));
+					
+					System.out.println(i +" Download Feito -> " + photosURL.get(i));
+				} catch (Exception e) {
+					e.printStackTrace();
+					
+				}
+			}	
+			
+	    }
+	    
 		
 		public ImageAdapter(Context c) {
 	        mContext = c;
+	        photos = new ArrayList<Bitmap>();
 	        TypedArray attr = mContext.obtainStyledAttributes(R.styleable.HelloGallery);
 	        mGalleryItemBackground = attr.getResourceId(
 	                R.styleable.HelloGallery_android_galleryItemBackground, 0);
@@ -570,27 +673,27 @@ public class ViewSpot extends Activity implements Runnable{
 	    }
 		
 		 public int getCount() {
-		        return mImageIds.length;
-		    }
+		        return photos.size();
+	    }
 
-		    public Object getItem(int position) {
-		        return position;
-		    }
+	    public Object getItem(int position) {
+	        return position;
+	    }
 
-		    public long getItemId(int position) {
-		        return position;
-		    }
+	    public long getItemId(int position) {
+	        return position;
+	    }
 
-		    public View getView(int position, View convertView, ViewGroup parent) {
-		        ImageView imageView = new ImageView(mContext);
-
-		        imageView.setImageResource(mImageIds[position]);
-		        imageView.setLayoutParams(new Gallery.LayoutParams(350, 250));
-		        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-		        imageView.setBackgroundResource(mGalleryItemBackground);
-
-		        return imageView;
-		    }
+	    public View getView(int position, View convertView, ViewGroup parent) {
+	    	
+			ImageView imageView = new ImageView(mContext);   	
+			imageView.setImageBitmap(photos.get(position));
+		    imageView.setLayoutParams(new Gallery.LayoutParams(350, 250));
+		    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+		    imageView.setBackgroundResource(mGalleryItemBackground);
+	
+	        return imageView;
+	    }
 	}
     
     

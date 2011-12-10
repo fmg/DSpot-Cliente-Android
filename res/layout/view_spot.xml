@@ -55,21 +55,32 @@
             android:layout_marginTop="15dp"
              android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Adress" />
-
+        
+        
         <TextView
-            android:id="@+id/view_spot_number"
+            android:id="@+id/view_spot_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/view_spot_adress"
             android:layout_marginTop="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Phone Number" />
+            android:text="Location" />
+        
+
+        <TextView
+            android:id="@+id/view_spot_sports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_spot_location"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Sports" />
 
         <TableLayout
             android:id="@+id/tableLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/view_spot_number"
+            android:layout_below="@+id/view_spot_sports"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp" android:stretchColumns="0,1,2">
 
@@ -236,8 +247,16 @@
                 android:id="@+id/view_spot_sendComment"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/view_spot_commentReview"
                 android:layout_alignParentRight="true"
-                android:text="Send" android:layout_below="@id/textView7" android:layout_marginTop="10dp"/>
+                android:layout_below="@id/textView7"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/blue_button_selector"
+                android:text="Send"
+                android:textColor="#FFFFFFFF"
+                android:textSize="16dp"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/view_spot_commentReview"

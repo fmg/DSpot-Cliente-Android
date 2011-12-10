@@ -32,7 +32,7 @@ public class Inicial extends TabActivity{
 	    	
 	    	this.addTab(tabHost,  SearchTab.class, "Search",R.drawable.ic_tab_search_selected);  	
 	    	this.addTab(tabHost,  MapTab.class, "Map",R.drawable.ic_tab_map_selected);
-	    	this.addTab(tabHost,  FavouritesTab.class, "Favourites",R.drawable.ic_tab_favourites_selected);
+	    	this.addTab(tabHost,  FavouritesTab.class, "Starred",R.drawable.ic_tab_favourites_selected);
 	    	this.addTab(tabHost,  MeTab.class, "Me",R.drawable.ic_tab_me_selected);
 
 	    } 

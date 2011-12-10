@@ -1,6 +1,10 @@
 package dspot.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import dspot.utils.SpotShortInfo;
 
@@ -10,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,14 +112,61 @@ public class ViewSpotList extends ListActivity implements Runnable{
 
 	@Override
 	public void run() {
-		spotList = api.getSpotsByLocation(location_id);
+		try {
+			
+			spotList = api.getSpotsByLocation(location_id);
+			for(SpotShortInfo ssi: spotList){
+				spotList_ids.add(ssi.getId());
+			}
+			
+			handler.sendMessage(handler.obtainMessage());
+			
+			
 		
-		for(SpotShortInfo ssi: spotList){
-			spotList_ids.add(ssi.getId());
+		} catch (ClientProtocolException e) {
+			
+			dialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+    		finish();
+    		
+    		Looper.loop();
+    		
+    		
+    		
+		} catch (JSONException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();
+    		Looper.loop();
+			
+			
+			
+		} catch (IOException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();	
+    		Looper.loop();
+			
+			
 		}
-		
-		handler.sendMessage(handler.obtainMessage());
-		
+
 	}
 	
 	final Handler handler = new Handler() {
@@ -122,6 +174,11 @@ public class ViewSpotList extends ListActivity implements Runnable{
         	
         	mAdapter.notifyDataSetChanged();
             dialog.dismiss();
+            
+            if(spotList.size() == 0){
+            	Toast toast = Toast.makeText(getApplicationContext(), "No spots in your area, sry... If you find a good spot to practice any sport, feel free to add", Toast.LENGTH_LONG);
+        		toast.show();	
+            }
         }
     };
 	

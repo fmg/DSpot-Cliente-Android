@@ -27,8 +27,10 @@ import org.json.JSONObject;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 
+import dspot.utils.Comment;
 import dspot.utils.MyLocation;
 import dspot.utils.Sport;
+import dspot.utils.SpotFullInfo;
 import dspot.utils.SpotShortInfo;
 import dspot.utils.User;
 
@@ -107,68 +109,58 @@ public class Api extends Application {
 	
 	
 	
-	public boolean getProfile(){
+	public boolean getProfile() throws ClientProtocolException, IOException, JSONException{
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		HttpResponse response=null;
-        try {
         	
-            String url = IP + "/users/profile";       
-            System.out.println(url);
-            
-            HttpGet httpget = new HttpGet(url);
-            
-            httpget.setHeader("Accept", "application/json");
-            httpget.setHeader("Cookie", cookie);
-            
-            response = httpClient.execute(httpget);
-            
-            if(response.getStatusLine().getStatusCode() == 200){
-            	
-                InputStream instream = response.getEntity().getContent();
-                String tmp = read(instream);
-                
-            	
-    	        JSONObject messageReceived = new JSONObject(tmp.toString());
-            	System.out.println(messageReceived.toString());
-            	
-            	//guardar os dados comuns
-            	user.setName(messageReceived.getString("name"));
-            	user.setEmail(messageReceived.getString("email"));
-            	user.setId(messageReceived.getInt("id"));
-            	user.setPhoto(messageReceived.getString("avatar_file_name"));
-            	
-            	//elimina tudo do user
-            	resetUserInfo();
-            	
-            	createUserInfo(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getPhoto());
-            	
-            	//cria amigos
-            	JSONArray friends = messageReceived.getJSONArray("friends");
-            	createFriends(friends,user.getId());
-            	
-            	
-            	//cria favoritos
-            	JSONArray favourites = messageReceived.getJSONArray("spot_favs");
-            	createFavourites(favourites,user.getId());
-            	
-            	//TODO:compor url da photo
-            	//String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/avatar_file_name
-            	
-            	
-      	
-            	return true;
-            }	
-            
-        } catch (IOException ex) {
-        	ex.printStackTrace();    	
-        } catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+        String url = IP + "/users/profile";       
+        System.out.println(url);
         
+        HttpGet httpget = new HttpGet(url);
+        
+        httpget.setHeader("Accept", "application/json");
+        httpget.setHeader("Cookie", cookie);
+        
+        response = httpClient.execute(httpget);
+        
+        if(response.getStatusLine().getStatusCode() == 200){
+        	
+            InputStream instream = response.getEntity().getContent();
+            String tmp = read(instream);
+            
+        	
+	        JSONObject messageReceived = new JSONObject(tmp.toString());
+        	System.out.println(messageReceived.toString());
+        	
+        	//guardar os dados comuns
+        	user.setName(messageReceived.getString("name"));
+        	user.setEmail(messageReceived.getString("email"));
+        	user.setId(messageReceived.getInt("id"));
+        	user.setPhoto(messageReceived.getString("avatar_file_name"));
+        	
+        	//elimina tudo do user
+        	resetUserInfo();
+        	
+        	createUserInfo(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getPhoto());
+        	
+        	//cria amigos
+        	JSONArray friends = messageReceived.getJSONArray("friends");
+        	createFriends(friends,user.getId());
+        	
+        	
+        	//cria favoritos
+        	JSONArray favourites = messageReceived.getJSONArray("spot_favs");
+        	createFavourites(favourites,user.getId());
+        	
+        	//TODO:compor url da photo
+        	//String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/avatar_file_name
+        	
+        	
+  	
+        	return true;
+        }	
         
         return false;
 		
@@ -176,11 +168,11 @@ public class Api extends Application {
 	
 	
 	
-	public int updateAplicationDefinitions(){
+	public int updateApplicationDefinitions() throws ClientProtocolException, IOException, JSONException{
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		HttpResponse response=null;
-       try {
+       
        	
            String url = IP + "/version/show";       
            System.out.println(url);
@@ -212,27 +204,21 @@ public class Api extends Application {
 			   	
 			   	
            }
-       } catch (IOException ex) {
-       	ex.printStackTrace();    	
-       } catch (IllegalStateException e) {
-		e.printStackTrace();
-   		} catch (JSONException e) {
-   			e.printStackTrace();
-   		}
+       
 		
 		return 0;
 	}
 	
 	
 	
-	public ArrayList<SpotShortInfo> getSpotsByLocation(int id){
+	public ArrayList<SpotShortInfo> getSpotsByLocation(int id) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		HttpResponse response=null;
-       try {
+       
        	
            String url = IP + "/spot_by_city?id="+id;       
            System.out.println(url);
@@ -244,7 +230,6 @@ public class Api extends Application {
            
            response = httpClient.execute(httpget);
            
-           System.out.println(response.getStatusLine().getStatusCode());
            
            if(response.getStatusLine().getStatusCode() == 200){
         	   
@@ -264,15 +249,83 @@ public class Api extends Application {
 			   	}
 	   	
            }
-       } catch (IOException ex) {
-       	ex.printStackTrace();    	
-       } catch (IllegalStateException e) {
-		e.printStackTrace();
-   		} catch (JSONException e) {
-   			e.printStackTrace();
-   		}
 		
 		return spotlist;
+	}
+	
+	
+	
+	
+	
+	public SpotFullInfo getSpotsFullInfo(int id) throws ClientProtocolException, IOException, JSONException{
+		
+		SpotFullInfo spot = new SpotFullInfo();
+				
+		final HttpClient httpClient =  new DefaultHttpClient();
+		HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+		       
+		       	
+		String url = IP + "/spots/"+id;       
+		System.out.println(url);
+		   
+		HttpGet httpget = new HttpGet(url);
+		   
+		httpget.setHeader("Accept", "application/json");
+		httpget.setHeader("Cookie", cookie);
+		   
+		response = httpClient.execute(httpget);
+		   
+		System.out.println(response.getStatusLine().getStatusCode());
+		   
+		if(response.getStatusLine().getStatusCode() == 200){
+			   
+			InputStream instream = response.getEntity().getContent();
+			String tmp = read(instream);
+				
+			JSONObject messageReceived = new JSONObject(tmp.toString());
+			System.out.println(messageReceived.toString());
+			
+			
+			JSONArray pictures = messageReceived.getJSONArray("pictures");
+			for(int i = 0; i < pictures.length(); i++){
+				String photo = IP + "/system/pictures/"+
+								(pictures.getJSONObject(i)).getInt("id")+
+								"/medium/" + 
+								(pictures.getJSONObject(i)).getString("picture_file_name");
+								
+				spot.addPhoto(photo);
+			}
+			
+			
+			JSONArray sports = messageReceived.getJSONArray("sports");
+			for(int i = 0; i < sports.length(); i++){
+				spot.addSports((sports.getJSONObject(i)).getString("name"));
+			}
+			
+			JSONArray comments = messageReceived.getJSONArray("comments10");
+			for(int i = 0; i < comments.length(); i++){
+				Comment c = new Comment((comments.getJSONObject(i)).getString("name"),
+										(comments.getJSONObject(i)).getString("body"),
+										(comments.getJSONObject(i)).getInt("value"));
+				
+				spot.addComment(c);
+			}
+			
+			spot.setId(messageReceived.getInt("id"));
+			spot.setName(messageReceived.getString("name"));
+			spot.setAddress(messageReceived.getString("address"));
+			spot.setLatitude(messageReceived.getDouble("latitude"));
+			spot.setLongitude(messageReceived.getDouble("longitude"));
+			spot.setLocation(((JSONObject)messageReceived.get("localidade")).getString("name"));
+			spot.setPhoneNumber(messageReceived.getString("phone"));
+			spot.setDescription(messageReceived.getString("description"));
+			
+			
+			
+		}
+			
+		return spot;
 	}
 	
 	
