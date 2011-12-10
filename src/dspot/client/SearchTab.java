@@ -41,7 +41,7 @@ public class SearchTab  extends ListActivity{
 	
 	ProgressDialog dialog;
 	
-	static final String[] Options = new String[] {"Search Near Me", "Search By Location", "Last Search", "Sports", "Radius"};
+	static final String[] Options = new String[] {"Search Near Me", "Search By Location","Search By Name", "Last Search", "Sports", "Radius"};
 
 	
 	private AlertDialog sportsDialog;
@@ -77,8 +77,16 @@ public class SearchTab  extends ListActivity{
 			lastSearch();
 		else if (Options[position].equals("Sports"))
 			showSports();
+		else if (Options[position].equals("Search By Name"))
+			searchByName();
 		else
 			return;
+	}
+	
+	
+	public void searchByName(){
+		Intent intent = new Intent(getApplicationContext(),SearchByName.class);
+        startActivity(intent);
 	}
 	
 	
@@ -322,7 +330,7 @@ public class SearchTab  extends ListActivity{
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {    
-			 if(position == 4){
+			 if(position == 5){
             	 LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         		 convertView = infalInflater.inflate(R.layout.search_tab_child_seek, null);
 

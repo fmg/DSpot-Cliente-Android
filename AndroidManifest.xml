@@ -38,6 +38,7 @@
         <activity android:name="ViewSpotList" android:theme="@android:style/Theme.NoTitleBar"  android:configChanges="orientation"></activity>
         <activity android:name="ViewSpot" android:theme="@android:style/Theme.NoTitleBar" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name="ViewSpotMap" android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="SearchByName" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar"></activity>
         
             
        
