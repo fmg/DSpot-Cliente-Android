@@ -266,7 +266,12 @@
             android:layout_below="@id/view_spot_commentHolder"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:text="More Comments"/>
+            android:text="More Comments"
+            android:background="@drawable/blue_button" 
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"
+        	android:textColor="#FFFFFFFF"
+        	android:textSize="16dp" />
     </RelativeLayout>
 
 </ScrollView>

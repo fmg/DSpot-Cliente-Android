@@ -47,7 +47,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                android:text="@string/username" />
+                android:text="@string/username"
+                android:textColor="@android:color/white"/>
 
             <EditText
                 android:id="@+id/login_username"
@@ -72,7 +73,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                android:text="@string/password" />
+                android:text="@string/password"
+                android:textColor="@android:color/white"
+                />
 
             <EditText
                 android:id="@+id/login_password"
@@ -91,7 +94,11 @@
         android:layout_below="@+id/tableLayout1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="@string/login" />
+        android:background="@drawable/green_button"
+        android:text="@string/login"
+        android:textStyle="bold"
+        android:textColor="#FFFFFFFF"
+        android:textSize="16dp" />
 
     <TableLayout
         android:id="@+id/tableLayout2"
@@ -110,13 +117,23 @@
                 android:id="@+id/login_registerButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/register" />
+                android:text="@string/register" 
+                android:background="@drawable/blue_button" 
+                android:layout_marginRight="5dp"
+                android:textStyle="bold"
+        		android:textColor="#FFFFFFFF"
+        		android:textSize="16dp" />
 
             <Button
                 android:id="@+id/login_guestButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/guest" />
+                android:text="@string/guest"
+                android:background="@drawable/gray_button"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+        		android:textColor="#FFFFFFFF"
+        		android:textSize="16dp" />
 
         </TableRow>
     </TableLayout>

@@ -84,7 +84,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/tableLayout1"
-            android:text="@string/register" >
+            android:text="@string/register"
+            android:background="@drawable/blue_button" 
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"
+        	android:textColor="#FFFFFFFF"
+        	android:textSize="16dp"  >
         </Button>
 
         <TableLayout

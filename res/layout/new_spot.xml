@@ -2,13 +2,15 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/wallpapper" >
     
 	<RelativeLayout
 	    android:id="@+id/RelativeLayout1"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:orientation="vertical" >
+	    android:orientation="vertical"
+	    android:padding="10dp" >
 
 	    <ImageView
 	        android:id="@+id/new_spot_picture"
@@ -22,11 +24,17 @@
 
 	    <Button
 	        android:id="@+id/button1"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/tableLayout1"
 	        android:layout_centerHorizontal="true"
-	        android:text="Create Spot" android:layout_marginTop="30dp"/>
+	        android:layout_marginRight="5dp"
+	        android:layout_marginTop="30dp"
+	        android:background="@drawable/blue_button"
+	        android:text="Create Spot"
+	        android:textColor="#FFFFFFFF"
+	        android:textSize="16dp"
+	        android:textStyle="bold" />
 
 	    <TableLayout
 	        android:id="@+id/tableLayout1"
@@ -135,7 +143,12 @@
 	                android:id="@+id/new_spot_setSports"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:text="Tap to set sports" />
+	                android:text="Tap to set sports"
+	                android:background="@drawable/green_button"
+                	android:layout_marginLeft="5dp"
+                	android:textStyle="bold"
+        			android:textColor="#FFFFFFFF"
+        			android:textSize="16dp" />
 
 	        </TableRow>
 
