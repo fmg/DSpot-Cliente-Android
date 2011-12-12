@@ -55,6 +55,8 @@ public class Api extends Application {
     public static AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
     
     public static int last_visited_spot = 0;
+    
+    public static final int numberCommentsPerPage = 5;
 	
     
 	/////////////////////////////////////////////////////////////////////
@@ -436,6 +438,8 @@ public class Api extends Application {
 			spot.setPhoneNumber(messageReceived.getString("phone"));
 			spot.setDescription(messageReceived.getString("description"));
 			
+			spot.setRating(messageReceived.getDouble("rating"));
+			
 			
 			
 		}
@@ -444,10 +448,54 @@ public class Api extends Application {
 	}
 	
 	
-	
+	public ArrayList<Comment> getCommentsPage(int spot_id, int page) throws ClientProtocolException, IOException, JSONException{
+		
+		ArrayList<Comment> comments = new ArrayList<Comment>();
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+		       
+		       	
+		String url = IP + "/index_spot?id_spot="+spot_id+
+									"&limit="+(page*numberCommentsPerPage);  
+		
+		System.out.println(url);
+		   
+		HttpGet httpget = new HttpGet(url);
+		   
+		httpget.setHeader("Accept", "application/json");
+		httpget.setHeader("Cookie", cookie);
+		   
+		response = httpClient.execute(httpget);
+		   
+		System.out.println(response.getStatusLine().getStatusCode());
+		   
+		if(response.getStatusLine().getStatusCode() == 200){
+			   
+			InputStream instream = response.getEntity().getContent();
+			String tmp = read(instream);
+				
+			JSONArray messageReceived = new JSONArray(tmp.toString());
+			System.out.println(messageReceived.toString());
+			
+			
+			for(int i = 0; i < messageReceived.length(); i++){
+				JSONObject o = messageReceived.getJSONObject(i);
+				Comment c = new Comment(((JSONObject)o.get("user")).getString("username"),
+										o.getString("body"),
+										o.getInt("value"));
+				
+				comments.add(c);
+			}
+
+		}
+			
+		return comments;
+	}
 
 	
-	public int registrate(String username, String pass, String nome, String email,String pictureURL){
+ 	public int registrate(String username, String pass, String nome, String email,String pictureURL){
 		
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);

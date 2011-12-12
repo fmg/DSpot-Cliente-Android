@@ -279,18 +279,19 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/view_spot_moreCommentsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/view_spot_commentHolder"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="More Comments"
-            android:background="@drawable/blue_button_selector" 
             android:layout_marginRight="5dp"
-            android:textStyle="bold"
-        	android:textColor="#FFFFFFFF"
-        	android:textSize="16dp" />
+            android:layout_marginTop="20dp"
+            android:background="@drawable/blue_button_selector"
+            android:text="More Comments"
+            android:textColor="#FFFFFFFF"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
     </RelativeLayout>
 
 </ScrollView>

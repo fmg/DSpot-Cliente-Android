@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class SpotFullInfo {
 
+	
 	private int id;
 	private String name;
 	private String address;
@@ -12,6 +13,7 @@ public class SpotFullInfo {
 	private String phoneNumber;
 	private String description;
 	private String location;
+	private double rating;
 	private ArrayList<String> photosURL;
 	private ArrayList<Comment> comments;
 	private ArrayList<String> sports;
@@ -133,5 +135,17 @@ public class SpotFullInfo {
 	public ArrayList<String> getSports() {
 		return sports;
 	}
+	
+	
+	public double getRating() {
+		return rating;
+	}
+
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+
 	
 }

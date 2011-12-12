@@ -73,11 +73,14 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	boolean commentAreaVisible = false;
 	ArrayList<Comment> commentList;
+	int page_index = 1;
 	
 	
 	int spot_id;
 	ArrayList<Integer> spotList_ids;
-	int index;
+	int index ;
+	
+	int operation; //1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
 	
 	
 	SpotFullInfo sfi;
@@ -101,8 +104,8 @@ public class ViewSpot extends Activity implements Runnable{
 		spot_id = extras.getInt("id");
 		spotList_ids = extras.getIntegerArrayList("spotList_ids");
 		index = extras.getInt("index");
-		System.out.println(spotList_ids.toString()+ " -> " + index);
 		
+		operation = 1;
 		
 		
 		buildInviteDialog();
@@ -203,6 +206,14 @@ public class ViewSpot extends Activity implements Runnable{
 		});
 	    
 	    
+	    ((ImageView)findViewById(R.id.view_spot_actionReport)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reportAction();				
+			}
+		});
+	    
+	    
 	    
 	    gestureDetector = new GestureDetector(new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
@@ -220,6 +231,7 @@ public class ViewSpot extends Activity implements Runnable{
         thread.start();
         
 	}
+
 	
 	@Override
   	public boolean dispatchTouchEvent(MotionEvent ev){
@@ -314,6 +326,7 @@ public class ViewSpot extends Activity implements Runnable{
 		
 	}
 	
+	
 	public void reportAction(){
 		if(api.user.isConnected())
 			reportDialog.show();
@@ -324,30 +337,15 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	public void sendCommentAction(){
-		Toast.makeText(ViewSpot.this, "Comment will be sent", Toast.LENGTH_SHORT).show();
 		
-		try {
-			if(api.sendComment(sfi.getId(), 
-					(int)(((RatingBar)findViewById(R.id.view_spot_rateSpot)).getRating()),
-					((EditText)findViewById(R.id.view_spot_commentReview)).getText().toString()) == 0){
-				Toast.makeText(ViewSpot.this, "Comment sent", Toast.LENGTH_SHORT).show();
-				//TODO: actualizar lista de comments;
-			}else{
-				Toast.makeText(ViewSpot.this, "Error sending comment", Toast.LENGTH_SHORT).show();
-				
-			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}		
-		
-		
-        
-        ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
+		((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
 		commentAreaVisible = false;
+		
+		operation = 2;
+		progressDialog = ProgressDialog.show(ViewSpot.this, "", "Sending comment. Please wait...", true);
+ 		Thread thread = new Thread(this);
+        thread.start();
+
         
 	}
 
@@ -402,11 +400,27 @@ public class ViewSpot extends Activity implements Runnable{
 	public void run() {
 		
 		try {
-			sfi = api.getSpotsFullInfo(spot_id);
-			imageAdapter.setImages(sfi.getPhotosURL());
-			commentList = sfi.getComments();
 			
-			handler.sendMessage(handler.obtainMessage());
+			
+			if(operation == 1){
+				sfi = api.getSpotsFullInfo(spot_id);
+				imageAdapter.setImages(sfi.getPhotosURL());
+				commentList = sfi.getComments();
+				
+				handler.sendMessage(handler.obtainMessage());
+			}else if(operation == 2){
+				
+				if(api.sendComment(sfi.getId(), 
+						(int)(((RatingBar)findViewById(R.id.view_spot_rateSpot)).getRating()),
+						((EditText)findViewById(R.id.view_spot_commentReview)).getText().toString()) == 0){
+				
+						commentList = api.getCommentsPage(spot_id, page_index);
+						
+						
+						handler.sendMessage(handler.obtainMessage());
+
+				}
+			}
 			
 		} catch (ClientProtocolException e) {
 			
@@ -459,22 +473,31 @@ public class ViewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
-        	imageAdapter.notifyDataSetChanged();
         	
-        	
-        	PopulateScreenComments();
-        	
-        	
-        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
-        	
-        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
-        	((TextView)findViewById(R.id.view_spot_adress)).setText(sfi.getAddress());
-        	((TextView)findViewById(R.id.view_spot_sports)).setText("Sports: "+(sfi.getSports().toString()).replace("[", "").replace("]", ""));
-        	((TextView)findViewById(R.id.view_spot_location)).setText(sfi.getLocation());
-        	
-        	progressDialog.dismiss();
-            
-            api.last_visited_spot = sfi.getId();
+        	if(operation == 1){//onCreate
+	        	imageAdapter.notifyDataSetChanged();
+	        	
+	        	
+	        	PopulateScreenComments();
+	        	
+	        	
+	        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
+	        	
+	        	((TextView)findViewById(R.id.view_spot_spotName)).setText(sfi.getName());
+	        	((TextView)findViewById(R.id.view_spot_adress)).setText(sfi.getAddress());
+	        	((TextView)findViewById(R.id.view_spot_sports)).setText("Sports: "+(sfi.getSports().toString()).replace("[", "").replace("]", ""));
+	        	((TextView)findViewById(R.id.view_spot_location)).setText(sfi.getLocation());
+	        	((RatingBar)findViewById(R.id.view_spot_rating)).setRating((float)sfi.getRating());
+	        	
+	        	progressDialog.dismiss();
+	            
+	            api.last_visited_spot = sfi.getId();
+	            
+        	}else if(operation== 2){//enviar comentario
+        		
+        		PopulateScreenComments();
+        		
+        	}
 
         }
     };
@@ -484,6 +507,8 @@ public class ViewSpot extends Activity implements Runnable{
     public void PopulateScreenComments(){
 		
 		LinearLayout list = (LinearLayout)this.findViewById(R.id.view_spot_commentHolder);
+		
+		list.removeAllViews();
 		
 		for(int i = 0; i < commentList.size(); i++){
 			LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
