@@ -231,6 +231,35 @@ public class DatabaseAdapter {
 	}
 	
 	
+	
+	
+	public ArrayList<Integer> getSelectedSports(){
+		
+		ArrayList<Integer> sports = new ArrayList<Integer>();
+		
+		String selectSports = "Select _id from sports where ischecked=1";  
+		
+	 	Cursor sportsCursor = database.rawQuery(selectSports, null);
+	 	
+	 	
+	 	sportsCursor.moveToFirst();
+	 	if(sportsCursor.getCount() == 0){
+	 		sportsCursor.close();
+	 		return sports;
+	 	}
+	 	
+	 	sportsCursor.moveToFirst();
+	 	do {
+	 		sports.add(sportsCursor.getInt(0));
+	 	}while(sportsCursor.moveToNext());
+	 	sportsCursor.close();
+	 	
+	 	return sports;
+	 	
+	}
+	
+	
+	
 	public void updateSportState(int id, int check){
 		
 		 ContentValues args = new ContentValues();

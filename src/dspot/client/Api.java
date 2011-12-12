@@ -42,7 +42,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://95.92.112.141:3000";
+	public static String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	public static int radious;
@@ -222,16 +222,42 @@ public class Api extends Application {
 		HttpResponse response=null;
        
        	
-           String url = IP + "/spot_by_city?id="+id;       
+           String url = IP + "/search_json";       
            System.out.println(url);
            
-           HttpGet httpget = new HttpGet(url);
+           HttpPost httpPost = new HttpPost(url);         
+           JSONObject jsonuser=new JSONObject();
            
-           httpget.setHeader("Accept", "application/json");
-           httpget.setHeader("Cookie", cookie);
-           
-           response = httpClient.execute(httpget);
-           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+           	
+   			jsonuser.put("local_id", id);
+   			
+   			
+   			ArrayList<Integer> sel_sports = getSelectedSports();
+   			
+   			String sports ="";
+   			for(int i = 0; i < sel_sports.size(); i++){
+   				if(i == sel_sports.size()-1){
+   					sports += sel_sports.get(i);
+   					
+   				}else
+   					sports+= sel_sports.get(i) + ",";
+   			}
+   			
+   			jsonuser.put("sport_ids", sports);
+
+   				
+   			String POSTText = jsonuser.toString();
+   			StringEntity entity; 
+       	 
+   			entity = new StringEntity(POSTText, "UTF-8");
+   			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+           httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+           entity.setContentType(basicHeader);
+           httpPost.setEntity(entity);
+           response = httpClient.execute(httpPost);
+               
            
            if(response.getStatusLine().getStatusCode() == 200){
         	   
@@ -256,6 +282,50 @@ public class Api extends Application {
 	}
 	
 	
+	
+	
+	public ArrayList<SpotShortInfo> getSpotsByName(String keyword) throws ClientProtocolException, IOException, JSONException{
+		
+		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/search_key?keywords="+keyword;       
+           System.out.println(url);
+           
+           
+           HttpGet httpget = new HttpGet(url);
+           
+           httpget.setHeader("Accept", "application/json");
+           httpget.setHeader("Cookie", cookie);
+           
+           response = httpClient.execute(httpget);
+               
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+        	   
+			   InputStream instream = response.getEntity().getContent();
+			   String tmp = read(instream);
+			
+			    JSONArray messageReceived = new JSONArray(tmp.toString());
+			   	System.out.println(messageReceived.toString());
+			   	
+			   	for(int i = 0; i<messageReceived.length(); i++){
+			   		JSONObject spot = messageReceived.getJSONObject(i);
+			   		
+			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"));
+			   		
+			   		spotlist.add(ssi);
+			   		
+			   	}
+	   	
+           }
+		
+		return spotlist;
+	}
 	
 	
 	
@@ -521,6 +591,17 @@ public class Api extends Application {
 		dbAdapter.open();
 		dbAdapter.updateSportState(id, check);
 		dbAdapter.close();
+	}
+	
+	
+	
+	public ArrayList<Integer> getSelectedSports(){
+		dbAdapter.open();
+		ArrayList<Integer> ret = dbAdapter.getSelectedSports();
+		dbAdapter.close();
+		
+		
+		return ret;
 	}
 	
 	

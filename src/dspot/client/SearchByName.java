@@ -1,25 +1,38 @@
 package dspot.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import dspot.utils.SpotShortInfo;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SearchByName extends ListActivity {
+public class SearchByName extends ListActivity implements Runnable{
 
 	Api api;
+	
+	ProgressDialog dialog;
+	String keyword;
+
 	
 	MyListAdapter mAdapter;
 	ArrayList<SpotShortInfo> spotList;
@@ -43,6 +56,7 @@ public class SearchByName extends ListActivity {
 			
 			@Override
 			public void onClick(View v) {
+				keyword = ((EditText)findViewById(R.id.search_by_name_editText)).getText().toString();
 				submitSearch();
 			}
 		});
@@ -51,9 +65,86 @@ public class SearchByName extends ListActivity {
 	
 	
 	public void submitSearch(){
-		Toast toast = Toast.makeText(getApplicationContext(), "To be done", Toast.LENGTH_SHORT);
-		toast.show();
+		dialog = ProgressDialog.show(SearchByName.this, "", "Obtaining Spot list. Please wait...", true);
+ 		Thread thread = new Thread(this);
+        thread.start();
 	}
+	
+	
+	@Override
+	public void run() {
+		try {
+			
+			String tmp = keyword.replace(" ", "%20");
+			
+			
+			spotList = api.getSpotsByName(tmp);
+			for(SpotShortInfo ssi: spotList){
+				spotList_ids.add(ssi.getId());
+			}
+			
+			handler.sendMessage(handler.obtainMessage());
+			
+			
+		
+		} catch (ClientProtocolException e) {
+			
+			dialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+    		finish();
+    		
+    		Looper.loop();
+    		
+    		
+    		
+		} catch (JSONException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();
+    		Looper.loop();
+			
+			
+			
+		} catch (IOException e) {
+			
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error sending information to server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		e.printStackTrace();
+			finish();	
+    		Looper.loop();
+			
+			
+		}
+
+	}
+	
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+        	
+        	mAdapter.notifyDataSetChanged();
+            dialog.dismiss();
+            
+            if(spotList.size() == 0){
+            	Toast toast = Toast.makeText(getApplicationContext(), "No spots in your area, sry... If you find a good spot to practice any sport, feel free to add", Toast.LENGTH_LONG);
+        		toast.show();	
+            }
+        }
+    };
 	
 	
 	@Override
