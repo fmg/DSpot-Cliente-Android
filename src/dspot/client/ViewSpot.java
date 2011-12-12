@@ -324,7 +324,28 @@ public class ViewSpot extends Activity implements Runnable{
 	
 	
 	public void sendCommentAction(){
-        Toast.makeText(ViewSpot.this, "To be done in a near future", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ViewSpot.this, "Comment will be sent", Toast.LENGTH_SHORT).show();
+		
+		try {
+			if(api.sendComment(sfi.getId(), 
+					(int)(((RatingBar)findViewById(R.id.view_spot_rateSpot)).getRating()),
+					((EditText)findViewById(R.id.view_spot_commentReview)).getText().toString()) == 0){
+				Toast.makeText(ViewSpot.this, "Comment sent", Toast.LENGTH_SHORT).show();
+				//TODO: actualizar lista de comments;
+			}else{
+				Toast.makeText(ViewSpot.this, "Error sending comment", Toast.LENGTH_SHORT).show();
+				
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}		
+		
+		
+        
         ((RelativeLayout)findViewById(R.id.relativeLayout2)).setVisibility(View.GONE);
 		commentAreaVisible = false;
         

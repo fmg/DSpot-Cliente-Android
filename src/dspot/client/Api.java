@@ -283,6 +283,49 @@ public class Api extends Application {
 	
 	
 	
+	public int sendComment(int spot_id, int rating, String body) throws ClientProtocolException, IOException, JSONException{
+		
+		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/comments/create";       
+           System.out.println(url);
+           
+           HttpPost httpPost = new HttpPost(url);         
+           JSONObject jsonuser=new JSONObject();
+           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+           System.out.println(cookie);	
+           
+   			jsonuser.put("value", rating);
+   			jsonuser.put("body", body);
+   			jsonuser.put("spot_id", spot_id);
+   		
+   				
+   			String POSTText = jsonuser.toString();
+   			StringEntity entity; 
+       	 
+   			entity = new StringEntity(POSTText, "UTF-8");
+   			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+           httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+           entity.setContentType(basicHeader);
+           httpPost.setEntity(entity);
+           response = httpClient.execute(httpPost);
+                          
+           if(response.getStatusLine().getStatusCode() == 201){	   
+        	   return 0;
+           }
+		
+		return -1;
+	}
+	
+	
+	
 	
 	public ArrayList<SpotShortInfo> getSpotsByName(String keyword) throws ClientProtocolException, IOException, JSONException{
 		
@@ -377,7 +420,7 @@ public class Api extends Application {
 			
 			JSONArray comments = messageReceived.getJSONArray("comments10");
 			for(int i = 0; i < comments.length(); i++){
-				Comment c = new Comment((comments.getJSONObject(i)).getString("name"),
+				Comment c = new Comment((comments.getJSONObject(i)).getString("username"),
 										(comments.getJSONObject(i)).getString("body"),
 										(comments.getJSONObject(i)).getInt("value"));
 				
