@@ -157,6 +157,15 @@ public class ViewSpot extends Activity implements Runnable{
 				sendCommentAction();
 			}
 		}); 
+	    
+	    
+	    ((Button)findViewById(R.id.view_spot_moreCommentsButton)).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				moreCommentsAction();
+			}
+		}); 
 	   
 	    
 	    ((ImageView)findViewById(R.id.view_spot_actionCall)).setOnClickListener(new OnClickListener() {
@@ -327,6 +336,18 @@ public class ViewSpot extends Activity implements Runnable{
 	}
 	
 	
+	
+	
+	public void moreCommentsAction(){
+		
+		operation = 4;
+		progressDialog = ProgressDialog.show(ViewSpot.this, "", "Getting comments. Please wait...", true);
+ 		Thread thread = new Thread(this);
+        thread.start();
+	}
+
+	
+	
 	public void reportAction(){
 		if(api.user.isConnected())
 			reportDialog.show();
@@ -414,12 +435,20 @@ public class ViewSpot extends Activity implements Runnable{
 						(int)(((RatingBar)findViewById(R.id.view_spot_rateSpot)).getRating()),
 						((EditText)findViewById(R.id.view_spot_commentReview)).getText().toString()) == 0){
 				
-						commentList = api.getCommentsPage(spot_id, page_index);
-						
+						commentList = api.getCommentsPage(spot_id, 1);
+						page_index = 1;
 						
 						handler.sendMessage(handler.obtainMessage());
 
 				}
+			}else if(operation == 4){
+				
+				page_index++;
+				commentList = api.getCommentsPage(spot_id, page_index);
+				
+				handler.sendMessage(handler.obtainMessage());
+
+				
 			}
 			
 		} catch (ClientProtocolException e) {
@@ -493,10 +522,12 @@ public class ViewSpot extends Activity implements Runnable{
 	            
 	            api.last_visited_spot = sfi.getId();
 	            
-        	}else if(operation== 2){//enviar comentario
+        	}else if(operation== 2 || operation == 4){//enviar comentario
         		
         		PopulateScreenComments();
         		
+        		
+        		progressDialog.dismiss();
         	}
 
         }
