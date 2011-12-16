@@ -4,13 +4,69 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent" android:orientation="vertical"
-  android:background="@drawable/wallpapper">
+  android:background="@drawable/wallpapper"
+  android:padding="10dp">
   
 	<RelativeLayout
-    	android:layout_width="match_parent"
-    	android:layout_height="match_parent" >
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
 
-    
+		<ImageView
+		    android:id="@+id/tab_me_image"
+		    android:layout_width="100dp"
+		    android:layout_height="100dp"
+		    android:src="@drawable/profile_picture" />
+
+		<TextView
+		    android:id="@+id/tab_me_name"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentTop="true"
+		    android:layout_toRightOf="@+id/tab_me_image"
+		    android:text="Name"
+		    android:textAppearance="?android:attr/textAppearanceLarge"
+		    android:layout_marginLeft="10dp" />
+
+		<TextView
+		    android:id="@+id/tab_me_username"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_toRightOf="@+id/tab_me_image"
+		    android:layout_below="@+id/tab_me_name"
+		    android:text="Username"
+		    android:textAppearance="?android:attr/textAppearanceMedium"
+		    android:layout_marginLeft="10dp"
+		    android:layout_marginTop="10dp" />
+
+		<TextView
+		    android:id="@+id/tab_me_email"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_toRightOf="@+id/tab_me_image"
+		    android:layout_below="@+id/tab_me_username"
+		    android:text="Email"
+		    android:textAppearance="?android:attr/textAppearanceMedium"
+		    android:layout_marginLeft="10dp"
+		    android:layout_marginTop="10dp" />
+		
+		<TextView
+		    android:id="@+id/textView1"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_below="@+id/tab_me_image"
+		    android:layout_centerHorizontal="true"
+		    android:layout_marginTop="20dp"
+		    android:text="Friends"
+		    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+		<ListView
+		    android:id="@+id/listView1"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+		    android:layout_below="@+id/textView1"
+		    android:layout_marginTop="10dp" >
+		</ListView>
 
 	</RelativeLayout>
 
