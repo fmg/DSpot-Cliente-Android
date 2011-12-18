@@ -2,12 +2,18 @@ package dspot.client;
 
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -15,6 +21,10 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.HttpConnectionParams;
@@ -38,11 +48,17 @@ import android.app.Application;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class Api extends Application {
 	
+	
+	private final String PATH = "/data/data/dspot.client/";
+
+	
 	public static String cookie;
-	public static String IP = "http://172.30.1.57:3000";
+	public final String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	public static int radious;
@@ -498,8 +514,8 @@ public class Api extends Application {
 
 	
 	
- 	public int registrate(String username, String pass, String nome, String email,String pictureURL){
-		
+ 	public int registrate(String username, String pass, String nome, String email,String pictureURL, String facebook_id) throws ClientProtocolException, IOException, URISyntaxException{
+		/*
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		 
@@ -560,7 +576,59 @@ public class Api extends Application {
 			e.printStackTrace();
 			return -3;
 		}
+		*/
+ 		
+ 		
+ 		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		 
+		 HttpResponse response=null;
+		 
+		 String url = IP + "/users"; 
+ 		
+ 		HttpPost post = new HttpPost(url);
 
+ 		  MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+ 		  multipartEntity.addPart("user[username]", new StringBody(username, "text/plain",Charset.forName("UTF-8")));
+ 		 multipartEntity.addPart("user[password]", new StringBody(pass));
+ 		multipartEntity.addPart("user[password_confirmation]", new StringBody(pass));
+ 		multipartEntity.addPart("user[name]", new StringBody(nome,"text/plain",Charset.forName("UTF-8")));
+ 		multipartEntity.addPart("user[email]", new StringBody(email));
+ 		
+ 		URL newurl = new URL("http://graph.facebook.com/"+facebook_id+"/picture?type=large");
+ 		
+ 		File f = new File(PATH+"tmp.png");
+ 		
+		Bitmap mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
+		FileOutputStream fout = new FileOutputStream(f);
+		
+		mIcon_val.compress(Bitmap.CompressFormat.PNG, 100, fout);
+		
+		fout.flush();
+		fout.close();
+
+		
+
+ 		
+ 		multipartEntity.addPart("user[avatar]", new FileBody(f)); 
+ 		
+ 		  
+ 		post.setEntity(multipartEntity);  
+ 		response = httpClient.execute(post);  
+
+ 		HttpEntity resEntity = response.getEntity();  
+ 		if (resEntity != null) {    
+ 		  resEntity.consumeContent();  
+ 		}
+ 		
+ 		f.delete();
+ 		
+ 		
+ 		if(response.getStatusLine().getStatusCode()== 200)
+ 			return 0;
+ 		else
+ 			return -1;
+ 		
 	}
 	
 	

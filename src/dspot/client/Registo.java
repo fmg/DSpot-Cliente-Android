@@ -2,8 +2,10 @@ package dspot.client;
 
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.Editable.Factory;
 import android.view.View;
@@ -28,11 +31,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Registo extends Activity {
+public class Registo extends Activity  implements Runnable{
 		
 	private Api api;
 	String name, email, picURL = null;
 	ProgressDialog dialog;
+	String facebook_id;
 
 	
     /** Called when the activity is first created. */
@@ -88,27 +92,72 @@ public class Registo extends Activity {
     		toast.show();
     		return;
     	}
- 
-        
-    	int ret = api.registrate(user, pass, nome, email, picURL);
     	
-    	if(ret ==  0){
-	    	Toast toast = Toast.makeText(getApplicationContext(), "Registered with success", Toast.LENGTH_LONG);
-			toast.show();
-	    	
-	    	Intent intent = new Intent(getApplicationContext(),DSpotActivity.class);
-	        startActivity(intent);
-	        finish();
-	        
-    	}else if(ret == -1){
-    		Toast toast = Toast.makeText(getApplicationContext(), "Error on regristration", Toast.LENGTH_SHORT);
-			toast.show();
-    	}
-    	else if(ret == -3){
-    		Toast toast = Toast.makeText(getApplicationContext(), "Connection problems", Toast.LENGTH_SHORT);
-			toast.show();
-    	}
+    	
+    	dialog = ProgressDialog.show(Registo.this, "", "Working. Please wait...", true);
+		Thread thread = new Thread(this);
+        thread.start();
     }
+    
+    
+    
+    @Override
+	public void run() {
+    	String user, pass, passconf, nome, email;
+    	
+    	
+    	user = ((EditText) findViewById(R.id.register_username)).getText().toString();
+    	pass = ((EditText) findViewById(R.id.register_password)).getText().toString();
+    	passconf = ((EditText) findViewById(R.id.register_passwordConf)).getText().toString();
+    	nome = ((EditText) findViewById(R.id.register_name)).getText().toString();
+    	email = ((TextView) findViewById(R.id.register_email)).getText().toString();
+        
+    	int ret;
+		try {
+			ret = api.registrate(user, pass, nome, email, picURL, facebook_id);
+			if(ret ==  0){
+				
+				Message msg = handler.obtainMessage();
+				handler2.sendMessage(msg);
+						        
+	    	}else if(ret == -1){
+	    		dialog.dismiss();
+	    		Looper.prepare();
+	    		Toast toast = Toast.makeText(getApplicationContext(), "Error on regristration", Toast.LENGTH_SHORT);
+				toast.show();
+				Looper.loop();
+	    	}
+		} catch (ClientProtocolException e) {
+			
+			dialog.dismiss();
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+    		
+    		e.printStackTrace();
+    		
+		} catch (IOException e) {
+			dialog.dismiss();
+
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+			
+			e.printStackTrace();
+			
+		} catch (URISyntaxException e) {
+			dialog.dismiss();
+			
+			Looper.prepare();
+			Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+    		toast.show();
+    		Looper.loop();
+    		
+    		e.printStackTrace();
+		}
+	}
     
     
     public void facebookAction(){
@@ -183,10 +232,11 @@ public class Registo extends Activity {
         	URL newurl;
 			Bitmap mIcon_val;
 			
-			System.out.println("VAI FAZER LOAD DA IMAGEM");
 			
 			newurl = new URL(picURL);
+
 			mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
+			
 			((ImageView)findViewById(R.id.register_profileImage)).setImageBitmap(mIcon_val);
 			
 			((EditText)findViewById(R.id.register_email)).setEnabled(false);
@@ -217,6 +267,8 @@ public class Registo extends Activity {
 	        	name = jsonObject.getString("name");
 	        	email = jsonObject.getString("email");
 	        	picURL = jsonObject.getString("picture");
+	        	facebook_id = jsonObject.getString("id");
+
 	        	
 	        	System.out.println("AKI-> " + name + " "+ email + " " + picURL);
 	        	
@@ -240,6 +292,18 @@ public class Registo extends Activity {
 
             fillTheForm();
             dialog.dismiss();
+        }
+    };
+    
+    
+    final Handler handler2 = new Handler() {
+        public void handleMessage(Message msg) {
+
+        	dialog.dismiss();
+        	Toast toast = Toast.makeText(getApplicationContext(), "Registered with success", Toast.LENGTH_LONG);
+			toast.show();
+	        finish();
+
         }
     };
     

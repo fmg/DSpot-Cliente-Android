@@ -4,5 +4,9 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="/Users/fgracas89/Documents/LDSO/DSpot-Cliente-Android/lib/apache-mime4j-core-0.7.1.jar"/>
+	<classpathentry kind="lib" path="/Users/fgracas89/Documents/LDSO/DSpot-Cliente-Android/lib/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/fgracas89/Documents/LDSO/DSpot-Cliente-Android/lib/httpcore-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/fgracas89/Documents/LDSO/DSpot-Cliente-Android/lib/httpmime-4.1.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
