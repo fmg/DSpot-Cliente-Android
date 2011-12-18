@@ -89,9 +89,12 @@ public class DatabaseAdapter {
 	 	}
 	 	
 	 	userCursor.moveToFirst();
-	 	do {
-	 		
-	 	}while(userCursor.moveToNext());
+ 		u.setId(userCursor.getInt(0));
+ 		u.setName(userCursor.getString(1));
+ 		u.setUsername(userCursor.getString(2));
+ 		u.setEmail(userCursor.getString(3));
+ 		u.setPhoto(userCursor.getString(4));
+ 		
 	 	userCursor.close();
 	 	
 	 	return u;

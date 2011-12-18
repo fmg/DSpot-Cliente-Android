@@ -42,7 +42,7 @@ import android.database.Cursor;
 public class Api extends Application {
 	
 	public static String cookie;
-	public static String IP = "http://172.30.15.86:3000";
+	public static String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	public static int radious;
@@ -142,7 +142,10 @@ public class Api extends Application {
         	user.setName(messageReceived.getString("name"));
         	user.setEmail(messageReceived.getString("email"));
         	user.setId(messageReceived.getInt("id"));
-        	user.setPhoto(messageReceived.getString("avatar_file_name"));
+        	
+        	//TODO:corrigir link
+        	String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/"+messageReceived.getString("avatar_file_name");
+        	user.setPhoto(photoURL);
         	
         	//elimina tudo do user
         	resetUserInfo();
@@ -158,8 +161,7 @@ public class Api extends Application {
         	JSONArray favourites = messageReceived.getJSONArray("spot_favs");
         	createFavourites(favourites,user.getId());
         	
-        	//TODO:compor url da photo
-        	//String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/avatar_file_name
+        	
         	
         	
   	
@@ -328,7 +330,6 @@ public class Api extends Application {
 	
 	
 	
-	
 	public ArrayList<SpotShortInfo> getSpotsByName(String keyword) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
@@ -448,6 +449,7 @@ public class Api extends Application {
 	}
 	
 	
+	
 	public ArrayList<Comment> getCommentsPage(int spot_id, int page) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -494,6 +496,7 @@ public class Api extends Application {
 		return comments;
 	}
 
+	
 	
  	public int registrate(String username, String pass, String nome, String email,String pictureURL){
 		
@@ -597,6 +600,7 @@ public class Api extends Application {
         }
 		return false;	
 	}
+	
 	
 	
 	private String read(InputStream in) throws IOException {
