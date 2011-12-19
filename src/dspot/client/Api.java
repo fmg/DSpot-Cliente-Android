@@ -57,9 +57,10 @@ import android.location.Address;
 public class Api extends Application {
 	
 	//TODO: corrigir bug no mapa dos clicks
+	//TODO: corrigir bug da propagacao das estrelas
 	
-	//TODO: compor comments (canComment), adicionar/remover favoritos e ver estado da estrelinha,
-	//mandar mail, report, ranking do user, search near me
+	//TODO: adicionar/remover favoritos,
+	//mandar mail, report, search near me
 	
 	private final String PATH = "/data/data/dspot.client/";
 
@@ -68,7 +69,6 @@ public class Api extends Application {
 	public final String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
-	public static int radious;
 	
 	public static dspot.client.database.DatabaseAdapter dbAdapter;
 	
@@ -363,6 +363,58 @@ public class Api extends Application {
 	
 	
 	
+	public int sendAddFavourite(int spot_id) throws ClientProtocolException, IOException, JSONException{
+				
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/favourite/create&spot_id="+spot_id;       
+           System.out.println(url);
+           
+           HttpPost httpPost = new HttpPost(url);         
+           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+           System.out.println(cookie);	
+        
+           response = httpClient.execute(httpPost);
+                          
+           if(response.getStatusLine().getStatusCode() == 200){	   
+        	   return 0;
+           }
+		
+		return -1;
+	}
+	
+	
+	public int sendRemoveFavourite(int spot_id) throws ClientProtocolException, IOException, JSONException{
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/favourite/destroy&spot_id="+spot_id;       
+           System.out.println(url);
+           
+           HttpPost httpPost = new HttpPost(url);         
+           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+           System.out.println(cookie);	
+        
+           response = httpClient.execute(httpPost);
+                          
+           if(response.getStatusLine().getStatusCode() == 200){	   
+        	   return 0;
+           }
+		
+		return -1;
+	}
+	
+	
 	public ArrayList<SpotShortInfo> getSpotsByName(String keyword) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
@@ -470,7 +522,7 @@ public class Api extends Application {
 			spot.setLocation(((JSONObject)messageReceived.get("localidade")).getString("name"));
 			spot.setPhoneNumber(messageReceived.getString("phone"));
 			spot.setDescription(messageReceived.getString("description"));
-			
+			spot.setCanComment(messageReceived.getBoolean("can_comment"));
 			spot.setRating(messageReceived.getDouble("rating"));
 			
 			
@@ -902,6 +954,15 @@ public class Api extends Application {
 		dbAdapter.close();
 		
 		return fav;
+	}
+	
+	
+	public boolean hasFavourite(int id){		
+		dbAdapter.open();
+		boolean ret = dbAdapter.hasFavourite(id, user.getId());
+		dbAdapter.close();
+		
+		return ret;
 	}
 
 }

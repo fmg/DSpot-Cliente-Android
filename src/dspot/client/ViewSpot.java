@@ -420,6 +420,7 @@ public class ViewSpot extends Activity implements Runnable{
 	@Override
 	public void run() {
 		
+		//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
 		try {
 			
 			
@@ -502,7 +503,7 @@ public class ViewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
-        	
+        	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
         	if(operation == 1){//onCreate
 	        	imageAdapter.notifyDataSetChanged();
 	        	
@@ -518,16 +519,32 @@ public class ViewSpot extends Activity implements Runnable{
 	        	((TextView)findViewById(R.id.view_spot_location)).setText(sfi.getLocation());
 	        	((RatingBar)findViewById(R.id.view_spot_rating)).setRating((float)sfi.getRating());
 	        	
+	        	if(api.user.isConnected()){
+	        		if(api.hasFavourite(sfi.getId()))
+	        			((RatingBar)findViewById(R.id.view_spot_favourite)).setRating(1);
+	        	}else{
+	        		((RatingBar)findViewById(R.id.view_spot_favourite)).setVisibility(View.GONE);
+	        	}
+	        	
+	        	if(!sfi.isCanComment())
+	        		((RatingBar)findViewById(R.id.view_spot_rateSpot)).setVisibility(View.GONE);
+	        		
+	        		
 	        	progressDialog.dismiss();
 	            
 	            api.last_visited_spot = sfi.getId();
 	            
-        	}else if(operation== 2 || operation == 4){//enviar comentario
+        	}else if(operation== 2){//enviar comentario
+        		
+        		((RatingBar)findViewById(R.id.view_spot_rateSpot)).setVisibility(View.GONE);
         		
         		PopulateScreenComments();
-        		
-        		
+
         		progressDialog.dismiss();
+        	}else if(operation == 4){
+        		
+        		PopulateScreenComments();
+        		progressDialog.dismiss();	
         	}
 
         }

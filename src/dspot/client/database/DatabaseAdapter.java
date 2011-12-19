@@ -327,5 +327,22 @@ public class DatabaseAdapter {
 	 	return favourites;
 		
 	}
+	
+	
+	
+	public boolean hasFavourite(int id, int user_id){
+		String selectFavourite = "Select * from favourites Where user_id="+ user_id +" And _id="+id;  
+		
+	 	Cursor favouriteCursor = database.rawQuery(selectFavourite, null);
+	 	
+	 	favouriteCursor.moveToFirst();
+	 	if(favouriteCursor.getCount() == 0){
+	 		favouriteCursor.close();
+	 		return false;
+	 	}else{
+	 		favouriteCursor.close();
+	 		return true;
+	 	}
+	}
 
 }

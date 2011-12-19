@@ -30,11 +30,11 @@ public class FavouritesTab extends ListActivity {
         
 		api = ((Api)getApplicationContext());
 		
+		setContentView(R.layout.tab_starred);
 		
 		favouritesList = api.getFavourites();
 		
 		mAdapter = new MyListAdapter();
-		
 		
 		setListAdapter(mAdapter);
 		

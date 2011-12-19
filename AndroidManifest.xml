@@ -43,6 +43,7 @@
         <activity android:name="ViewSpotMap" android:theme="@android:style/Theme.NoTitleBar" android:configChanges="orientation"></activity>
         <activity android:name="SearchByName" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name="MapFullScreen" android:configChanges="orientation"  android:theme="@android:style/Theme.NoTitleBar"></activity>
+        <activity android:name="SearchNearMe" android:configChanges="orientation"  android:theme="@android:style/Theme.NoTitleBar"></activity>
         
             
        

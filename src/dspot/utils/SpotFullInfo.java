@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class SpotFullInfo {
 
-	
+
 	private int id;
 	private String name;
 	private String address;
@@ -17,6 +17,7 @@ public class SpotFullInfo {
 	private ArrayList<String> photosURL;
 	private ArrayList<Comment> comments;
 	private ArrayList<String> sports;
+	private boolean canComment;
 	
 	
 	
@@ -147,5 +148,12 @@ public class SpotFullInfo {
 	}
 
 
-	
+	public boolean isCanComment() {
+		return canComment;
+	}
+
+
+	public void setCanComment(boolean canComment) {
+		this.canComment = canComment;
+	}
 }

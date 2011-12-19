@@ -55,7 +55,7 @@ public final class R {
         public static final int wallpapper=0x7f020023;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f070032;
+        public static final int LinearLayout1=0x7f070034;
         public static final int RelativeLayout1=0x7f070000;
         public static final int ScrollView1=0x7f070006;
         public static final int checklist_child_check=0x7f070001;
@@ -112,9 +112,9 @@ public final class R {
         public static final int search_by_location_editText=0x7f07002f;
         public static final int search_by_name_button=0x7f070031;
         public static final int search_by_name_editText=0x7f070030;
-        public static final int search_tab_child_normal_text=0x7f070033;
-        public static final int search_tab_child_seek_seekBar=0x7f070035;
-        public static final int search_tab_child_seek_text=0x7f070034;
+        public static final int search_near_me_button=0x7f070033;
+        public static final int search_near_me_seekbar=0x7f070032;
+        public static final int search_tab_child_normal_text=0x7f070035;
         public static final int spotList_address_text=0x7f07003a;
         public static final int spotList_name_text=0x7f070038;
         public static final int spotList_ratingBar=0x7f070039;
@@ -178,20 +178,21 @@ public final class R {
         public static final int registo=0x7f030005;
         public static final int search_by_location=0x7f030006;
         public static final int search_by_name=0x7f030007;
-        public static final int search_tab_child_normal=0x7f030008;
-        public static final int search_tab_child_seek=0x7f030009;
+        public static final int search_near_me=0x7f030008;
+        public static final int search_tab_child_normal=0x7f030009;
         public static final int search_tab_sports_dialog=0x7f03000a;
         public static final int spot_list=0x7f03000b;
         public static final int spot_list_child=0x7f03000c;
         public static final int tab_map=0x7f03000d;
         public static final int tab_me=0x7f03000e;
         public static final int tab_search=0x7f03000f;
-        public static final int tabs=0x7f030010;
-        public static final int tabs_bg=0x7f030011;
-        public static final int view_spot=0x7f030012;
-        public static final int view_spot_invite_dialog=0x7f030013;
-        public static final int view_spot_map=0x7f030014;
-        public static final int view_spot_report_dialog=0x7f030015;
+        public static final int tab_starred=0x7f030010;
+        public static final int tabs=0x7f030011;
+        public static final int tabs_bg=0x7f030012;
+        public static final int view_spot=0x7f030013;
+        public static final int view_spot_invite_dialog=0x7f030014;
+        public static final int view_spot_map=0x7f030015;
+        public static final int view_spot_report_dialog=0x7f030016;
     }
     public static final class menu {
         public static final int full_screen_map_menu=0x7f060000;

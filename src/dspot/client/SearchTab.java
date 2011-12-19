@@ -41,7 +41,7 @@ public class SearchTab  extends ListActivity{
 	
 	ProgressDialog dialog;
 	
-	static final String[] Options = new String[] {"Search Near Me", "Search By Location","Search By Name", "Last Search", "Sports", "Radius"};
+	static final String[] Options = new String[] {"Search Near Me", "Search By Location","Search By Name", "Last Search", "Sports"};
 
 	
 	private AlertDialog sportsDialog;
@@ -160,8 +160,8 @@ public class SearchTab  extends ListActivity{
 
 	
 	public void searchNearMe(){
-		Toast toast = Toast.makeText(getApplicationContext(), "Search Near Me", Toast.LENGTH_SHORT);
-		toast.show();
+		Intent intent = new Intent(getApplicationContext(),SearchNearMe.class);
+        startActivity(intent);
 	}
 
 	
@@ -330,44 +330,12 @@ public class SearchTab  extends ListActivity{
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {    
-			 if(position == 5){
-            	 LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        		 convertView = infalInflater.inflate(R.layout.search_tab_child_seek, null);
-
-				 ((TextView) convertView.findViewById(R.id.search_tab_child_seek_text)).setText(Options[position]);		
-				 SeekBar sb = (SeekBar)convertView.findViewById(R.id.search_tab_child_seek_seekBar);
-				 sb.setMax(100);
-				 sb.setProgress(5);
-				 sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-					
-					@Override
-					public void onStopTrackingTouch(SeekBar seekBar) {
-						Toast toast = Toast.makeText(getApplicationContext(), "SeekBar -> " + seekBar.getProgress(), Toast.LENGTH_SHORT);
-			    		toast.show();
-			    		api.radious =  seekBar.getProgress();
-					}
-					
-					@Override
-					public void onStartTrackingTouch(SeekBar seekBar) {
-						//nao faz nada
-						return;
-						
-					}
-					
-					@Override
-					public void onProgressChanged(SeekBar seekBar, int progress,
-							boolean fromUser) {
-						//nao faz nada
-						return;
-						
-					}
-				});
-			 }else{
+			
 	             LayoutInflater infalInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				 convertView = infalInflater.inflate(R.layout.search_tab_child_normal, null);
 				 ((TextView) convertView.findViewById(R.id.search_tab_child_normal_text)).setText(Options[position]); 
 				 
-			 }
+			 
 			 
 			return convertView;
 		}

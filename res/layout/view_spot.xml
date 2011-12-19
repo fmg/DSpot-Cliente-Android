@@ -34,8 +34,8 @@
             android:id="@+id/gallery1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/view_spot_favourite"
-            android:layout_centerHorizontal="true" android:layout_marginTop="10dp"/>
+            android:layout_below="@+id/view_spot_spotName"
+            android:layout_centerHorizontal="true" android:layout_marginTop="35dp"/>
 
         <RatingBar
             android:id="@+id/view_spot_rating"
