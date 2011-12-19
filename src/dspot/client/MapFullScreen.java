@@ -1,9 +1,11 @@
 package dspot.client;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.io.IOException;
 import java.util.Locale;
+
 
 
 import org.apache.http.client.ClientProtocolException;
@@ -19,10 +21,8 @@ import com.google.android.maps.OverlayItem;
 
 import dspot.utils.SpotShortInfo;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -34,15 +34,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapTab  extends MapActivity implements Runnable{
+public class MapFullScreen extends MapActivity implements Runnable{
+	
+
+	 private GestureDetector gestureDetector;
+	 View.OnTouchListener gestureListener;
 
 	Api api;
 
@@ -50,15 +57,12 @@ public class MapTab  extends MapActivity implements Runnable{
 	MapController mapController;
 	boolean popupActive = false;
 	int selected_index = -1;
-	int click_count = 0;
 
 	View popupView;
 	
 	ProgressDialog dialog;
-
 	 
 	
-	private boolean fistStart = true;
 	LocationManager locationManager;
 	LocationListener locationListener;
     
@@ -107,12 +111,30 @@ public class MapTab  extends MapActivity implements Runnable{
 		    }
 		};
 	      
+		
+		gestureDetector = new GestureDetector(new MyGestureDetector());
+	      gestureListener = new View.OnTouchListener() {
+	          public boolean onTouch(View v, MotionEvent event) {
+	              if (gestureDetector.onTouchEvent(event)) {
+	                  return true;
+	              }
+	              return false;
+	          }
+	      };
+		
 	      
 	      List<Overlay> mapOverlays = mapView.getOverlays();
 		 Drawable drawable = this.getResources().getDrawable(R.drawable.pin);
 		 itemizedoverlay = new MyItemizedOverlay(drawable);
 		 
 		mapOverlays.add(itemizedoverlay);
+		
+		
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);			
+		
+		dialog = ProgressDialog.show(MapFullScreen.this, "", "Working. Please wait...", true);
+		Thread thread = new Thread(this);
+        thread.start();
        
     }
 	
@@ -121,24 +143,6 @@ public class MapTab  extends MapActivity implements Runnable{
 	protected boolean isRouteDisplayed() {
 	    return false;
 	}
-	
-	
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		
-		if(fistStart){
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);			
-			
-			dialog = ProgressDialog.show(MapTab.this, "", "Working. Please wait...", true);
-			fistStart = false;
-    		Thread thread = new Thread(this);
-            thread.start();
-			
-		}
-	}
-	
 	
 	
 	@Override
@@ -248,13 +252,17 @@ public class MapTab  extends MapActivity implements Runnable{
 	}
     
     
-    
+    @Override
+  	public boolean dispatchTouchEvent(MotionEvent ev){
+  		super.dispatchTouchEvent(ev);
+  		return gestureDetector.onTouchEvent(ev);
+  	}
     
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.tab_map_menu, menu);
+	    inflater.inflate(R.menu.full_screen_map_menu, menu);
 	    return true;
 	}
 	
@@ -263,20 +271,15 @@ public class MapTab  extends MapActivity implements Runnable{
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.tab_map_menu_fullscreen:
-	    	 Intent intent = new Intent(getApplicationContext(), MapFullScreen.class);
-	    	 startActivity(intent);
-	        return true;
 	    
-	    case R.id.tab_map_menu_refresh:
+	    case R.id.full_screen_map_menu_refresh:
 	    	
 	    	lastLatitude = 9999.9; 	
 			lastLongitude= 9999.9;
 	    	
 	    	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);			
 			
-			dialog = ProgressDialog.show(MapTab.this, "", "Working. Please wait...", true);
-			fistStart = false;
+			dialog = ProgressDialog.show(MapFullScreen.this, "", "Working. Please wait...", true);
     		Thread thread = new Thread(this);
             thread.start();
 	        return true;
@@ -333,8 +336,7 @@ public class MapTab  extends MapActivity implements Runnable{
 			popupActive = true;
 			selected_index = index;
 			
-			spots.get(index).count_click++;
-			System.out.println("click_count->" + (spots.get(index).count_click) + "selected_index-> " +selected_index);			
+			System.out.println("selected_index-> " +selected_index);			
 			
 			OverlayItem item = mOverlays.get(index);
 			
@@ -354,17 +356,6 @@ public class MapTab  extends MapActivity implements Runnable{
 	                  MapView.LayoutParams.BOTTOM_CENTER);
 	    	  mapView.addView(popupView, mapParams);
 	    	  
-	    	  if(spots.get(index).count_click ==3){
-	    		  spots.get(index).count_click=0;
-	    		  
-	    		  Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
-	    		  intent.putExtra("id", spots.get(index).getId());
-	    			intent.putExtra("index", 0);
-	    			ArrayList<Integer> tmp = new ArrayList<Integer>();
-	    			tmp.add(spots.get(index).getId());
-	    			intent.putIntegerArrayListExtra("spotList_ids", tmp);
-	    	        startActivity(intent);
-	    	  }
 	    	  
 	        
 		  return true;
@@ -382,36 +373,40 @@ public class MapTab  extends MapActivity implements Runnable{
 			selected_index = -1;
 			return super.onTap(p, mapView);
 		}
-	}    
-    
-	
-	@Override
-	public void onBackPressed() {
-		
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-        alertbox.setMessage("Do you want to quit the application?");
-        alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {
-                //Do nothing
-            }
-        });
-        
-        alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {            	            	
-            	if (Api.user.isConnected()) {
-            		finish();            			
-            	}
-            	else if (!Api.user.isConnected()) {
-            		if (api.logout())
-            			finish();
-            		else {
-            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
-            			toast.show();
-            		}
-            	}
-            }       
-        });
-        
-        alertbox.show();
 	}
+    
+    
+    
+    class MyGestureDetector extends SimpleOnGestureListener {
+        
+		@Override
+		public void onLongPress(MotionEvent e) {
+			super.onLongPress(e);
+			
+			if(selected_index != -1){
+				Intent intent = new Intent(getApplicationContext(), ViewSpot.class);
+	  		  	intent.putExtra("id", spots.get(selected_index).getId());
+	  			intent.putExtra("index", 0);
+	  			ArrayList<Integer> tmp = new ArrayList<Integer>();
+	  			tmp.add(spots.get(selected_index).getId());
+	  			intent.putIntegerArrayListExtra("spotList_ids", tmp);
+	  	        startActivity(intent);
+			}
+			
+		}
+
+		@Override
+		public boolean onDoubleTap(MotionEvent e) {
+			if(selected_index != -1){
+				System.out.println("aki->" + selected_index);
+				mapController.animateTo(itemizedoverlay.getSelectedGeopoint(selected_index));
+				mapController.setZoom(17);
+			}
+
+			return super.onDoubleTap(e);
+		}
+
+		
+  	}
+	
 }

@@ -71,7 +71,7 @@ public class ViewSpotMap extends MapActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.map_menu, menu);
+	    inflater.inflate(R.menu.view_spot_map_menu, menu);
 	    return true;
 	}
 	
@@ -79,11 +79,11 @@ public class ViewSpotMap extends MapActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-	    case R.id.map_menu_satellite:
+	    case R.id.view_spot_map_menu_satellite:
 	    	mapView.setSatellite(true);
 	        return true;
 	        
-	    case R.id.map_menu_street:
+	    case R.id.view_spot_map_menu_street:
 	    	mapView.setSatellite(false);
 	        return true;
 	        

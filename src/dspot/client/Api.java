@@ -56,8 +56,10 @@ import android.location.Address;
 
 public class Api extends Application {
 	
+	//TODO: corrigir bug no mapa dos clicks
+	
 	//TODO: compor comments (canComment), adicionar/remover favoritos e ver estado da estrelinha,
-	//mandar mail, report, ranking do user, mapa, search near me
+	//mandar mail, report, ranking do user, search near me
 	
 	private final String PATH = "/data/data/dspot.client/";
 
@@ -238,7 +240,7 @@ public class Api extends Application {
 	
 	
 	
-	public ArrayList<SpotShortInfo> getSpotsByLocation(int id) throws ClientProtocolException, IOException, JSONException{
+	public ArrayList<SpotShortInfo> getSpotsByLocation(int id, boolean withSports) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
 		
@@ -270,6 +272,10 @@ public class Api extends Application {
    					sports+= sel_sports.get(i) + ",";
    			}
    			
+   			
+   			if(!withSports)
+   				sports = "";
+   			
    			jsonuser.put("sport_ids", sports);
 
    				
@@ -296,6 +302,12 @@ public class Api extends Application {
 			   		JSONObject spot = messageReceived.getJSONObject(i);
 			   		
 			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"), spot.getInt("rating"));
+			   		ssi.setLatitude(spot.getDouble("latitude"));
+			   		ssi.setLongitude(spot.getDouble("longitude"));
+			   		
+			   		JSONArray arraySports = spot.getJSONArray("sports");
+			   		for(int k = 0; k < arraySports.length(); k++)
+			   			ssi.addSport((arraySports.getJSONObject(k)).getString("name"));
 			   		
 			   		spotlist.add(ssi);
 			   		
@@ -384,7 +396,6 @@ public class Api extends Application {
 			   		JSONObject spot = messageReceived.getJSONObject(i);
 			   		
 			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"), spot.getInt("rating"));
-			   		
 			   		spotlist.add(ssi);
 			   		
 			   	}

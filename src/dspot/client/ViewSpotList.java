@@ -114,7 +114,7 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	public void run() {
 		try {
 			
-			spotList = api.getSpotsByLocation(location_id);
+			spotList = api.getSpotsByLocation(location_id, true);
 			for(SpotShortInfo ssi: spotList){
 				spotList_ids.add(ssi.getId());
 			}
