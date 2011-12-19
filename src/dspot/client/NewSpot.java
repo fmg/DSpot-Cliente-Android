@@ -1,9 +1,12 @@
 package dspot.client;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.http.client.ClientProtocolException;
 
 import dspot.utils.Sport;
 
@@ -21,6 +24,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +66,11 @@ public class NewSpot extends Activity implements Runnable{
 	
 	
 	AlertDialog alert_address;
+	
+	Bitmap photo;
+	
+	
+	int operation =1; //1- obter localizacao, 2-criarspot
 
 	
 	
@@ -94,11 +103,22 @@ public class NewSpot extends Activity implements Runnable{
 			}
 		});
 		
+		((Button)findViewById(R.id.new_spot_createButton)).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				createSpot();
+			}
+		});
+		
 		EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
 		t.setEnabled(false);
+		t.setFocusable(false);
 		
 		t= (EditText)findViewById(R.id.new_spot_addressEdit);
-		t.setEnabled(false);			
+		t.setEnabled(false);
+		t.setFocusable(false);
+
 
 		
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -106,8 +126,8 @@ public class NewSpot extends Activity implements Runnable{
 		locationListener = new LocationListener() {
 		    public void onLocationChanged(Location location) {
 			    
-			      Toast toast = Toast.makeText(getApplicationContext(), location.getProvider() + ": " + location.getLatitude() +" , " + location.getLongitude(), Toast.LENGTH_LONG);
-				  toast.show();
+			      //Toast toast = Toast.makeText(getApplicationContext(), location.getProvider() + ": " + location.getLatitude() +" , " + location.getLongitude(), Toast.LENGTH_LONG);
+				  //toast.show();
 				  System.out.println(location.getProvider() +": " +location.getLatitude() + " , " + location.getLongitude());
 			    
 				  double deltaLat, deltaLon;
@@ -173,7 +193,6 @@ public class NewSpot extends Activity implements Runnable{
 					long id) {
 				sportsDialogAdapter.setChecked(position);
 				sportsDialogAdapter.notifyDataSetChanged();
-				System.out.println("tlalalala");
 				
 			}
 		});
@@ -211,10 +230,10 @@ public class NewSpot extends Activity implements Runnable{
 	    	
 	    	// do something  
 	    	if(data.hasExtra("data")){
-		    	Bitmap thumbnail = (Bitmap) data.getExtras().get("data");  
+		    	photo = (Bitmap) data.getExtras().get("data");  
 		    	
 		    	ImageView image = (ImageView) findViewById(R.id.new_spot_picture);  
-		    	image.setImageBitmap(thumbnail);
+		    	image.setImageBitmap(photo);
 		    	
 		    	
 		    	// Register the listener with the Location Manager to receive location updates
@@ -223,6 +242,7 @@ public class NewSpot extends Activity implements Runnable{
 				
 				
 				dialog = ProgressDialog.show(NewSpot.this, "", "Obtaining your location. Please don't move and wait...", true);
+				operation=1;
 	    		Thread thread = new Thread(this);
 	            thread.start();
 	    	}
@@ -232,38 +252,95 @@ public class NewSpot extends Activity implements Runnable{
 
 	@Override
 	public void run() {
-		while(deltaLatitude_network + deltaLongitude_network > 0.0 && deltaLatitude_gps + deltaLongitude_gps > 0.0){
-			try {
+		if(operation == 1){
+			while(deltaLatitude_network + deltaLongitude_network > 0.0 && deltaLatitude_gps + deltaLongitude_gps > 0.0){
+				try {
+					
+					if(retrys > max_retrys){
+						locationManager.removeUpdates(locationListener);
+						System.out.println("vai sair da thread");
+						Message msg = handler.obtainMessage();
+						handler.sendMessage(msg);
+						return;
+					}	
+					
+					System.out.println("Sleeping. zZzZzZzzzzz");
+					Thread.sleep(10000);
+					retrys++;
 				
-				if(retrys > max_retrys){
-					locationManager.removeUpdates(locationListener);
-					System.out.println("vai sair da thread");
-					Message msg = handler.obtainMessage();
-					handler.sendMessage(msg);
-					return;
-				}	
-				
-				System.out.println("Sleeping. zZzZzZzzzzz");
-				Thread.sleep(10000);
-				retrys++;
-			
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			
+			if(deltaLatitude_network + deltaLongitude_network == 0.0){
+				finalLocation_latitude = lastLatitude_network;
+				finalLocation_longitude = lastLongitude_network;
+			}else{
+				finalLocation_latitude = lastLatitude_gps;
+				finalLocation_longitude = lastLongitude_gps;
+			}
+			
+			locationManager.removeUpdates(locationListener);
+			System.out.println("vai sair da thread");
+			Message msg = handler.obtainMessage();
+			handler.sendMessage(msg);
+		}else if(operation == 2){
+			
+			
+			try {
+				if(api.createSpot(photo, sportsDialogAdapter.getIDs(), finalLocation_latitude, finalLocation_longitude,
+						((EditText)findViewById(R.id.new_spot_nameEdit)).getText().toString(),
+						((EditText)findViewById(R.id.new_spot_locationEdit)).getText().toString(),
+						((EditText)findViewById(R.id.new_spot_addressEdit)).getText().toString(), 
+						((EditText)findViewById(R.id.new_spot_descriptionEdit)).getText().toString()) == 0){
+					
+					
+					Message msg = handler2.obtainMessage();
+					handler2.sendMessage(msg);
+					
+				}else{
+					dialog.dismiss();
+		    		Looper.prepare();
+		    		Toast toast = Toast.makeText(getApplicationContext(), "Error on creation", Toast.LENGTH_SHORT);
+					toast.show();
+					Looper.loop();
+				}
+			} catch (ClientProtocolException e) {
+				
+				dialog.dismiss();
+				Looper.prepare();
+				Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+	    		toast.show();
+	    		Looper.loop();
+	    		
+	    		e.printStackTrace();
+				
+			} catch (IOException e) {
+				
+				dialog.dismiss();
+
+				Looper.prepare();
+				Toast toast = Toast.makeText(getApplicationContext(), "Error parsing information from server, try again...", Toast.LENGTH_SHORT);
+	    		toast.show();
+	    		Looper.loop();
+				
+				e.printStackTrace();
+				
+			} catch (URISyntaxException e) {
+				
+				dialog.dismiss();
+				
+				Looper.prepare();
+				Toast toast = Toast.makeText(getApplicationContext(), "Error connecting to the server, try again...", Toast.LENGTH_SHORT);
+	    		toast.show();
+	    		Looper.loop();
+	    		
+	    		e.printStackTrace();
+				
+			}
+					
 		}
-		
-		if(deltaLatitude_network + deltaLongitude_network == 0.0){
-			finalLocation_latitude = lastLatitude_network;
-			finalLocation_longitude = lastLongitude_network;
-		}else{
-			finalLocation_latitude = lastLatitude_gps;
-			finalLocation_longitude = lastLongitude_gps;
-		}
-		
-		locationManager.removeUpdates(locationListener);
-		System.out.println("vai sair da thread");
-		Message msg = handler.obtainMessage();
-		handler.sendMessage(msg);
 		
 	}  
 	
@@ -280,6 +357,7 @@ public class NewSpot extends Activity implements Runnable{
         	
         	if(retrys> max_retrys){
         		Toast.makeText(getApplicationContext(), "Cannot obtain your position. Please try in a again in a near open space", Toast.LENGTH_SHORT).show();
+        		retrys =0;
 				dialog.dismiss();
         		return;
         	}
@@ -290,7 +368,7 @@ public class NewSpot extends Activity implements Runnable{
         	
     		try {
     			locationManager.removeUpdates(locationListener);
-    			addresses = gcd.getFromLocation(finalLocation_latitude, finalLocation_longitude, 5);
+    			addresses = gcd.getFromLocation(finalLocation_latitude, finalLocation_longitude, 1);
  
     			
     			if (addresses.size() > 0) {
@@ -311,25 +389,19 @@ public class NewSpot extends Activity implements Runnable{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Choose the adress");
 		
-		for(int i = 0; i < addresses.size();i++){
-			System.out.println("localidade -> " + addresses.get(i).getLocality());
-			
-			for(int k= 0; k < addresses.get(i).getMaxAddressLineIndex(); k++){
-				
-				System.out.println("address - > " + addresses.get(i).getAddressLine(k).toString());
-			}
-				
-		}
-		/*
-		builder.setSingleChoiceItems((CharSequence[]) addresses.toArray(), -1, new DialogInterface.OnClickListener() {
+		String[] ruas = new String[addresses.get(0).getMaxAddressLineIndex()];
+		
+		for(int i = 0; i < addresses.get(0).getMaxAddressLineIndex(); i++)
+			ruas[i] = addresses.get(0).getAddressLine(i).toString();
+		
+		builder.setSingleChoiceItems((CharSequence[])ruas , -1, new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int item) {
 		    	
-		    	System.out.println(addresses.get(0).getLocality());
 				EditText t = (EditText)findViewById(R.id.new_spot_locationEdit);
 				t.setText(addresses.get(0).getLocality());
 				
 				EditText t2 = (EditText)findViewById(R.id.new_spot_addressEdit);
-				t2.setText(addresses.get(0).getAddressLine(0).toString());
+				t2.setText(addresses.get(0).getAddressLine(item).toString());
 				
 				alert_address.dismiss();
 		        
@@ -337,11 +409,42 @@ public class NewSpot extends Activity implements Runnable{
 		});
 		alert_address = builder.create();
 		alert_address.show();
-		*/
+		
 		
 		
 	}
 	
+	
+	
+	
+	public void createSpot(){
+		String name, address, location;
+		name = ((EditText)findViewById(R.id.new_spot_nameEdit)).getText().toString();
+		location = ((EditText)findViewById(R.id.new_spot_locationEdit)).getText().toString();
+		address = ((EditText)findViewById(R.id.new_spot_addressEdit)).getText().toString();
+
+		if(name.equalsIgnoreCase("") || location.equalsIgnoreCase("") || address.equalsIgnoreCase("")){
+			Toast.makeText(getApplicationContext(), "Fill the form before creating. Phone and description not mandatory", Toast.LENGTH_SHORT).show();
+		}else{
+			dialog = ProgressDialog.show(NewSpot.this, "", "Creating. Please wait...", true);
+			operation=2;
+    		Thread thread = new Thread(this);
+            thread.start();	
+		}
+		
+		
+	}
+
+	final Handler handler2 = new Handler() {
+        public void handleMessage(Message msg) {
+        	
+        	Toast.makeText(getApplicationContext(), "Created with success", Toast.LENGTH_SHORT).show();
+			dialog.dismiss();
+			
+			finish();
+
+        }
+    };
 	
 	
 	
@@ -394,6 +497,16 @@ public class NewSpot extends Activity implements Runnable{
 					sports.get(position).setChecked(true);
 				}
 
+			}
+			
+			
+			public ArrayList<Integer> getIDs(){
+				ArrayList<Integer> ret = new ArrayList<Integer>();
+				
+				for(Sport s: sports)
+					ret.add(s.getId());
+				
+				return ret;
 			}
 			
 			

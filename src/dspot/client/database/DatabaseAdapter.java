@@ -104,6 +104,22 @@ public class DatabaseAdapter {
 	
 /////////////////////////////////////////////////////////////////////
 
+	public int getLocationId(String name) {
+		
+		String selectLocation = "Select _id from locations Where name=\""+ name + "\"";  
+		
+	 	Cursor locationCursor = database.rawQuery(selectLocation, null);
+	 	
+	 	locationCursor.moveToFirst();
+	 	if(locationCursor.getCount() == 0){
+	 		locationCursor.close();
+	 		return -1;
+	 	}
+	 
+	 	return locationCursor.getInt(0);
+	}
+	
+	
 	public long createLocation(int id, String name) {
 		
 		ContentValues initialvalues = new ContentValues();
@@ -273,14 +289,14 @@ public class DatabaseAdapter {
 	
 /////////////////////////////////////////////////////////////////////
 
-	public long createFavourite(int id, String name, String address, int user_id) {
+	public long createFavourite(int id, String name, String address, int rating ,int user_id) {
 		
 		ContentValues initialvalues = new ContentValues();
 		initialvalues.put("_id", id);
 		initialvalues.put("name", name);
 		initialvalues.put("address", address);
-		initialvalues.put("photo", "");
 		initialvalues.put("user_id", user_id);
+		initialvalues.put("rating", rating);
 
 		return database.insert("favourites", null, initialvalues);
 	}
@@ -303,7 +319,7 @@ public class DatabaseAdapter {
 	 	
 	 	favouritesCursor.moveToFirst();
 	 	do {
-	 		SpotShortInfo s = new SpotShortInfo(favouritesCursor.getString(1), favouritesCursor.getString(2), favouritesCursor.getInt(0));
+	 		SpotShortInfo s = new SpotShortInfo(favouritesCursor.getString(1), favouritesCursor.getString(2), favouritesCursor.getInt(0), favouritesCursor.getInt(3));
 	 		favourites.add(s);
 	 	}while(favouritesCursor.moveToNext());
 	 	favouritesCursor.close();

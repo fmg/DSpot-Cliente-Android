@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -23,6 +24,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -50,9 +52,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
 
 public class Api extends Application {
 	
+	//TODO: compor comments (canComment), adicionar/remover favoritos e ver estado da estrelinha,
+	//mandar mail, report, ranking do user, mapa, search near me
 	
 	private final String PATH = "/data/data/dspot.client/";
 
@@ -290,7 +295,7 @@ public class Api extends Application {
 			   	for(int i = 0; i<messageReceived.length(); i++){
 			   		JSONObject spot = messageReceived.getJSONObject(i);
 			   		
-			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"));
+			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"), spot.getInt("rating"));
 			   		
 			   		spotlist.add(ssi);
 			   		
@@ -378,7 +383,7 @@ public class Api extends Application {
 			   	for(int i = 0; i<messageReceived.length(); i++){
 			   		JSONObject spot = messageReceived.getJSONObject(i);
 			   		
-			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"));
+			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"), spot.getInt("rating"));
 			   		
 			   		spotlist.add(ssi);
 			   		
@@ -515,69 +520,6 @@ public class Api extends Application {
 	
 	
  	public int registrate(String username, String pass, String nome, String email,String pictureURL, String facebook_id) throws ClientProtocolException, IOException, URISyntaxException{
-		/*
-		final HttpClient httpClient =  new DefaultHttpClient();
-		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
-		 
-		 HttpResponse response=null;
-		 
-		 String url = IP + "/users";  
-		 
-		
-         HttpPost httpPost = new HttpPost(url);         
-         JSONObject jsonuser=new JSONObject();
-         JSONObject jsonuserinfo=new JSONObject();
-         httpPost.setHeader("Accept", "application/json");
-         try {
-        	
-        	 
-        	 jsonuserinfo.put("username", username);
-        	 jsonuserinfo.put("password", pass);
-        	 jsonuserinfo.put("password_confirmation", pass);
-        	 jsonuserinfo.put("name", nome);
-        	 jsonuserinfo.put("email", email);
-         	
-         	//TODO: ver cena da foto
-         	//jsonuser.put("picture", pictureURL);
-         	jsonuser.put("user", jsonuserinfo);
-        
-            String POSTText = jsonuser.toString();
-            System.out.println(POSTText);
-            
-            StringEntity entity = new StringEntity(POSTText, "UTF-8");
-			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
-	        httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-	        entity.setContentType(basicHeader);
-	        httpPost.setEntity(entity);
-	        response = httpClient.execute(httpPost);
-         
-	        System.out.println(url);
-	        
-	        if(response.getStatusLine().getStatusCode() == 201){
-            	
-	        	 System.out.println("success");
-            	
-            	 return 0;
-            	 
-            }else{
-            	System.out.println("erro -> "+ response.getStatusLine().getStatusCode());
-            	return -1;
-            }
-         } catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-			return -3;
-         } catch (ClientProtocolException e) {
-			e.printStackTrace();
-			return -3;
-         } catch (IOException e) {
-			e.printStackTrace();
-			return -3;
-         } catch (JSONException e) {
-			e.printStackTrace();
-			return -3;
-		}
-		*/
- 		
  		
  		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
@@ -606,9 +548,6 @@ public class Api extends Application {
 		
 		fout.flush();
 		fout.close();
-
-		
-
  		
  		multipartEntity.addPart("user[avatar]", new FileBody(f)); 
  		
@@ -632,6 +571,81 @@ public class Api extends Application {
 	}
 	
 	
+ 	
+ 	public int createSpot(Bitmap photo, ArrayList<Integer> sportsIdList, double latitude, double longitude, String name, String location, String address ,String description) throws ClientProtocolException, IOException, URISyntaxException{
+ 		
+ 		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		 
+		 HttpResponse response=null;
+		 
+		 String url = IP + "/spots"; 
+ 		
+ 		HttpPost post = new HttpPost(url);
+ 		
+ 		
+ 		int location_id = getLocationID(location);
+ 		
+ 		
+ 		 post.setHeader("Cookie", cookie);
+         post.setHeader("Accept", "application/json");
+         
+
+ 		  MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+ 		  multipartEntity.addPart("lat", new StringBody(String.valueOf(latitude)));
+ 		 multipartEntity.addPart("lon", new StringBody(String.valueOf(longitude)));
+ 		multipartEntity.addPart("spot[premium]", new StringBody("0"));
+ 		multipartEntity.addPart("spot[name]", new StringBody(name,"text/plain",Charset.forName("UTF-8")));
+ 		multipartEntity.addPart("spot[address]", new StringBody(address,"text/plain",Charset.forName("UTF-8")));
+ 		multipartEntity.addPart("spot[user_id]", new StringBody(String.valueOf(user.getId())));
+ 		multipartEntity.addPart("spot[description]", new StringBody(description,"text/plain",Charset.forName("UTF-8")));
+ 		multipartEntity.addPart("spot[localidade_id]", new StringBody(String.valueOf(location_id)));
+
+ 		
+ 		
+ 		String sports ="";
+			for(int i = 0; i < sportsIdList.size(); i++){
+				if(i == sportsIdList.size()-1){
+					sports += sportsIdList.get(i);
+					
+				}else
+					sports+= sportsIdList.get(i) + ",";
+			}
+ 		
+ 		
+			multipartEntity.addPart("sports", new StringBody(sports));
+			
+ 		File f = new File(PATH+"tmp.png");
+ 		
+		
+		FileOutputStream fout = new FileOutputStream(f);
+		
+		photo.compress(Bitmap.CompressFormat.PNG, 100, fout);
+		
+		fout.flush();
+		fout.close();
+ 		
+ 		multipartEntity.addPart("spot[pictures_attributes][0][picture]", new FileBody(f)); 
+ 		
+ 		  
+ 		post.setEntity(multipartEntity);  
+ 		response = httpClient.execute(post);  
+
+ 		HttpEntity resEntity = response.getEntity();  
+ 		if (resEntity != null) {    
+ 		  resEntity.consumeContent();  
+ 		}
+ 		
+ 		f.delete();
+ 		
+ 		
+ 		if(response.getStatusLine().getStatusCode()== 201)
+ 			return 0;
+ 		else
+ 			return -1;
+ 		
+	}
+ 	
 	
 	public boolean logout() {
 		
@@ -799,6 +813,17 @@ public class Api extends Application {
 	}
 	
 	
+	public int getLocationID(String name){
+		
+		dbAdapter.open();		
+		int ret = dbAdapter.getLocationId(name);
+		dbAdapter.close();
+		
+		return ret;
+		
+	}
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	
 	public ArrayList<User> getFriends(){	
@@ -848,7 +873,7 @@ public class Api extends Application {
 			JSONObject favoutire;
 			try {
 				favoutire = favoutires.getJSONObject(i);
-				dbAdapter.createFavourite(favoutire.getInt("id"), favoutire.getString("name"), favoutire.getString("address"),user_id);
+				dbAdapter.createFavourite(favoutire.getInt("id"), favoutire.getString("name"), favoutire.getString("address"),favoutire.getInt("rating"),user_id);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

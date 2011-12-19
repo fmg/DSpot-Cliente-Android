@@ -1,19 +1,17 @@
 package dspot.utils;
 
 public class SpotShortInfo {
-
-	public SpotShortInfo(String name, String address, int id, String photo ){
-		this.name = name;
-		this.address = address;
-		this.id = id;
-		this.photoURL = photo;
+	
+	public String toString(){
+		return name;
 	}
 	
 	
-	public SpotShortInfo(String name, String address, int id){
+	public SpotShortInfo(String name, String address, int id, int rating){
 		this.name = name;
 		this.address = address;
 		this.id = id;
+		this.rating = rating;
 	}
 	
 	public String getName() {
@@ -32,10 +30,16 @@ public class SpotShortInfo {
 	public String getPhotoURL() {
 		return photoURL;
 	}
+	
+	
+	public int getRating() {
+		return rating;
+	}
 
 	private String name;
 	private String address;
 	private int id;
 	private String photoURL;
+	private int rating;
 
 }

@@ -240,7 +240,11 @@ public class Registo extends Activity  implements Runnable{
 			((ImageView)findViewById(R.id.register_profileImage)).setImageBitmap(mIcon_val);
 			
 			((EditText)findViewById(R.id.register_email)).setEnabled(false);
+			((EditText)findViewById(R.id.register_email)).setFocusable(false);
+
         	((EditText)findViewById(R.id.register_name)).setEnabled(false);
+        	((EditText)findViewById(R.id.register_name)).setFocusable(false);
+
 			
     	}catch (IOException e) {
 			Toast toast = Toast.makeText(getApplicationContext(), "Error downloading image", Toast.LENGTH_SHORT);

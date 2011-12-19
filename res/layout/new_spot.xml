@@ -23,7 +23,7 @@
 	    </ImageView>
 
 	    <Button
-	        android:id="@+id/button1"
+	        android:id="@+id/new_spot_createButton"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/tableLayout1"
@@ -58,7 +58,7 @@
 	                android:textAppearance="?android:attr/textAppearanceMedium" />
 
 	            <EditText
-	                android:id="@+id/editText1"
+	                android:id="@+id/new_spot_nameEdit"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:inputType="text" >

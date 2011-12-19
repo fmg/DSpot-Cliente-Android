@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,10 +99,11 @@ public class ViewSpotList extends ListActivity implements Runnable{
 	            }
 	            TextView name = (TextView) convertView.findViewById(R.id.spotList_name_text);
 	            TextView address = (TextView) convertView.findViewById(R.id.spotList_address_text);
+	            RatingBar rating = (RatingBar) convertView.findViewById(R.id.spotList_ratingBar);
 
 	            name.setText(spotList.get(position).getName());
 	            address.setText(spotList.get(position).getAddress());
-
+	            rating.setRating(spotList.get(position).getRating());
 			
 			return convertView;
 		}
