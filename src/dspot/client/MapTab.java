@@ -385,10 +385,9 @@ public class MapTab  extends MapActivity implements Runnable{
 	}    
     
 	
-	@Override
+    @Override
 	public void onBackPressed() {
-		
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+		AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
         alertbox.setMessage("Do you want to quit the application?");
         alertbox.setPositiveButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
@@ -399,19 +398,18 @@ public class MapTab  extends MapActivity implements Runnable{
         alertbox.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {            	            	
             	if (Api.user.isConnected()) {
-            		finish();            			
-            	}
-            	else if (!Api.user.isConnected()) {
             		if (api.logout())
             			finish();
             		else {
-            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
+            			Toast toast = Toast.makeText(getApplicationContext(), "Logout failed, try again", Toast.LENGTH_SHORT);
             			toast.show();
-            		}
+            		}           			
             	}
+            	else
+            		finish();
             }       
         });
         
-        alertbox.show();
+        alertbox.show();        
 	}
 }

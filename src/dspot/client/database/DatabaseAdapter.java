@@ -45,6 +45,39 @@ public class DatabaseAdapter {
 	 	database.execSQL(resetSports);
 	 	database.execSQL(resetVersion);
 	}
+	
+	
+	public long updateVersion(int version){
+		
+		String resetVersion = "delete from versions";
+	 	database.execSQL(resetVersion);
+
+
+	 	ContentValues initialvalues = new ContentValues();
+		initialvalues.put("version", version);
+		
+		return database.insert("versions", null, initialvalues);
+	}
+	
+	
+	
+	public int getDBVersion(){
+		String selectVersion = "Select * from versions";
+		
+		Cursor versionCursor = database.rawQuery(selectVersion, null);
+	 	
+		versionCursor.moveToFirst();
+	 	if(versionCursor.getCount() == 0){
+	 		versionCursor.close();
+	 		return -1;
+	 	}
+	 	
+	 	int ret = versionCursor.getInt(0);
+	 	versionCursor.close();
+	 	
+	 	return ret;
+		
+	}
 
 	
 	public void resetUserInfo(int id) {

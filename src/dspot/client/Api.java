@@ -221,14 +221,24 @@ public class Api extends Application {
 			   	System.out.println(messageReceived.toString());
 			   	
 			   	
-			   	//TODO: ver cena das versoes
+			   	int version = messageReceived.getInt("version");
+			   	int dbVersion = getDBVersion();
 			   	
-			   	JSONArray cities = messageReceived.getJSONArray("localidades");
-			   	createLocations(cities);
+			   	System.out.println("Server version:" + version + "   Local Version:" + dbVersion);
 			   	
-			   	JSONArray sports = messageReceived.getJSONArray("sports");
-			   	createSports(sports);
-			   	
+			   	if(version > dbVersion){
+			   		System.out.println("updating db");
+				   	JSONArray cities = messageReceived.getJSONArray("localidades");
+				   	createLocations(cities);
+				   	
+				   	JSONArray sports = messageReceived.getJSONArray("sports");
+				   	createSports(sports);
+				   	
+				   	
+				   	updateDBVersion(version);
+			   	}else
+			   		System.out.println("mantaining db");
+
 			   	
            }
        
@@ -914,6 +924,22 @@ public class Api extends Application {
 	/////////////////////////////////////////////////////////////////////
 	//					CHAMADAS A BD								////
    /////////////////////////////////////////////////////////////////////
+	
+	
+	public int getDBVersion(){
+		dbAdapter.open();
+		int ret = dbAdapter.getDBVersion();
+		dbAdapter.close();
+		
+		return ret;
+	}
+	
+	
+	public void updateDBVersion(int version){
+		dbAdapter.open();
+		dbAdapter.updateVersion(version);
+		dbAdapter.close();
+	}
 	
 	public void resetDefinitions(){
 		dbAdapter.open();

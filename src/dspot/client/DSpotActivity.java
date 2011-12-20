@@ -79,8 +79,6 @@ public class DSpotActivity extends Activity implements Runnable {
     
     @Override
 	public void run() {
-    	 //TODO: apagar
-        api.resetDefinitions();
         
         try {
         	
