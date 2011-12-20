@@ -60,14 +60,11 @@ public class Api extends Application {
 	//TODO: corrigir bug da propagacao das estrelas
 	//TODO: actualizar rating nos favoritos
 	
-	//TODO:
-	//mandar mail, report
-	
 	private final String PATH = "/data/data/dspot.client/";
 
 	
 	public static String cookie;
-	public final String IP = "http://172.30.15.86:3000";
+	public final String IP = "http://172.30.1.57:3000";
 	
 	public static User user = new User();
 	
@@ -345,6 +342,58 @@ public class Api extends Application {
         	   
    			jsonuser.put("dests", jsonto);
    			jsonuser.put("msg", message);
+
+   			
+   			String POSTText = jsonuser.toString();
+   			StringEntity entity; 
+       	 
+   			entity = new StringEntity(POSTText, "UTF-8");
+   			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+           httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+           entity.setContentType(basicHeader);
+           httpPost.setEntity(entity);
+           response = httpClient.execute(httpPost);
+               
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+        	   
+			  return 0;	 
+	   	
+           }else{
+		
+        	   return -1;
+        	   
+           }
+	}
+	
+	
+	
+	
+	public int sendReport(int spot_id, String message) throws ClientProtocolException, IOException, JSONException{
+		
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/report/create";       
+           System.out.println(url);
+           
+           HttpPost httpPost = new HttpPost(url);         
+           JSONObject jsonuser=new JSONObject();
+           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+ 
+           
+           JSONObject rep = new JSONObject();
+           
+           rep.put("spot_id", spot_id);
+           rep.put("cause", message);
+           
+           
+           jsonuser.put("report", rep);
 
    			
    			String POSTText = jsonuser.toString();

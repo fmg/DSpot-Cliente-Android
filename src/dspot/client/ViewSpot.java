@@ -46,6 +46,7 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RatingBar;
@@ -80,7 +81,7 @@ public class ViewSpot extends Activity implements Runnable{
 	ArrayList<Integer> spotList_ids;
 	int index ;
 	
-	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios, 5-remover favoritos //6-mandar email
+	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios, 5-remover favoritos //6-mandar email //7-mandar report
 	int operation;
 	
 	SpotFullInfo sfi;
@@ -349,12 +350,16 @@ public class ViewSpot extends Activity implements Runnable{
 		builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				
 				RadioGroup rg = (RadioGroup)reportDialogLayout.findViewById(R.id.view_spot_report_options);
-				if(rg.indexOfChild(rg.findViewById(rg.getCheckedRadioButtonId())) == 4){
-					System.out.println(((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).getText().toString());
+				
+				if(rg.getCheckedRadioButtonId()==-1){	
+					Toast.makeText(ViewSpot.this, "Choose an option", Toast.LENGTH_SHORT).show();
+				}else{
+					dialog.dismiss();
+					sendReportAction();
 				}
 				
-				dialog.dismiss();			
 			}	
 		});
 		
@@ -363,6 +368,14 @@ public class ViewSpot extends Activity implements Runnable{
 		
 	}
 	
+	
+	public void sendReportAction(){
+		
+		operation = 7;
+		progressDialog = ProgressDialog.show(ViewSpot.this, "", "Sending report. Please wait...", true);
+ 		Thread thread = new Thread(this);
+        thread.start();
+	}
 	
 	
 	
@@ -515,6 +528,31 @@ public class ViewSpot extends Activity implements Runnable{
 	        		Looper.loop();
 
 				}
+			}else if (operation == 7){
+				
+				String cause;
+				
+				RadioGroup rg = (RadioGroup)reportDialogLayout.findViewById(R.id.view_spot_report_options);
+				RadioButton rb = (RadioButton)rg.findViewById(rg.getCheckedRadioButtonId());
+				
+				System.out.println(rb.getText());
+				
+				if(rg.indexOfChild(rg.findViewById(rg.getCheckedRadioButtonId())) == 4)	
+					cause = rb.getText() +": "+ ((EditText)reportDialogLayout.findViewById(R.id.view_spot_report_text)).getText().toString();
+				else
+					cause = rb.getText().toString();
+				
+				if(api.sendReport(sfi.getId(), cause) == 0){
+					handler.sendMessage(handler.obtainMessage());
+				}else{
+					
+					progressDialog.dismiss();
+					Looper.prepare();
+	        		Toast.makeText(getApplicationContext(), "Error sending report", Toast.LENGTH_SHORT).show();
+	        		Looper.loop();
+					
+				}
+				
 			}
 			
 		} catch (ClientProtocolException e) {
@@ -626,6 +664,9 @@ public class ViewSpot extends Activity implements Runnable{
     			progressDialog.dismiss();
     			favouriteEnabled = true;
         	}else if(operation == 6){
+        		progressDialog.dismiss();
+        		Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_SHORT).show();
+        	}else if(operation == 7){
         		progressDialog.dismiss();
         		Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_SHORT).show();
         	}
