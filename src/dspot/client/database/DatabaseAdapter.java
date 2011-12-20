@@ -61,13 +61,13 @@ public class DatabaseAdapter {
 
 	
 	
-	public long createUser(int id, String username,  String name, String email) {
+	public long createUser(int id, String username,  String name, String email,String photo) {
 		
 		ContentValues initialvalues = new ContentValues();
 		initialvalues.put("_id", id);
 		initialvalues.put("name", name);
 		initialvalues.put("email", email);
-		initialvalues.put("photo", "");
+		initialvalues.put("photo", photo);
 		initialvalues.put("username", username);
 
 		return database.insert("user", null, initialvalues);
@@ -343,6 +343,13 @@ public class DatabaseAdapter {
 	 		favouriteCursor.close();
 	 		return true;
 	 	}
+	}
+	
+	
+	public void removeFavourite(int id){
+		String deleteFavourite = "delete from favourites where _id= " + id;
+	
+	 	database.execSQL(deleteFavourite);
 	}
 
 }

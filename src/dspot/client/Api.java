@@ -58,15 +58,16 @@ public class Api extends Application {
 	
 	//TODO: corrigir bug no mapa dos clicks
 	//TODO: corrigir bug da propagacao das estrelas
+	//TODO: actualizar rating nos favoritos
 	
-	//TODO: adicionar/remover favoritos,
-	//mandar mail, report, search near me
+	//TODO:
+	//mandar mail, report
 	
 	private final String PATH = "/data/data/dspot.client/";
 
 	
 	public static String cookie;
-	public final String IP = "http://172.30.1.57:3000";
+	public final String IP = "http://172.30.15.86:3000";
 	
 	public static User user = new User();
 	
@@ -166,8 +167,8 @@ public class Api extends Application {
         	user.setEmail(messageReceived.getString("email"));
         	user.setId(messageReceived.getInt("id"));
         	
-        	//TODO:corrigir link
-        	String photoURL = IP+"/public/system/avatares/"+ user.getId()+ "/medium/"+messageReceived.getString("avatar_file_name");
+        	String photoURL = IP+"/system/avatars/"+ user.getId()+ "/thumb/"+messageReceived.getString("avatar_file_name");
+        	System.out.println(photoURL);
         	user.setPhoto(photoURL);
         	
         	//elimina tudo do user
@@ -319,11 +320,108 @@ public class Api extends Application {
 	}
 	
 	
+	public int sendEmail(ArrayList<Integer> to, String message) throws ClientProtocolException, IOException, JSONException{
+		
+		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/users/invite";       
+           System.out.println(url);
+           
+           HttpPost httpPost = new HttpPost(url);         
+           JSONObject jsonuser=new JSONObject();
+           JSONArray jsonto = new JSONArray();
+           
+           httpPost.setHeader("Accept", "application/json");
+           httpPost.setHeader("Cookie", cookie);
+           	
+           
+          
+           for(Integer i: to)
+        	   jsonto.put(i);
+        	   
+   			jsonuser.put("dests", jsonto);
+   			jsonuser.put("msg", message);
+
+   			
+   			String POSTText = jsonuser.toString();
+   			StringEntity entity; 
+       	 
+   			entity = new StringEntity(POSTText, "UTF-8");
+   			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+           httpPost.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+           entity.setContentType(basicHeader);
+           httpPost.setEntity(entity);
+           response = httpClient.execute(httpPost);
+               
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+        	   
+			  return 0;	 
+	   	
+           }else{
+		
+        	   return -1;
+        	   
+           }
+	}
 	
-	public int sendComment(int spot_id, int rating, String body) throws ClientProtocolException, IOException, JSONException{
+	
+	
+	public ArrayList<SpotShortInfo> getSpotsByRadius(double latitude, double longitude,int radius) throws ClientProtocolException, IOException, JSONException{
 		
 		ArrayList<SpotShortInfo> spotlist = new ArrayList<SpotShortInfo>();
 		
+		final HttpClient httpClient =  new DefaultHttpClient();
+		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
+		HttpResponse response=null;
+       
+       	
+           String url = IP + "/spots/search_raio?lat="+latitude+
+        		   			"&lon="+longitude+"&km="+radius;       
+           System.out.println(url);
+           
+           HttpGet httpget = new HttpGet(url);
+           
+           httpget.setHeader("Accept", "application/json");
+           
+           response = httpClient.execute(httpget);
+           
+           if(response.getStatusLine().getStatusCode() == 200){
+           	   
+			   InputStream instream = response.getEntity().getContent();
+			   String tmp = read(instream);
+			
+			    JSONArray messageReceived = new JSONArray(tmp.toString());
+			   	System.out.println(messageReceived.toString());
+			   	
+			   	for(int i = 0; i<messageReceived.length(); i++){
+			   		JSONObject spot = messageReceived.getJSONObject(i);
+			   		
+			   		SpotShortInfo ssi = new SpotShortInfo(spot.getString("name"), spot.getString("address"), spot.getInt("id"), spot.getInt("rating"));
+			   		ssi.setLatitude(spot.getDouble("latitude"));
+			   		ssi.setLongitude(spot.getDouble("longitude"));
+			   		
+			   		JSONArray arraySports = spot.getJSONArray("sports");
+			   		for(int k = 0; k < arraySports.length(); k++)
+			   			ssi.addSport((arraySports.getJSONObject(k)).getString("name"));
+			   		
+			   		spotlist.add(ssi);
+			   		
+			   	}
+	   	
+           }
+		
+		return spotlist;
+	}
+	
+	
+	
+	public int sendComment(int spot_id, int rating, String body) throws ClientProtocolException, IOException, JSONException{
+				
 		final HttpClient httpClient =  new DefaultHttpClient();
 		 HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), 3000);
 		HttpResponse response=null;
@@ -370,14 +468,14 @@ public class Api extends Application {
 		HttpResponse response=null;
        
        	
-           String url = IP + "/favourite/create&spot_id="+spot_id;       
+           String url = IP + "/favourite/create?spot_id="+spot_id;       
            System.out.println(url);
            
            HttpPost httpPost = new HttpPost(url);         
            
            httpPost.setHeader("Accept", "application/json");
            httpPost.setHeader("Cookie", cookie);
-           System.out.println(cookie);	
+           //System.out.println(cookie);	
         
            response = httpClient.execute(httpPost);
                           
@@ -396,17 +494,17 @@ public class Api extends Application {
 		HttpResponse response=null;
        
        	
-           String url = IP + "/favourite/destroy&spot_id="+spot_id;       
+           String url = IP + "/favourite/destroy?spot_id="+spot_id;       
            System.out.println(url);
            
            HttpPost httpPost = new HttpPost(url);         
            
            httpPost.setHeader("Accept", "application/json");
            httpPost.setHeader("Cookie", cookie);
-           System.out.println(cookie);	
+           //System.out.println(cookie);	
         
            response = httpClient.execute(httpPost);
-                          
+           //System.out.println(response.getStatusLine().getStatusCode());               
            if(response.getStatusLine().getStatusCode() == 200){	   
         	   return 0;
            }
@@ -478,7 +576,8 @@ public class Api extends Application {
 		   
 		response = httpClient.execute(httpget);
 		   
-		System.out.println(response.getStatusLine().getStatusCode());
+		//System.out.println(response.getStatusLine().getStatusCode());
+		
 		   
 		if(response.getStatusLine().getStatusCode() == 200){
 			   
@@ -783,7 +882,7 @@ public class Api extends Application {
 	
 	private void createUserInfo(int id, String username, String name, String email, String photo){
 		dbAdapter.open();
-		dbAdapter.createUser(id, username, name, email);
+		dbAdapter.createUser(id, username, name, email,photo);
 		dbAdapter.close();
 	}
 	
@@ -946,6 +1045,12 @@ public class Api extends Application {
 		dbAdapter.close();
 	}
 	
+	public void createFavourite(int id, String name, String address, int rating){
+		dbAdapter.open();
+		dbAdapter.createFavourite(id, name, address,rating,user.getId());
+		dbAdapter.close();
+	}
+	
 	
 	public ArrayList<SpotShortInfo> getFavourites(){
 		
@@ -963,6 +1068,13 @@ public class Api extends Application {
 		dbAdapter.close();
 		
 		return ret;
+	}
+	
+	
+	public void removeFavourite(int id){
+		dbAdapter.open();
+		dbAdapter.removeFavourite(id);
+		dbAdapter.close();
 	}
 
 }

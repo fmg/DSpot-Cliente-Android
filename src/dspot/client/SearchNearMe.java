@@ -11,6 +11,9 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,6 +43,11 @@ public class SearchNearMe extends ListActivity implements Runnable{
 	ArrayList<SpotShortInfo> spotList;
 	
 	double radius;
+	LocationManager locationManager;
+	LocationListener locationListener;
+    
+	private double lastLatitude = 9999.9, 	
+					lastLongitude= 9999.9;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,11 +99,34 @@ public class SearchNearMe extends ListActivity implements Runnable{
 			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {				
 			}
 		});  
+        
+        
+		 locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+		 locationListener = new LocationListener() {
+			    public void onLocationChanged(Location location) {
+				    
+					  System.out.println(location.getProvider() +": " +location.getLatitude() + " , " + location.getLongitude());
+				    
+					 lastLatitude = location.getLatitude();
+					 lastLongitude = location.getLongitude();
+			    }
+
+			    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+			    public void onProviderEnabled(String provider) {
+			    }
+
+			    public void onProviderDisabled(String provider) {
+			    }
+			};
 		
 	}
 	
 	
 	public void submitSearch(){
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
 		dialog = ProgressDialog.show(SearchNearMe.this, "", "Obtaining Spot list. Please wait...", true);
  		Thread thread = new Thread(this);
         thread.start();
@@ -106,13 +137,28 @@ public class SearchNearMe extends ListActivity implements Runnable{
 	
 	@Override
 	public void run() {
-		/*
+		
 		try {
 			
 			
+			while(lastLatitude > 900.0 && lastLongitude > 900.0){
+				try {					
+					
+					System.out.println("Sleeping. zZzZzZzzzzz");
+					Thread.sleep(5000);
+				
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			
-			//TODO:
-			//spotList = api.getSpotsByName(tmp);
+			locationManager.removeUpdates(locationListener);
+			
+			System.out.println(lastLatitude + " " + lastLongitude);
+			
+			
+			spotList = api.getSpotsByRadius(lastLatitude, lastLongitude, 
+					 ((SeekBar)findViewById(R.id.search_near_me_seekbar)).getProgress());
 			
 			
 			handler.sendMessage(handler.obtainMessage());
@@ -162,7 +208,7 @@ public class SearchNearMe extends ListActivity implements Runnable{
 			
 			
 		}
-*/
+
 	}
 	
 	

@@ -1,7 +1,6 @@
 package dspot.client;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -67,6 +66,7 @@ public class ViewSpot extends Activity implements Runnable{
 	View inviteDialogLayout;
 	MyCustomAdapter inviteDialogAdapter;
 	
+	boolean favouriteEnabled = false;
 	
 	ImageAdapter imageAdapter;
 	
@@ -80,8 +80,8 @@ public class ViewSpot extends Activity implements Runnable{
 	ArrayList<Integer> spotList_ids;
 	int index ;
 	
-	int operation; //1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
-	
+	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios, 5-remover favoritos //6-mandar email
+	int operation;
 	
 	SpotFullInfo sfi;
 
@@ -138,14 +138,17 @@ public class ViewSpot extends Activity implements Runnable{
 			
 			@Override
 			public void onRatingChanged(RatingBar arg0, float arg1, boolean arg2) {
-				
-				if(arg0.getRating() == 1){
-         			//TODO: adicionar aos favoritos
-					 System.out.println("Adiciona aos favoritos");
-         		}else{
-         			//TODO: remover dos favoritos
-					 System.out.println("Remove dos favoritos");
-         		}
+				if(favouriteEnabled){
+					if(arg0.getRating() == 1){
+						 System.out.println("Adiciona aos favoritos");
+						 addFavouriteAction();
+						 
+	         		}else{
+	         			System.out.println("Remove dos favoritos");
+	         			removeFavouriteAction();
+	         			
+	         		}
+				}
 				
 			}
 		});
@@ -215,15 +218,6 @@ public class ViewSpot extends Activity implements Runnable{
 		});
 	    
 	    
-	    ((ImageView)findViewById(R.id.view_spot_actionReport)).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				reportAction();				
-			}
-		});
-	    
-	    
-	    
 	    gestureDetector = new GestureDetector(new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -240,6 +234,27 @@ public class ViewSpot extends Activity implements Runnable{
         thread.start();
         
 	}
+	
+	
+	
+	
+	
+	 public void addFavouriteAction(){
+		 	favouriteEnabled=false;
+			operation =3;
+			progressDialog = ProgressDialog.show(ViewSpot.this, "", "Adding to favourites. Please wait...", true);
+	 		Thread thread = new Thread(this);
+	        thread.start();
+	 }
+	 
+	 public void removeFavouriteAction(){
+		 	favouriteEnabled= false;
+			operation =5;
+			progressDialog = ProgressDialog.show(ViewSpot.this, "", "Removing from favourites. Please wait...", true);
+	 		Thread thread = new Thread(this);
+	        thread.start();
+	 }
+
 
 	
 	@Override
@@ -267,6 +282,7 @@ public class ViewSpot extends Activity implements Runnable{
 					long id) {
 				inviteDialogAdapter.setChecked(position);
 				inviteDialogAdapter.notifyDataSetChanged();
+				
 				System.out.println("tlalalala");
 				
 			}
@@ -277,7 +293,10 @@ public class ViewSpot extends Activity implements Runnable{
 		builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();			
+				
+				dialog.dismiss();	
+				sendEmailAction();
+
 			}	
 		});
 		
@@ -286,6 +305,15 @@ public class ViewSpot extends Activity implements Runnable{
 		//inviteDialog.show();
 	}
 
+	
+	public void sendEmailAction(){
+		operation = 6;
+		progressDialog = ProgressDialog.show(ViewSpot.this, "", "Sending. Please wait...", true);
+ 		Thread thread = new Thread(this);
+        thread.start();
+	}
+
+	
 	
 	public void inviteAction(){
 		if(api.user.isConnected())
@@ -420,7 +448,7 @@ public class ViewSpot extends Activity implements Runnable{
 	@Override
 	public void run() {
 		
-		//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
+		//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios, 5-remover favoritos
 		try {
 			
 			
@@ -450,6 +478,43 @@ public class ViewSpot extends Activity implements Runnable{
 				handler.sendMessage(handler.obtainMessage());
 
 				
+			}else if(operation == 3){
+				
+				if(api.sendAddFavourite(sfi.getId())==0){
+					api.createFavourite(sfi.getId(), sfi.getName(), sfi.getAddress(), (int)sfi.getRating());
+					handler.sendMessage(handler.obtainMessage());
+				}else{
+					progressDialog.dismiss();
+					Looper.prepare();
+	        		Toast.makeText(getApplicationContext(), "Error adding to favourites", Toast.LENGTH_SHORT).show();
+	        		Looper.loop();
+				}
+				
+			}else if(operation == 5){
+				
+				if(api.sendRemoveFavourite(sfi.getId()) ==0){
+					api.removeFavourite(sfi.getId());
+					handler.sendMessage(handler.obtainMessage());
+				}else{
+					progressDialog.dismiss();
+					Looper.prepare();
+	        		Toast.makeText(getApplicationContext(), "Error removing from favourites", Toast.LENGTH_SHORT).show();
+	        		Looper.loop();
+				}
+				
+			}else if(operation==6){
+				
+				String message = ((EditText)inviteDialogLayout.findViewById(R.id.view_spot_invite_text)).getText().toString();
+				
+				if(api.sendEmail(inviteDialogAdapter.getSelected(), message) == 0){
+					handler.sendMessage(handler.obtainMessage());
+				}else{
+					progressDialog.dismiss();
+					Looper.prepare();
+	        		Toast.makeText(getApplicationContext(), "Error sending invite", Toast.LENGTH_SHORT).show();
+	        		Looper.loop();
+
+				}
 			}
 			
 		} catch (ClientProtocolException e) {
@@ -503,7 +568,8 @@ public class ViewSpot extends Activity implements Runnable{
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
-        	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios
+        	//1-onCreate; 2-update de comentarios, 3-adiciona aos favoritos, 4-load dos comentarios, 5-remover favoritos
+        	
         	if(operation == 1){//onCreate
 	        	imageAdapter.notifyDataSetChanged();
 	        	
@@ -534,6 +600,8 @@ public class ViewSpot extends Activity implements Runnable{
 	            
 	            api.last_visited_spot = sfi.getId();
 	            
+	            favouriteEnabled = true;
+	            
         	}else if(operation== 2){//enviar comentario
         		
         		((RatingBar)findViewById(R.id.view_spot_rateSpot)).setVisibility(View.GONE);
@@ -545,6 +613,21 @@ public class ViewSpot extends Activity implements Runnable{
         		
         		PopulateScreenComments();
         		progressDialog.dismiss();	
+        		
+        	}else if(operation == 3){
+        		
+    			((RatingBar)findViewById(R.id.view_spot_favourite)).setRating(1);
+    			progressDialog.dismiss();
+    			favouriteEnabled = true;
+
+        	}else if(operation == 5){
+        		
+    			((RatingBar)findViewById(R.id.view_spot_favourite)).setRating(0);
+    			progressDialog.dismiss();
+    			favouriteEnabled = true;
+        	}else if(operation == 6){
+        		progressDialog.dismiss();
+        		Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_SHORT).show();
         	}
 
         }
@@ -715,6 +798,16 @@ public class ViewSpot extends Activity implements Runnable{
 				api.updateFrienState(friends.get(position).getId(), 1);
 			}
 
+		}
+		
+		
+		public ArrayList<Integer> getSelected(){
+			ArrayList<Integer> ret = new ArrayList<Integer>();
+			
+			for(User u:friends)
+				ret.add(u.getId());		
+			
+			return ret;
 		}
 		
 		

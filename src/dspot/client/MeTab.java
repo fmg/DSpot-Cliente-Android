@@ -41,6 +41,7 @@ public class MeTab extends Activity{
 		
 		URL newurl;
 		try {
+			System.out.println("aki->"+ u.getPhoto());
 			newurl = new URL(u.getPhoto());
 			Bitmap mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
 			
