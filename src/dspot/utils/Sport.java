@@ -30,4 +30,9 @@ public class Sport {
 			this.isChecked = false;
 			
 	}
+	
+	
+	public String toString(){
+		return name;
+	}
 }

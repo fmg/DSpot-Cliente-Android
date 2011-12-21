@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/spot_menu_new" android:title="New Spot"></item>
-    <item android:id="@+id/spot_menu_refresh" android:title="Update App"></item>
     <item android:id="@+id/spot_menu_invite" android:title="Invite friends"></item>
 
     

@@ -274,15 +274,15 @@ public class SearchTab  extends ListActivity{
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.spot_menu_new:
-	    	Intent intent = new Intent(getApplicationContext(),NewSpot.class);
-	        startActivity(intent);
+	    	if(api.user.isConnected()){
+		    	Intent intent = new Intent(getApplicationContext(),NewSpot.class);
+		        startActivity(intent);
+	    	}else{
+	    		Toast toast = Toast.makeText(getApplicationContext(), "You must loggin first", Toast.LENGTH_SHORT);
+	    		toast.show();
+	    	}
 	        return true;
 	    
-	    case R.id.spot_menu_refresh:
-	    	Toast toast = Toast.makeText(getApplicationContext(), "Refresh to be done in a near future", Toast.LENGTH_SHORT);
-    		toast.show();
-	        return true;
-	        
 	    case R.id.spot_menu_invite:
 	    	inviteFriendsFacebook();
 	    	return true;

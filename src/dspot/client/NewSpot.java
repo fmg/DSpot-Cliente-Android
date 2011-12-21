@@ -289,7 +289,7 @@ public class NewSpot extends Activity implements Runnable{
 			
 			
 			try {
-				if(api.createSpot(photo, sportsDialogAdapter.getIDs(), finalLocation_latitude, finalLocation_longitude,
+				if(api.createSpot(photo, sportsDialogAdapter.getCheckedIDs(), finalLocation_latitude, finalLocation_longitude,
 						((EditText)findViewById(R.id.new_spot_nameEdit)).getText().toString(),
 						((EditText)findViewById(R.id.new_spot_locationEdit)).getText().toString(),
 						((EditText)findViewById(R.id.new_spot_addressEdit)).getText().toString(), 
@@ -500,11 +500,13 @@ public class NewSpot extends Activity implements Runnable{
 			}
 			
 			
-			public ArrayList<Integer> getIDs(){
+			public ArrayList<Integer> getCheckedIDs(){
 				ArrayList<Integer> ret = new ArrayList<Integer>();
 				
-				for(Sport s: sports)
-					ret.add(s.getId());
+				for(Sport s: sports){
+					if(s.isChecked())
+						ret.add(s.getId());
+				}
 				
 				return ret;
 			}
@@ -514,7 +516,7 @@ public class NewSpot extends Activity implements Runnable{
 			public void notifyDataSetChanged() {
 				super.notifyDataSetChanged();
 			}
-	    	
+			
 	    }
 
 }

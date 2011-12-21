@@ -231,6 +231,7 @@ public class MapFullScreen extends MapActivity implements Runnable{
   		  	mapController.setCenter(p);
   		  	
   		  	itemizedoverlay.removeAllOverlays();
+  		  	itemizedoverlay.callPopulate();
   		  	for(int i= 0; i < spots.size(); i++){
 	  		  	GeoPoint point = new GeoPoint((int)(spots.get(i).getLatitude()*1e6), (int)(spots.get(i).getLongitude()*1e6));
 	  		  	OverlayItem overlayitem = new OverlayItem(point, "", "");
@@ -373,6 +374,11 @@ public class MapFullScreen extends MapActivity implements Runnable{
 			selected_index = -1;
 			return super.onTap(p, mapView);
 		}
+		
+		
+		public void callPopulate(){
+			populate();
+		}
 	}
     
     
@@ -405,7 +411,6 @@ public class MapFullScreen extends MapActivity implements Runnable{
 
 			return super.onDoubleTap(e);
 		}
-
 		
   	}
 	

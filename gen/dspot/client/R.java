@@ -118,11 +118,10 @@ public final class R {
         public static final int spotList_address_text=0x7f07003a;
         public static final int spotList_name_text=0x7f070038;
         public static final int spotList_ratingBar=0x7f070039;
-        public static final int spot_menu_invite=0x7f07006c;
+        public static final int spot_menu_invite=0x7f07006b;
         public static final int spot_menu_new=0x7f07006a;
-        public static final int spot_menu_refresh=0x7f07006b;
-        public static final int tab_map_menu_fullscreen=0x7f07006e;
-        public static final int tab_map_menu_refresh=0x7f07006d;
+        public static final int tab_map_menu_fullscreen=0x7f07006d;
+        public static final int tab_map_menu_refresh=0x7f07006c;
         public static final int tab_me_email=0x7f07003f;
         public static final int tab_me_friendsList=0x7f070040;
         public static final int tab_me_image=0x7f07003c;
@@ -158,8 +157,8 @@ public final class R {
         public static final int view_spot_favourite=0x7f070047;
         public static final int view_spot_invite_text=0x7f070060;
         public static final int view_spot_location=0x7f07004b;
-        public static final int view_spot_map_menu_satellite=0x7f07006f;
-        public static final int view_spot_map_menu_street=0x7f070070;
+        public static final int view_spot_map_menu_satellite=0x7f07006e;
+        public static final int view_spot_map_menu_street=0x7f07006f;
         public static final int view_spot_moreCommentsButton=0x7f07005e;
         public static final int view_spot_rateSpot=0x7f070058;
         public static final int view_spot_rating=0x7f070049;
