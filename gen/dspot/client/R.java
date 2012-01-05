@@ -45,14 +45,15 @@ public final class R {
         public static final int ic_tab_search_selected=0x7f020019;
         public static final int ic_tab_search_unselected=0x7f02001a;
         public static final int ic_whisle=0x7f02001b;
-        public static final int pin=0x7f02001c;
-        public static final int profile_picture=0x7f02001d;
-        public static final int red_button_shape=0x7f02001e;
-        public static final int tab_bg_selected=0x7f02001f;
-        public static final int tab_bg_selector=0x7f020020;
-        public static final int tab_bg_unselected=0x7f020021;
-        public static final int tab_text_selector=0x7f020022;
-        public static final int wallpapper=0x7f020023;
+        public static final int logo2=0x7f02001c;
+        public static final int pin=0x7f02001d;
+        public static final int profile_picture=0x7f02001e;
+        public static final int red_button_shape=0x7f02001f;
+        public static final int tab_bg_selected=0x7f020020;
+        public static final int tab_bg_selector=0x7f020021;
+        public static final int tab_bg_unselected=0x7f020022;
+        public static final int tab_text_selector=0x7f020023;
+        public static final int wallpapper=0x7f020024;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f070034;
