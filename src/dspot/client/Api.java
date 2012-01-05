@@ -64,7 +64,7 @@ public class Api extends Application {
 
 	
 	public static String cookie;
-	public final String IP = "http://95.92.112.141:3000";
+	public final String IP = "http://172.30.15.86:3000";
 	
 	public static User user = new User();
 	
@@ -164,7 +164,9 @@ public class Api extends Application {
         	user.setEmail(messageReceived.getString("email"));
         	user.setId(messageReceived.getInt("id"));
         	
-        	String photoURL = IP+"/system/avatars/"+ user.getId()+ "/thumb/"+messageReceived.getString("avatar_file_name");
+        	String photoURL = IP+"/system/avatars/"+ user.getId()+ "/thumb/"+
+        			(messageReceived.getString("avatar_file_name").split("\\.")[0]).replace(" ", "%20")
+        						+ ".png";
         	System.out.println(photoURL);
         	user.setPhoto(photoURL);
         	
@@ -652,7 +654,9 @@ public class Api extends Application {
 				String photo = IP + "/system/pictures/"+
 								(pictures.getJSONObject(i)).getInt("id")+
 								"/medium/" + 
-								(pictures.getJSONObject(i)).getString("picture_file_name");
+								((pictures.getJSONObject(i)).getString("picture_file_name").split("\\.")[0]).replace(" ", "%20")+
+								".png";
+
 								
 				spot.addPhoto(photo);
 			}
