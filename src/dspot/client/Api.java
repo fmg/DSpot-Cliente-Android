@@ -64,7 +64,7 @@ public class Api extends Application {
 
 	
 	public static String cookie;
-	public final String IP = "http://172.30.15.86:3000";
+	public final String IP = "http://ldso2011.no-ip.org:8080";
 	
 	public static User user = new User();
 	
