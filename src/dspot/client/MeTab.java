@@ -8,22 +8,32 @@ import java.util.ArrayList;
 import dspot.utils.User;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MeTab extends Activity{
+public class MeTab extends Activity implements Runnable{
 	
 	Api api;
 	User u;
 	MyListAdapter adapter;
+	
+	
+	Bitmap mIcon_val;
+	
+	ProgressDialog dialog;
+	private boolean firstStart = true;
     
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,23 +47,6 @@ public class MeTab extends Activity{
 		((TextView)findViewById(R.id.tab_me_email)).setText(u.getEmail());
 		((TextView)findViewById(R.id.tab_me_name)).setText(u.getName());
 		((TextView)findViewById(R.id.tab_me_username)).setText(u.getUsername());
-		
-		
-		URL newurl;
-		try {
-			System.out.println("aki->"+ u.getPhoto());
-			newurl = new URL(u.getPhoto());
-			Bitmap mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
-			
-			((ImageView)findViewById(R.id.tab_me_image)).setImageBitmap(mIcon_val);
-			
-		} catch (MalformedURLException e) {
-			((ImageView)findViewById(R.id.tab_me_image)).setImageResource(R.drawable.profile_picture);
-			e.printStackTrace();
-		} catch (IOException e) {
-			((ImageView)findViewById(R.id.tab_me_image)).setImageResource(R.drawable.profile_picture);
-			e.printStackTrace();
-		}
 		
 		
 		adapter = new MyListAdapter(this,  android.R.layout.simple_list_item_1, api.getFriends());
@@ -114,5 +107,59 @@ public class MeTab extends Activity{
             this.friends = items;
 		}
 	}
+	
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		if(firstStart){		
+			firstStart = false;
+			
+			dialog = ProgressDialog.show(MeTab.this, "", "Working. Please wait...", true);
+    		Thread thread = new Thread(this);
+            thread.start();
+		}
+	}
+
+
+
+	@Override
+	public void run() {
+		URL newurl;
+		try {
+			System.out.println("aki->"+ u.getPhoto());
+			newurl = new URL(u.getPhoto());
+			mIcon_val = BitmapFactory.decodeStream(newurl.openConnection() .getInputStream());
+			
+			//((ImageView)findViewById(R.id.tab_me_image)).setImageBitmap(mIcon_val);
+			
+		} catch (MalformedURLException e) {
+			//((ImageView)findViewById(R.id.tab_me_image)).setImageResource(R.drawable.profile_picture);
+			e.printStackTrace();
+		} catch (IOException e) {
+			//((ImageView)findViewById(R.id.tab_me_image)).setImageResource(R.drawable.profile_picture);
+			e.printStackTrace();
+		}
+		
+		Message msg = handler.obtainMessage();
+		handler.sendMessage(msg);
+		
+	}
+	
+	
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+        	
+        	
+        	if(mIcon_val == null)
+        		((ImageView)findViewById(R.id.tab_me_image)).setImageResource(R.drawable.profile_picture);
+        	else
+        		((ImageView)findViewById(R.id.tab_me_image)).setImageBitmap(mIcon_val);
+        		
+        	dialog.dismiss();
+        }
+	};
 
 }
